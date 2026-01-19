@@ -1,1 +1,150 @@
-# expensy
+# Personal Expense Tracker
+
+A full-stack personal expense tracking application.
+
+![Expense Tracker](https://via.placeholder.com/800x400/6366f1/ffffff?text=Personal+Expense+Tracker)
+
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Python 3.11+
+- Node.js 18+ and npm
+
+### 1️⃣ Backend Setup
+
+1. Navigate to the backend directory:
+   ```bash
+   cd backend
+   ```
+
+2. Create and activate a virtual environment:
+   ```bash
+   python -m venv venv
+   # Windows
+   venv\Scripts\activate
+   # macOS/Linux
+   source venv/bin/activate
+   ```
+
+3. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. Start the server (Database is auto-created):
+   ```bash
+   python -m uvicorn app.main:app --reload
+   ```
+   *Server runs at: http://localhost:8000*
+
+### 3️⃣ Configuration (Optional)
+
+Create a `.env` file in the `backend/` directory (or next to your executable) to override default settings:
+
+```env
+# backend/.env
+SECRET_KEY=your-secure-production-key-here
+```
+*If not provided, the app uses a default development key.*
+
+### 2️⃣ Frontend Setup
+
+1. Open a new terminal and navigate to the frontend directory:
+   ```bash
+   cd frontend
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Start the application:
+   ```bash
+   npm run dev
+   ```
+   *App runs at: http://localhost:5173*
+
+---
+
+## � Building for Distribution
+
+### 1. Build Frontend
+First, compile the React frontend into static files:
+```bash
+cd frontend
+npm run build
+```
+This creates a `dist/` folder which the backend is configured to serve automatically.
+
+### 2. Create Executable (PyInstaller)
+
+You can package the entire application (Backend + Frontend) into a single executable file.
+
+**Windows:**
+1. Ensure you have installed the requirements.
+2. Run the build script (if available) or use PyInstaller directly:
+```bash
+cd backend
+pyinstaller --name "Expensy" --onefile --icon=app.ico --add-data "../frontend/dist;frontend/dist" app/main.py
+```
+*Note: You may need to adjust `--add-data` separator: `;` for Windows, `:` for Linux/Mac.*
+
+**Linux / macOS:**
+```bash
+cd backend
+pyinstaller --name "Expensy" --onefile --add-data "../frontend/dist:frontend/dist" app/main.py
+```
+
+### 3. Cross-Platform (Docker)
+For the most consistent experience across architectures (x86, ARM) and OS (Windows, Linux, Mac), use Docker.
+
+**Dockerfile:**
+```dockerfile
+# Build Frontend
+FROM node:18 as frontend-build
+WORKDIR /app/frontend
+COPY frontend/package*.json ./
+RUN npm install
+COPY frontend/ .
+RUN npm run build
+
+# Build Backend
+FROM python:3.11-slim
+WORKDIR /app
+COPY backend/requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY backend/app ./app
+COPY --from=frontend-build /app/frontend/dist ./frontend/dist
+
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+```
+
+**Build & Run:**
+```bash
+docker build -t expensy .
+docker run -p 8000:8000 expensy
+```
+
+
+---
+
+## 📡 API Endpoints
+
+### Authentication
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/auth/signup` | Register new user |
+| POST | `/auth/login` | Login and get JWT |
+| GET | `/auth/me` | Get current profile |
+| PUT | `/auth/me` | Update profile/budget |
+
+### Expenses & Metrics
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/expenses` | List all expenses (filterable) |
+| POST | `/expenses` | Create new expense |
+| GET | `/metrics` | Get budget & dashboard stats |
+
+---
