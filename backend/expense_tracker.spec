@@ -9,14 +9,18 @@ import os
 block_cipher = None
 SPEC_DIR = os.path.dirname(os.path.abspath(SPEC))
 
-# Check if static folder exists
-static_path = os.path.join(SPEC_DIR, 'static')
+# Frontend dist path (relative to backend)
+frontend_dist = os.path.join(os.path.dirname(SPEC_DIR), 'frontend', 'dist')
+
 datas = []
-if os.path.exists(static_path):
-    datas.append(('static', 'static'))
+# Verify frontend build exists and add it
+if os.path.exists(frontend_dist):
+    datas.append((frontend_dist, 'static'))
+else:
+    print(f"WARNING: Frontend dist not found at {frontend_dist}")
 
 a = Analysis(
-    ['run_server.py'],
+    ['run.py'],
     pathex=[SPEC_DIR],
     binaries=[],
     datas=datas,
@@ -36,16 +40,13 @@ a = Analysis(
         'uvicorn.lifespan.off',
         'fastapi',
         'starlette',
-        'starlette.responses',
-        'starlette.staticfiles',
         'pydantic',
-        'pydantic_core',
         'sqlalchemy',
-        'sqlalchemy.dialects.sqlite',
-        'h11',
-        'anyio',
-        'anyio._backends',
-        'anyio._backends._asyncio',
+        'passlib',
+        'passlib.handlers',
+        'passlib.handlers.argon2',
+        'passlib.handlers.bcrypt',
+        'argon2',
     ],
     hookspath=[],
     runtime_hooks=[],
@@ -67,6 +68,13 @@ exe = EXE(
     debug=False,
     strip=False,
     upx=True,
+    upx_exclude=[],
+    runtime_tmpdir=None,
     console=True,
-    icon=None,
+    disable_windowed_traceback=False,
+    argv_emulation=False,
+    target_arch=None,
+    codesign_identity=None,
+    entitlements_file=None,
 )
+
