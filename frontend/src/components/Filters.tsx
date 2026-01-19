@@ -1,4 +1,4 @@
-import type { FilterState, ExpenseStatus } from '../types';
+import type { FilterState } from '../types';
 import { formatBillingMonth } from '../types';
 import MonthPicker from './MonthPicker';
 import CustomDropdown from './CustomDropdown';
@@ -51,8 +51,8 @@ const Filters: React.FC<FiltersProps> = ({ filters, onFilterChange, categories, 
                                 key={month}
                                 onClick={() => handleChange('billing_month', month)}
                                 className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all duration-200 ${filters.billing_month === month
-                                        ? 'bg-primary-500 text-white shadow-lg shadow-primary-500/30'
-                                        : 'bg-slate-100 dark:bg-dark-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-dark-600'
+                                    ? 'bg-primary-500 text-white shadow-lg shadow-primary-500/30'
+                                    : 'bg-slate-100 dark:bg-dark-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-dark-600'
                                     }`}
                             >
                                 {formatBillingMonth(month).split(' ')[0]}

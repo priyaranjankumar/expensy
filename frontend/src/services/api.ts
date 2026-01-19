@@ -2,7 +2,7 @@ import axios from 'axios';
 import type { Expense, ExpenseCreate, ExpenseUpdate, ExpenseListResponse, MetricsResponse } from '../types';
 
 // API base URL - connects to FastAPI backend
-const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = '/api';
 
 const api = axios.create({
     baseURL: API_BASE_URL,
