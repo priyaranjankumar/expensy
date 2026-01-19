@@ -47,6 +47,8 @@ a = Analysis(
         'passlib.handlers.argon2',
         'passlib.handlers.bcrypt',
         'argon2',
+        'argon2_cffi',
+        '_cffi_backend',
     ],
     hookspath=[],
     runtime_hooks=[],
