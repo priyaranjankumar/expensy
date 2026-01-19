@@ -82,20 +82,23 @@ This creates a `dist/` folder which the backend is configured to serve automatic
 
 You can package the entire application (Backend + Frontend) into a single executable file.
 
-**Windows:**
-1. Ensure you have installed the requirements.
-2. Run the build script (if available) or use PyInstaller directly:
-```bash
-cd backend
-pyinstaller --name "Expensy" --onefile --icon=app.ico --add-data "../frontend/dist;frontend/dist" app/main.py
-```
-*Note: You may need to adjust `--add-data` separator: `;` for Windows, `:` for Linux/Mac.*
+**Windows / Linux / macOS:**
 
-**Linux / macOS:**
-```bash
-cd backend
-pyinstaller --name "Expensy" --onefile --add-data "../frontend/dist:frontend/dist" app/main.py
-```
+1. Ensure requirements are installed:
+   ```bash
+   pip install -r requirements.txt
+   pip install pyinstaller
+   ```
+
+2. Run the build using the spec file (recommended):
+   ```bash
+   cd backend
+   pyinstaller expense_tracker.spec --clean
+   ```
+
+   *Note: This automatically handles the differing path separators and includes all necessary hidden imports (like `passlib`) and frontend static files.*
+
+3. The executable will be created in `backend/dist/ExpenseTracker` (or `ExpenseTracker.exe` on Windows).
 
 ### 3. Cross-Platform (Docker)
 For the most consistent experience across architectures (x86, ARM) and OS (Windows, Linux, Mac), use Docker.
@@ -135,16 +138,16 @@ docker run -p 8000:8000 expensy
 ### Authentication
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST | `/auth/signup` | Register new user |
-| POST | `/auth/login` | Login and get JWT |
-| GET | `/auth/me` | Get current profile |
-| PUT | `/auth/me` | Update profile/budget |
+| POST | `/api/auth/signup` | Register new user |
+| POST | `/api/auth/login` | Login and get JWT |
+| GET | `/api/auth/me` | Get current profile |
+| PUT | `/api/auth/me` | Update profile/budget |
 
 ### Expenses & Metrics
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/expenses` | List all expenses (filterable) |
-| POST | `/expenses` | Create new expense |
-| GET | `/metrics` | Get budget & dashboard stats |
+| GET | `/api/expenses` | List all expenses (filterable) |
+| POST | `/api/expenses` | Create new expense |
+| GET | `/api/metrics` | Get budget & dashboard stats |
 
 ---
