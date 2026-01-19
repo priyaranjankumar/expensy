@@ -34,9 +34,9 @@ app.add_middleware(
 )
 
 # Include routers
-app.include_router(auth.router)
-app.include_router(expenses.router)
-app.include_router(metrics.router)
+app.include_router(auth.router, prefix="/api")
+app.include_router(expenses.router, prefix="/api")
+app.include_router(metrics.router, prefix="/api")
 
 
 @app.get("/", tags=["root"])

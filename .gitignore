@@ -18,3 +18,8 @@ frontend/.env
 # IDE
 .vscode/
 .idea/
+
+# PyInstaller
+build/
+dist/
+backend/static/
