@@ -100,7 +100,19 @@ You can package the entire application (Backend + Frontend) into a single execut
 
 3. The executable will be created in `backend/dist/ExpenseTracker` (or `ExpenseTracker.exe` on Windows).
 
-### 3. Cross-Platform (Docker)
+### 3. Data Storage
+
+When running as a packaged executable, your data (SQLite database) is stored in a persistent user directory:
+
+| Platform | Data Location |
+|----------|---------------|
+| **Linux** | `~/.local/share/ExpenseTracker/expenses.db` |
+| **macOS** | `~/Library/Application Support/ExpenseTracker/expenses.db` |
+| **Windows** | `%APPDATA%\ExpenseTracker\expenses.db` |
+
+> **Note:** During development (running as a script), the database is stored in the `backend/` directory.
+
+### 4. Cross-Platform (Docker)
 For the most consistent experience across architectures (x86, ARM) and OS (Windows, Linux, Mac), use Docker.
 
 **Dockerfile:**

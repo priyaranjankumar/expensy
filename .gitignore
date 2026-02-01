@@ -14,7 +14,7 @@ node_modules/
 frontend/dist/
 frontend/.env
 *.log
-
+package-lock.json
 # IDE
 .vscode/
 .idea/
