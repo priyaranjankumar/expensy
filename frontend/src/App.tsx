@@ -1,5 +1,7 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { Sidebar } from './components/Sidebar';
 import Dashboard from './components/Dashboard';
+import TrendChart from './components/TrendChart';
 import ExpenseTable from './components/ExpenseTable';
 import ExpenseModal from './components/ExpenseModal';
 import Filters from './components/Filters';
@@ -7,9 +9,20 @@ import DarkModeToggle from './components/DarkModeToggle';
 import LoginPage from './components/LoginPage';
 import SignupPage from './components/SignupPage';
 import UserProfile from './components/UserProfile';
-import { expenseApi, metricsApi } from './services/api';
+import RemindersWidget from './components/RemindersWidget';
+import IncomeDashboard from './components/IncomeDashboard';
+import RecurringExpensesPage from './components/RecurringExpensesPage';
+import TagsManager from './components/TagsManager';
+import AnalyticsDashboard from './components/AnalyticsDashboard';
+import OrganizationPage from './components/OrganizationPage';
+import QuickAddWidget from './components/QuickAddWidget';
+import FinancePage from './components/FinancePage';
+import DataPage from './components/DataPage';
+import { expenseApi, metricsApi, exportApi } from './services/api';
 import type { Expense, ExpenseCreate, ExpenseUpdate, MetricsResponse, FilterState, User } from './types';
 import { getCurrentBillingMonth, formatBillingMonth } from './types';
+import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
+import KeyboardShortcutsHelp from './components/KeyboardShortcutsHelp';
 
 function App() {
     // Auth State
@@ -110,6 +123,23 @@ function AuthenticatedApp({ user, onLogout, onUserUpdate, showProfile, setShowPr
         modal: false,
     });
     const [error, setError] = useState<string | null>(null);
+    const [showShortcutsHelp, setShowShortcutsHelp] = useState(false);
+    const [activeTab, setActiveTab] = useState<'expenses' | 'recurring' | 'income' | 'tags' | 'analytics' | 'organize' | 'finance' | 'data'>('expenses');
+    const searchInputRef = useRef<HTMLInputElement>(null);
+
+    // Keyboard shortcuts
+    useKeyboardShortcuts({
+        onNewExpense: () => handleOpenModal(),
+        onFocusSearch: () => searchInputRef.current?.focus(),
+        onCloseModal: () => {
+            if (showShortcutsHelp) setShowShortcutsHelp(false);
+            else if (showProfile) setShowProfile(false);
+            else if (isModalOpen) handleCloseModal();
+        },
+        onShowHelp: () => setShowShortcutsHelp(true),
+        onExport: () => exportApi.downloadCSV(filters.billing_month),
+        isModalOpen: isModalOpen || showProfile || showShortcutsHelp,
+    });
 
     // Fetch expenses
     const fetchExpenses = useCallback(async () => {
@@ -247,113 +277,110 @@ function AuthenticatedApp({ user, onLogout, onUserUpdate, showProfile, setShowPr
         ? formatBillingMonth(filters.billing_month)
         : 'All Time';
 
-    return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-slate-100 to-slate-50 dark:from-dark-900 dark:via-dark-900 dark:to-dark-950 transition-colors duration-300">
-            {/* Header */}
-            <header className="bg-white/80 dark:bg-dark-800/80 backdrop-blur-xl border-b border-slate-200/50 dark:border-dark-700/50 sticky top-0 z-30">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex items-center justify-between h-16">
-                        <div className="flex items-center gap-4">
-                            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center text-white text-2xl shadow-lg shadow-primary-500/30 animate-pulse-soft">
-                                💰
-                            </div>
-                            <div>
-                                <h1 className="text-xl font-bold text-slate-800 dark:text-white">
-                                    Expense Tracker
-                                </h1>
-                                <p className="text-xs text-slate-500 dark:text-slate-400">
-                                    {currentMonthDisplay} • Budget: ₹{user.monthly_budget.toLocaleString('en-IN')}
-                                </p>
-                            </div>
-                        </div>
-                        <div className="flex items-center gap-3">
-                            <DarkModeToggle />
-                            {/* User Profile Button */}
-                            <button
-                                onClick={() => setShowProfile(true)}
-                                className="flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-100 dark:bg-dark-700 hover:bg-slate-200 dark:hover:bg-dark-600 transition-colors"
-                            >
-                                <span className="w-7 h-7 rounded-full bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center text-white text-sm font-medium">
-                                    {user.name.charAt(0).toUpperCase()}
-                                </span>
-                                <span className="text-sm font-medium text-slate-700 dark:text-slate-200 hidden sm:block">
-                                    {user.name.split(' ')[0]}
-                                </span>
-                            </button>
-                            <button
-                                onClick={() => handleOpenModal()}
-                                className="btn btn-primary"
-                            >
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                                </svg>
-                                Add Expense
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </header>
+    const [isSidebarOpen] = useState(true);
 
-            {/* Main Content */}
-            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                {/* Error Banner */}
-                {error && (
-                    <div className="mb-6 p-4 bg-danger-50 dark:bg-danger-500/10 border border-danger-200 dark:border-danger-500/20 rounded-xl flex items-center justify-between animate-fade-in">
-                        <div className="flex items-center gap-3">
-                            <span className="text-danger-500 text-xl">⚠️</span>
-                            <p className="text-danger-700 dark:text-danger-400">{error}</p>
-                        </div>
+    return (
+        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex transition-colors duration-300">
+            {/* Sidebar Navigation */}
+            <Sidebar
+                activeTab={activeTab}
+                onTabChange={(tab: any) => setActiveTab(tab)}
+                user={user}
+                onLogout={onLogout}
+                setShowProfile={setShowProfile}
+            />
+
+            {/* Main Content Area */}
+            <main className={`flex-1 transition-all duration-300 ${isSidebarOpen ? 'ml-0 md:ml-64' : 'ml-0 md:ml-20'}`}>
+                {/* Header / Top Bar */}
+                <header className="sticky top-0 z-30 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200 dark:border-slate-800 px-6 py-4 flex items-center justify-between">
+                    <h2 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-indigo-500 capitalize">
+                        {activeTab === 'recurring' ? 'Recurring Expenses' :
+                            activeTab === 'data' ? 'Data & Sharing' : activeTab}
+                    </h2>
+
+                    <div className="flex items-center gap-4">
+                        <DarkModeToggle />
                         <button
-                            onClick={() => setError(null)}
-                            className="text-danger-400 hover:text-danger-600 dark:hover:text-danger-300"
+                            onClick={() => setShowShortcutsHelp(true)}
+                            className="p-2 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                            title="Keyboard Shortcuts (Ctrl+/)"
                         >
-                            ✕
+                            ⌨️
                         </button>
                     </div>
-                )}
+                </header>
 
-                {/* Dashboard */}
-                <section className="mb-8">
-                    <Dashboard metrics={metrics} loading={loading.metrics} />
-                </section>
+                {/* Page Content */}
+                <div className="p-6 max-w-7xl mx-auto space-y-6">
+                    {/* Error Banner */}
+                    {error && (
+                        <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800 rounded-xl flex items-center justify-between animate-fade-in">
+                            <div className="flex items-center gap-3">
+                                <span className="text-red-500 text-xl">⚠️</span>
+                                <p className="text-red-700 dark:text-red-400">{error}</p>
+                            </div>
+                            <button onClick={() => setError(null)} className="text-red-400 hover:text-red-600">✕</button>
+                        </div>
+                    )}
 
-                {/* Filters */}
-                <section className="mb-6">
-                    <Filters
-                        filters={filters}
-                        onFilterChange={setFilters}
-                        categories={categories}
-                        billingMonths={billingMonths}
-                    />
-                </section>
+                    {activeTab === 'expenses' && (
+                        <div className="space-y-6">
+                            <Dashboard metrics={metrics} loading={loading.metrics} />
 
-                {/* Expense Table */}
-                <section>
-                    <div className="flex items-center justify-between mb-4">
-                        <h2 className="text-lg font-semibold text-slate-800 dark:text-white">
-                            Expense List
-                            {filteredExpenses.length > 0 && (
-                                <span className="text-sm font-normal text-slate-500 dark:text-slate-400 ml-2">
-                                    ({filteredExpenses.length} item{filteredExpenses.length !== 1 ? 's' : ''})
-                                </span>
-                            )}
-                        </h2>
-                    </div>
-                    <ExpenseTable
-                        expenses={filteredExpenses}
-                        loading={loading.expenses}
-                        onEdit={handleOpenModal}
-                        onDelete={handleDeleteExpense}
-                    />
-                </section>
+                            <Filters
+                                filters={filters}
+                                onFilterChange={setFilters}
+                                categories={categories}
+                                billingMonths={billingMonths}
+                                onExportCSV={() => exportApi.downloadCSV(filters.billing_month)}
+                                onExportJSON={() => exportApi.downloadJSON(filters.billing_month)}
+                                searchInputRef={searchInputRef}
+                            />
+
+                            <div className="flex flex-col lg:flex-row gap-6">
+                                <div className="lg:w-3/4 space-y-6">
+                                    <ExpenseTable
+                                        expenses={filteredExpenses}
+                                        loading={loading.expenses}
+                                        onEdit={handleOpenModal}
+                                        onDelete={handleDeleteExpense}
+                                    />
+                                </div>
+                                <div className="lg:w-1/4 space-y-6">
+                                    <TrendChart />
+                                    <div className="card p-4 bg-gradient-to-br from-indigo-500 to-purple-600 text-white rounded-2xl shadow-lg">
+                                        <h3 className="font-bold text-lg mb-1">Monthly Focus</h3>
+                                        <p className="opacity-90 text-sm">Viewing data for {currentMonthDisplay}</p>
+                                    </div>
+                                    <RemindersWidget />
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {activeTab === 'recurring' && <RecurringExpensesPage />}
+                    {activeTab === 'income' && <IncomeDashboard billingMonth={filters.billing_month} />}
+                    {activeTab === 'tags' && <TagsManager />}
+
+                    {activeTab === 'analytics' && (
+                        <div className="max-w-5xl mx-auto">
+                            <AnalyticsDashboard />
+                        </div>
+                    )}
+
+                    {activeTab === 'organize' && <OrganizationPage />}
+                    {activeTab === 'finance' && <FinancePage />}
+                    {activeTab === 'data' && <DataPage />}
+                </div>
             </main>
 
-            {/* Footer */}
-            <footer className="py-6 text-center text-sm text-slate-500 dark:text-slate-400 border-t border-slate-200 dark:border-dark-700 bg-white/50 dark:bg-dark-800/50 backdrop-blur-sm">
-                <p>Personal Expense Tracker © {new Date().getFullYear()}</p>
-            </footer>
+            {/* Quick Add Widget (FAB) */}
+            <QuickAddWidget
+                onOpenModal={() => handleOpenModal()}
+            />
 
-            {/* Expense Modal */}
+            {/* Modals */}
             <ExpenseModal
                 isOpen={isModalOpen}
                 onClose={handleCloseModal}
@@ -365,14 +392,22 @@ function AuthenticatedApp({ user, onLogout, onUserUpdate, showProfile, setShowPr
                 loading={loading.modal}
             />
 
-            {/* User Profile Modal */}
-            <UserProfile
-                isOpen={showProfile}
-                onClose={() => setShowProfile(false)}
-                user={user}
-                onUpdate={onUserUpdate}
-                onLogout={onLogout}
-            />
+            {showProfile && (
+                <UserProfile
+                    isOpen={showProfile}
+                    onClose={() => setShowProfile(false)}
+                    user={user}
+                    onUpdate={onUserUpdate}
+                    onLogout={onLogout}
+                />
+            )}
+
+            {showShortcutsHelp && (
+                <KeyboardShortcutsHelp
+                    isOpen={showShortcutsHelp}
+                    onClose={() => setShowShortcutsHelp(false)}
+                />
+            )}
         </div>
     );
 }

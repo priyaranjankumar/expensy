@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
 from .database import engine, Base
-from .routers import expenses, metrics, auth
+from .routers import expenses, metrics, auth, export, recurring, tags, budgets, income, reminders, analytics, payees, subcategories, groups, splits, templates, batch, accounts, savings, payment_methods, currency, reports, data_import, family
 from .seed import seed_database
 
 
@@ -37,6 +37,26 @@ app.add_middleware(
 app.include_router(auth.router, prefix="/api")
 app.include_router(expenses.router, prefix="/api")
 app.include_router(metrics.router, prefix="/api")
+app.include_router(export.router, prefix="/api")
+app.include_router(recurring.router, prefix="/api")
+app.include_router(tags.router, prefix="/api")
+app.include_router(budgets.router, prefix="/api")
+app.include_router(income.router, prefix="/api")
+app.include_router(reminders.router, prefix="/api")
+app.include_router(analytics.router, prefix="/api")
+app.include_router(payees.router, prefix="/api")
+app.include_router(subcategories.router, prefix="/api")
+app.include_router(groups.router, prefix="/api")
+app.include_router(splits.router, prefix="/api")
+app.include_router(templates.router, prefix="/api")
+app.include_router(batch.router, prefix="/api")
+app.include_router(accounts.router, prefix="/api")
+app.include_router(savings.router, prefix="/api")
+app.include_router(payment_methods.router, prefix="/api")
+app.include_router(currency.router, prefix="/api")
+app.include_router(reports.router, prefix="/api")
+app.include_router(data_import.router, prefix="/api")
+app.include_router(family.router, prefix="/api")
 
 
 @app.get("/", tags=["root"])

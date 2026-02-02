@@ -91,3 +91,35 @@ def delete_expense(
     if not success:
         raise HTTPException(status_code=404, detail="Expense not found")
     return None
+
+
+@router.put("/bulk/status")
+def bulk_update_status(
+    bulk_update: schemas.BulkStatusUpdate,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    """Bulk update status for multiple expenses."""
+    updated_count = crud.bulk_update_status(
+        db, 
+        user_id=current_user.id, 
+        expense_ids=bulk_update.expense_ids,
+        status=bulk_update.status.value
+    )
+    return {"updated_count": updated_count, "message": f"Successfully updated {updated_count} expenses"}
+
+
+@router.delete("/bulk")
+def bulk_delete_expenses(
+    bulk_delete: schemas.BulkDelete,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    """Bulk delete multiple expenses."""
+    deleted_count = crud.bulk_delete_expenses(
+        db, 
+        user_id=current_user.id, 
+        expense_ids=bulk_delete.expense_ids
+    )
+    return {"deleted_count": deleted_count, "message": f"Successfully deleted {deleted_count} expenses"}
+

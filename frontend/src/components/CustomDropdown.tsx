@@ -13,6 +13,7 @@ interface CustomDropdownProps {
     placeholder?: string;
     className?: string;
     icon?: string;
+    direction?: 'up' | 'down';
 }
 
 const CustomDropdown: React.FC<CustomDropdownProps> = ({
@@ -22,6 +23,7 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
     placeholder = 'Select option',
     className = '',
     icon,
+    direction = 'down',
 }) => {
     const [isOpen, setIsOpen] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -54,9 +56,9 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
             <button
                 type="button"
                 onClick={() => setIsOpen(!isOpen)}
-                className={`w-full flex items-center justify-between gap-2 px-4 py-2.5 bg-white dark:bg-dark-700 border rounded-xl text-left transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500/40 ${isOpen
-                        ? 'border-primary-500 ring-2 ring-primary-500/20'
-                        : 'border-slate-200 dark:border-dark-600 hover:border-slate-300 dark:hover:border-dark-500'
+                className={`w-full flex items-center justify-between gap-2 px-6 h-11 bg-white dark:bg-dark-700 border rounded-3xl text-left transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500/40 ${isOpen
+                    ? 'border-primary-500 ring-2 ring-primary-500/20'
+                    : 'border-slate-200 dark:border-dark-600 hover:border-slate-300 dark:hover:border-dark-500'
                     }`}
             >
                 <div className="flex items-center gap-2 min-w-0">
@@ -77,7 +79,8 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
 
             {/* Dropdown Menu */}
             {isOpen && (
-                <div className="absolute z-50 top-full left-0 right-0 mt-1.5 bg-white dark:bg-dark-800 rounded-xl shadow-2xl border border-slate-200 dark:border-dark-600 overflow-hidden animate-fade-in max-h-64 overflow-y-auto">
+                <div className={`absolute z-[100] left-0 right-0 bg-white dark:bg-dark-800 rounded-3xl shadow-2xl border border-slate-200 dark:border-dark-600 overflow-hidden animate-fade-in max-h-72 overflow-y-auto ${direction === 'up' ? 'bottom-full mb-1.5' : 'top-full mt-1.5'
+                    }`}>
                     {options.map((option, index) => (
                         <button
                             key={option.value}
@@ -86,10 +89,10 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
                                 onChange(option.value);
                                 setIsOpen(false);
                             }}
-                            className={`w-full flex items-center gap-2 px-4 py-2.5 text-left transition-all duration-150 ${option.value === value
-                                    ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
-                                    : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-dark-700'
-                                } ${index === 0 ? 'rounded-t-xl' : ''} ${index === options.length - 1 ? 'rounded-b-xl' : ''}`}
+                            className={`w-full flex items-center gap-2 px-6 py-2.5 text-left transition-all duration-150 ${option.value === value
+                                ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
+                                : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-dark-700'
+                                } ${index === 0 ? 'rounded-t-3xl' : ''} ${index === options.length - 1 ? 'rounded-b-3xl' : ''}`}
                         >
                             {option.icon && <span className="text-sm">{option.icon}</span>}
                             <span className="text-sm font-medium">{option.label}</span>

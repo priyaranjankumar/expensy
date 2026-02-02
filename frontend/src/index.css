@@ -2,221 +2,125 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Root variables for theming */
+/* Root variables */
 :root {
     --color-bg: 248 250 252;
     --color-surface: 255 255 255;
     --color-text: 15 23 42;
-    --color-text-secondary: 100 116 139;
-    --color-border: 226 232 240;
+    --color-primary: 99 102 241;
+    /* Indigo 500 */
 }
 
 .dark {
     --color-bg: 15 23 42;
     --color-surface: 30 41 59;
     --color-text: 248 250 252;
-    --color-text-secondary: 148 163 184;
-    --color-border: 51 65 85;
 }
 
-/* Base styles */
+/* Base */
 @layer base {
     html {
         scroll-behavior: smooth;
     }
-    
+
     body {
-        @apply font-sans antialiased;
-        @apply bg-slate-50 text-slate-900;
-        @apply dark:bg-dark-900 dark:text-slate-50;
-        transition: background-color 0.3s ease, color 0.3s ease;
+        @apply font-sans antialiased bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-50 transition-colors duration-300;
     }
 
     ::selection {
-        @apply bg-primary-500/30;
+        @apply bg-indigo-500/30 text-indigo-900 dark:text-indigo-100;
     }
 }
 
-/* Component styles */
-@layer components {
-    /* Cards with glassmorphism */
-    .card {
-        @apply bg-white rounded-2xl shadow-soft border border-slate-100;
-        @apply dark:bg-dark-800 dark:border-dark-700 dark:shadow-dark-soft;
-        @apply transition-all duration-300;
-    }
-
-    .card-glass {
-        @apply bg-white/70 backdrop-blur-xl rounded-2xl shadow-glass border border-white/20;
-        @apply dark:bg-dark-800/70 dark:border-dark-600/30;
-    }
-
-    /* Inputs with better styling */
-    .input {
-        @apply w-full px-4 py-3 text-sm rounded-xl border transition-all duration-200;
-        @apply bg-slate-50 border-slate-200 text-slate-900 placeholder-slate-400;
-        @apply dark:bg-dark-700 dark:border-dark-600 dark:text-white dark:placeholder-slate-500;
-        @apply focus:outline-none focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500;
-        @apply hover:border-slate-300 dark:hover:border-dark-500;
-    }
-    
-    .input-error {
-        @apply border-danger-500 focus:ring-danger-500/40 focus:border-danger-500;
-    }
-
-    /* Buttons with gradients */
-    .btn {
-        @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-semibold rounded-xl transition-all duration-200;
-        @apply focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-dark-900;
-        @apply disabled:opacity-50 disabled:cursor-not-allowed;
-        @apply transform active:scale-[0.98];
-    }
-
-    .btn-primary {
-        @apply bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-lg shadow-primary-500/30;
-        @apply hover:from-primary-600 hover:to-primary-700 hover:shadow-xl hover:shadow-primary-500/40;
-        @apply focus:ring-primary-500;
-    }
-
-    .btn-secondary {
-        @apply bg-slate-100 text-slate-700 border border-slate-200;
-        @apply dark:bg-dark-700 dark:text-slate-200 dark:border-dark-600;
-        @apply hover:bg-slate-200 dark:hover:bg-dark-600;
-        @apply focus:ring-slate-400;
-    }
-
-    .btn-ghost {
-        @apply bg-transparent text-slate-600 dark:text-slate-300;
-        @apply hover:bg-slate-100 dark:hover:bg-dark-700;
-        @apply focus:ring-slate-400;
-    }
-
-    .btn-danger {
-        @apply bg-gradient-to-r from-danger-500 to-danger-600 text-white shadow-lg shadow-danger-500/30;
-        @apply hover:from-danger-600 hover:to-danger-700;
-        @apply focus:ring-danger-500;
-    }
-
-    /* Labels */
-    .label {
-        @apply block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1.5;
-    }
-
-    /* Status badges with glow effect */
-    .badge {
-        @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold;
-        @apply transition-all duration-200;
-    }
-
-    .badge-unpaid {
-        @apply bg-red-500/10 text-red-600 dark:bg-red-500/20 dark:text-red-400;
-        @apply ring-1 ring-red-500/20;
-    }
-
-    .badge-paid {
-        @apply bg-blue-500/10 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400;
-        @apply ring-1 ring-blue-500/20;
-    }
-
-    .badge-complete {
-        @apply bg-green-500/10 text-green-600 dark:bg-green-500/20 dark:text-green-400;
-        @apply ring-1 ring-green-500/20;
-    }
-
-    /* Modal with blur backdrop */
-    .modal-backdrop {
-        @apply fixed inset-0 bg-black/40 backdrop-blur-sm z-40;
-        @apply dark:bg-black/60;
-        animation: fadeIn 0.2s ease-out;
-    }
-
-    .modal-content {
-        @apply fixed inset-0 flex items-center justify-center p-4 z-50;
-    }
-
-    .modal-panel {
-        @apply w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden;
-        @apply dark:bg-dark-800 dark:border dark:border-dark-700;
-        animation: slideUp 0.3s ease-out;
-    }
-
-    /* Month picker custom styling */
-    input[type="month"] {
-        @apply appearance-none;
-    }
-
-    input[type="month"]::-webkit-calendar-picker-indicator {
-        @apply cursor-pointer opacity-70 hover:opacity-100 transition-opacity;
-        filter: var(--calendar-icon-filter, none);
-    }
-
-    .dark input[type="month"]::-webkit-calendar-picker-indicator {
-        filter: invert(1);
-    }
-
-    /* Toggle switch */
-    .toggle {
-        @apply relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200;
-        @apply bg-slate-300 dark:bg-dark-600;
-    }
-
-    .toggle.active {
-        @apply bg-primary-500;
-    }
-
-    .toggle-knob {
-        @apply inline-block h-4 w-4 transform rounded-full bg-white shadow-lg transition-transform duration-200;
-        @apply translate-x-1;
-    }
-
-    .toggle.active .toggle-knob {
-        @apply translate-x-6;
-    }
-}
-
-/* Utility styles */
+/* Utilities */
 @layer utilities {
     .text-gradient {
-        @apply bg-clip-text text-transparent bg-gradient-to-r from-primary-500 to-primary-700;
+        @apply bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-indigo-700;
     }
 
     .glass {
-        @apply bg-white/80 backdrop-blur-xl border border-white/20;
-        @apply dark:bg-dark-800/80 dark:border-dark-600/30;
+        @apply bg-white/70 backdrop-blur-xl border border-white/20 shadow-lg shadow-black/5;
+        @apply dark:bg-slate-800/70 dark:border-slate-700/30 dark:shadow-black/20;
+    }
+
+    .shadow-soft {
+        box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    .animate-fade-in {
+        animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .animate-slide-up {
+        animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .animate-pulse-soft {
+        animation: pulseSoft 2s infinite;
     }
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-}
+/* Components */
+@layer components {
 
-::-webkit-scrollbar-track {
-    @apply bg-transparent;
-}
+    /* Layout */
+    .page-container {
+        @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 animate-fade-in;
+    }
 
-::-webkit-scrollbar-thumb {
-    @apply bg-slate-300 dark:bg-dark-600 rounded-full;
-}
+    /* Card Component */
+    .card {
+        @apply bg-white dark:bg-slate-900 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-800;
+    }
 
-::-webkit-scrollbar-thumb:hover {
-    @apply bg-slate-400 dark:bg-dark-500;
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+        @apply bg-transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        @apply bg-slate-300 dark:bg-slate-700 rounded-full border-2 border-transparent bg-clip-content hover:bg-slate-400 dark:hover:bg-slate-600;
+    }
 }
 
 /* Animations */
 @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @keyframes slideUp {
-    from { 
-        opacity: 0; 
-        transform: translateY(20px) scale(0.95); 
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.98);
     }
-    to { 
-        opacity: 1; 
-        transform: translateY(0) scale(1); 
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes pulseSoft {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.8;
     }
 }

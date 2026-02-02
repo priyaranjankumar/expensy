@@ -50,11 +50,11 @@ const MonthPicker: React.FC<MonthPickerProps> = ({ value, onChange, className = 
             <button
                 type="button"
                 onClick={() => setIsOpen(!isOpen)}
-                className="w-full flex items-center justify-between gap-3 px-4 py-3 bg-gradient-to-r from-primary-50 to-primary-100 dark:from-primary-900/30 dark:to-primary-800/20 border border-primary-200 dark:border-primary-700 rounded-xl text-left transition-all duration-200 hover:border-primary-400 dark:hover:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/40"
+                className="w-full flex items-center justify-between gap-3 px-6 h-11 bg-gradient-to-r from-primary-50 to-primary-100 dark:from-primary-900/30 dark:to-primary-800/20 border border-primary-200 dark:border-primary-700 rounded-3xl text-left transition-all duration-200 hover:border-primary-400 dark:hover:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/40"
             >
                 <div className="flex items-center gap-2">
                     <span className="text-lg">📅</span>
-                    <span className="font-semibold text-primary-700 dark:text-primary-300">
+                    <span className="font-semibold text-primary-700 dark:text-primary-300 text-sm">
                         {value ? formatBillingMonth(value) : 'Select Month'}
                     </span>
                 </div>
@@ -70,7 +70,7 @@ const MonthPicker: React.FC<MonthPickerProps> = ({ value, onChange, className = 
 
             {/* Dropdown */}
             {isOpen && (
-                <div className="absolute z-50 top-full left-0 right-0 mt-2 bg-white dark:bg-dark-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-dark-600 overflow-hidden animate-fade-in">
+                <div className="absolute z-[100] top-full left-0 right-0 mt-2 bg-white dark:bg-dark-800 rounded-3xl shadow-2xl border border-slate-200 dark:border-dark-600 overflow-hidden animate-fade-in">
                     {/* Year Selector */}
                     <div className="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-primary-500 to-primary-600 text-white">
                         <button
@@ -105,11 +105,11 @@ const MonthPicker: React.FC<MonthPickerProps> = ({ value, onChange, className = 
                                     key={month}
                                     type="button"
                                     onClick={() => handleMonthSelect(index)}
-                                    className={`px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${isSelected
-                                            ? 'bg-primary-500 text-white shadow-lg shadow-primary-500/30'
-                                            : isCurrent
-                                                ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 ring-1 ring-primary-300 dark:ring-primary-700'
-                                                : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-dark-700'
+                                    className={`px-3 py-2.5 rounded-2xl text-sm font-medium transition-all duration-200 ${isSelected
+                                        ? 'bg-primary-500 text-white shadow-lg shadow-primary-500/30'
+                                        : isCurrent
+                                            ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 ring-1 ring-primary-300 dark:ring-primary-700'
+                                            : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-dark-700'
                                         }`}
                                 >
                                     {month.slice(0, 3)}

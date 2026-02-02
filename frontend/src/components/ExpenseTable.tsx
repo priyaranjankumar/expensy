@@ -39,12 +39,12 @@ const getCategoryStyle = (category: string) => {
         'Utilities': { bg: 'from-amber-500 to-orange-600', icon: '⚡' },
         'Subscription': { bg: 'from-purple-500 to-violet-600', icon: '📱' },
         'SIP': { bg: 'from-emerald-500 to-green-600', icon: '📈' },
-        'Rent': { bg: 'from-orange-500 to-red-500', icon: '🏠' },
-        'EMI': { bg: 'from-rose-500 to-pink-600', icon: '💳' },
+        'Rent': { bg: 'from-cyan-500 to-teal-600', icon: '🏠' },
+        'EMI': { bg: 'from-fuchsia-500 to-pink-600', icon: '🏦' },
         'Credit Card Bill': { bg: 'from-blue-500 to-indigo-600', icon: '💳' },
         'Insurance': { bg: 'from-teal-500 to-cyan-600', icon: '🛡️' },
         'Groceries': { bg: 'from-lime-500 to-green-600', icon: '🛒' },
-        'Transportation': { bg: 'from-cyan-500 to-blue-600', icon: '🚗' },
+        'Transportation': { bg: 'from-sky-500 to-blue-600', icon: '🚗' },
     };
     return styles[category] || { bg: 'from-slate-500 to-slate-600', icon: '📋' };
 };
@@ -122,7 +122,7 @@ const ExpenseTable: React.FC<ExpenseTableProps> = ({ expenses, loading, onEdit, 
         return (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {[...Array(6)].map((_, i) => (
-                    <div key={i} className="h-32 bg-slate-200 dark:bg-dark-700 rounded-2xl animate-pulse"></div>
+                    <div key={i} className="h-32 bg-slate-200 dark:bg-dark-700 rounded-3xl animate-pulse"></div>
                 ))}
             </div>
         );
@@ -151,10 +151,10 @@ const ExpenseTable: React.FC<ExpenseTableProps> = ({ expenses, loading, onEdit, 
                             <button
                                 key={category}
                                 onClick={() => handleCategoryClick(category)}
-                                className="card overflow-hidden transition-all duration-300 hover:shadow-xl hover:scale-[1.02] text-left group"
+                                className="card border-0 overflow-hidden transition-all duration-300 hover:shadow-xl hover:scale-[1.02] text-left group"
                             >
                                 {/* Category Header */}
-                                <div className={`p-4 bg-gradient-to-r ${style.bg} text-white`}>
+                                <div className={`p-4 bg-gradient-to-br ${style.bg} text-white`}>
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-3">
                                             <span className="text-2xl drop-shadow-lg group-hover:scale-110 transition-transform">{style.icon}</span>
@@ -182,7 +182,7 @@ const ExpenseTable: React.FC<ExpenseTableProps> = ({ expenses, loading, onEdit, 
                                         {group.expenses.slice(0, 3).map((expense) => (
                                             <div
                                                 key={expense.id}
-                                                className="flex items-center gap-2 px-2.5 py-1.5 bg-white dark:bg-dark-700 rounded-lg border border-slate-200 dark:border-dark-600 text-xs"
+                                                className="flex items-center gap-2 px-2.5 py-1.5 bg-white dark:bg-dark-700 rounded-xl border border-slate-200 dark:border-dark-600 text-xs"
                                             >
                                                 <span className={`w-2 h-2 rounded-full ${getStatusClasses(expense.status)}`}></span>
                                                 <span className="text-slate-700 dark:text-slate-200 truncate max-w-[80px]">{expense.description}</span>

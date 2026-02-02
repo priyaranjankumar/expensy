@@ -2,12 +2,62 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func
 from typing import Optional, List
 from datetime import datetime
+from dateutil.relativedelta import relativedelta
 from . import models, schemas
 
 
 def get_current_billing_month() -> str:
     """Get current month in YYYY-MM format."""
     return datetime.now().strftime("%Y-%m")
+
+
+def get_monthly_trends(db: Session, user_id: int, months: int = 12) -> List[dict]:
+    """Get monthly spending trends for the past N months."""
+    # Generate list of past N months
+    current_date = datetime.now()
+    month_list = []
+    for i in range(months - 1, -1, -1):
+        date = current_date - relativedelta(months=i)
+        month_list.append(date.strftime("%Y-%m"))
+    
+    # Query totals for each month
+    results = []
+    for month in month_list:
+        # Total for the month
+        total = db.query(func.sum(models.Expense.amount)).filter(
+            models.Expense.user_id == user_id,
+            models.Expense.billing_month == month
+        ).scalar() or 0.0
+        
+        # Paid total
+        paid = db.query(func.sum(models.Expense.amount)).filter(
+            models.Expense.user_id == user_id,
+            models.Expense.billing_month == month,
+            models.Expense.status.in_(["Paid", "Completely Paid"])
+        ).scalar() or 0.0
+        
+        # Unpaid total
+        unpaid = db.query(func.sum(models.Expense.amount)).filter(
+            models.Expense.user_id == user_id,
+            models.Expense.billing_month == month,
+            models.Expense.status == "Unpaid"
+        ).scalar() or 0.0
+        
+        # Count
+        count = db.query(func.count(models.Expense.id)).filter(
+            models.Expense.user_id == user_id,
+            models.Expense.billing_month == month
+        ).scalar() or 0
+        
+        results.append({
+            "billing_month": month,
+            "total_amount": round(total, 2),
+            "total_paid": round(paid, 2),
+            "total_unpaid": round(unpaid, 2),
+            "expense_count": count
+        })
+    
+    return results
 
 
 def get_expenses(
@@ -111,6 +161,26 @@ def delete_expense(db: Session, expense_id: int, user_id: int) -> bool:
     db.delete(db_expense)
     db.commit()
     return True
+
+
+def bulk_update_status(db: Session, user_id: int, expense_ids: List[int], status: str) -> int:
+    """Bulk update status for multiple expenses. Returns count of updated expenses."""
+    updated = db.query(models.Expense).filter(
+        models.Expense.user_id == user_id,
+        models.Expense.id.in_(expense_ids)
+    ).update({"status": status}, synchronize_session=False)
+    db.commit()
+    return updated
+
+
+def bulk_delete_expenses(db: Session, user_id: int, expense_ids: List[int]) -> int:
+    """Bulk delete multiple expenses. Returns count of deleted expenses."""
+    deleted = db.query(models.Expense).filter(
+        models.Expense.user_id == user_id,
+        models.Expense.id.in_(expense_ids)
+    ).delete(synchronize_session=False)
+    db.commit()
+    return deleted
 
 
 def get_metrics(db: Session, user_id: int, budget: float, billing_month: Optional[str] = None) -> dict:
