@@ -277,7 +277,7 @@ function AuthenticatedApp({ user, onLogout, onUserUpdate, showProfile, setShowPr
         ? formatBillingMonth(filters.billing_month)
         : 'All Time';
 
-    const [isSidebarOpen] = useState(true);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
     return (
         <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex transition-colors duration-300">
@@ -288,6 +288,8 @@ function AuthenticatedApp({ user, onLogout, onUserUpdate, showProfile, setShowPr
                 user={user}
                 onLogout={onLogout}
                 setShowProfile={setShowProfile}
+                isCollapsed={!isSidebarOpen}
+                toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
             />
 
             {/* Main Content Area */}

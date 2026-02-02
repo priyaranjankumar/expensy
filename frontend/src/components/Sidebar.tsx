@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 interface SidebarProps {
     activeTab: string;
@@ -6,6 +6,8 @@ interface SidebarProps {
     user: any;
     onLogout: () => void;
     setShowProfile: (show: boolean) => void;
+    isCollapsed: boolean;
+    toggleSidebar: () => void;
 }
 
 const MENU_ITEMS = [
@@ -24,9 +26,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
     onTabChange,
     user,
     onLogout,
-    setShowProfile
+    setShowProfile,
+    isCollapsed,
+    toggleSidebar
 }) => {
-    const [isCollapsed, setIsCollapsed] = useState(false);
 
     return (
         <aside className={`
@@ -42,7 +45,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     </h1>
                 )}
                 <button
-                    onClick={() => setIsCollapsed(!isCollapsed)}
+                    onClick={toggleSidebar}
                     className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500"
                 >
                     {isCollapsed ? '➡️' : '⬅️'}
