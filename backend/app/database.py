@@ -35,8 +35,10 @@ def get_data_directory():
         os.makedirs(data_dir, exist_ok=True)
         return data_dir
     else:
-        # Running as script - use the backend directory
-        return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        # Running as script - use the backend directory's data folder
+        data_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
+        os.makedirs(data_dir, exist_ok=True)
+        return data_dir
 
 
 # Get the appropriate data directory

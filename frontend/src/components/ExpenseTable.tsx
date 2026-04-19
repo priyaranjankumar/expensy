@@ -1,6 +1,8 @@
 import React, { useState, useMemo } from 'react';
+import { Receipt } from 'lucide-react';
 import type { Expense } from '../types';
 import Modal from './Modal';
+import EmptyState from './EmptyState';
 
 interface ExpenseTableProps {
     expenses: Expense[];
@@ -130,10 +132,12 @@ const ExpenseTable: React.FC<ExpenseTableProps> = ({ expenses, loading, onEdit, 
 
     if (expenses.length === 0) {
         return (
-            <div className="card p-12 text-center">
-                <div className="text-7xl mb-4">📭</div>
-                <h3 className="text-lg font-semibold text-slate-700 dark:text-slate-200 mb-2">No expenses found</h3>
-                <p className="text-slate-500 dark:text-slate-400">Try adjusting your filters or add a new expense.</p>
+            <div className="card">
+                <EmptyState
+                    icon={Receipt}
+                    title="No expenses found"
+                    description="Try adjusting your filters or add a new expense to get started."
+                />
             </div>
         );
     }

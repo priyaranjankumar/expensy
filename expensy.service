@@ -1,0 +1,18 @@
+[Unit]
+Description=Expensy Application Service
+After=network.target
+
+[Service]
+User=expensy_user
+Group=expensy_user
+WorkingDirectory=/opt/expensy
+Environment="PATH=/opt/expensy/venv/bin"
+EnvironmentFile=/opt/expensy/.env
+ExecStart=/opt/expensy/venv/bin/python run.py
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+CapabilityBoundingSet=CAP_NET_BIND_SERVICE
+LimitNOFILE=65536
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

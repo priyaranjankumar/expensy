@@ -23,6 +23,8 @@ import type { Expense, ExpenseCreate, ExpenseUpdate, MetricsResponse, FilterStat
 import { getCurrentBillingMonth, formatBillingMonth } from './types';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import KeyboardShortcutsHelp from './components/KeyboardShortcutsHelp';
+import toast, { Toaster } from 'react-hot-toast';
+import confetti from 'canvas-confetti';
 
 function App() {
     // Auth State
@@ -242,8 +244,16 @@ function AuthenticatedApp({ user, onLogout, onUserUpdate, showProfile, setShowPr
 
             if (editingExpense) {
                 await expenseApi.updateExpense(editingExpense.id, expenseWithMonth);
+                toast.success('Expense updated successfully!');
             } else {
                 await expenseApi.createExpense(expenseWithMonth as ExpenseCreate);
+                toast.success('Expense added successfully!');
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 },
+                    colors: ['#6366f1', '#a855f7', '#ec4899']
+                });
             }
 
             handleCloseModal();
@@ -281,6 +291,7 @@ function AuthenticatedApp({ user, onLogout, onUserUpdate, showProfile, setShowPr
 
     return (
         <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex transition-colors duration-300">
+            <Toaster position="bottom-right" toastOptions={{ className: 'dark:bg-slate-800 dark:text-white' }} />
             {/* Sidebar Navigation */}
             <Sidebar
                 activeTab={activeTab}
