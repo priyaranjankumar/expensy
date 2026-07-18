@@ -246,16 +246,16 @@ function AuthenticatedApp({ user, onLogout, onUserUpdate, showProfile, setShowPr
 
     const handleStatusToggle = async (id: number, currentStatus: string) => {
         try {
-            const nextStatus = currentStatus === 'Unpaid' ? 'Paid' : 'Unpaid';
+            const nextStatus = currentStatus === 'Completely Paid' ? 'Unpaid' : 'Completely Paid';
             await expenseApi.updateExpense(id, { status: nextStatus });
-            if (nextStatus === 'Paid') {
+            if (nextStatus === 'Completely Paid') {
                 confetti({
                     particleCount: 50,
                     spread: 45,
                     origin: { y: 0.85 },
                     colors: ['#10b981', '#34d399', '#6366f1']
                 });
-                toast.success('Bill marked as paid! 🎉');
+                toast.success('Bill marked as fully paid! 🎉');
             } else {
                 toast.success('Bill marked as unpaid.');
             }

@@ -7,6 +7,7 @@ export interface Expense {
     category: string;
     description: string;
     amount: number;
+    paid_amount: number;
     status: ExpenseStatus;
     notes: string | null;
     billing_month: string;
@@ -18,6 +19,7 @@ export interface ExpenseCreate {
     category: string;
     description: string;
     amount: number;
+    paid_amount?: number;
     status: ExpenseStatus;
     notes?: string | null;
     billing_month?: string;
@@ -27,6 +29,7 @@ export interface ExpenseUpdate {
     category?: string;
     description?: string;
     amount?: number;
+    paid_amount?: number;
     status?: ExpenseStatus;
     notes?: string | null;
     billing_month?: string;

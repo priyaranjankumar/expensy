@@ -12,6 +12,17 @@ async def lifespan(app: FastAPI):
     """Application lifespan handler for startup/shutdown events."""
     # Startup: Create tables and seed database
     Base.metadata.create_all(bind=engine)
+    
+    # Check and add paid_amount column to expenses table if it doesn't exist
+    from sqlalchemy import text
+    with engine.connect() as conn:
+        result = conn.execute(text("PRAGMA table_info(expenses)"))
+        columns = [row[1] for row in result.fetchall()]
+        if "paid_amount" not in columns:
+            conn.execute(text("ALTER TABLE expenses ADD COLUMN paid_amount FLOAT DEFAULT 0.0"))
+            conn.execute(text("UPDATE expenses SET paid_amount = amount WHERE status IN ('Paid', 'Completely Paid')"))
+            conn.commit()
+            
     seed_database()
     yield
     # Shutdown: Nothing to clean up

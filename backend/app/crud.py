@@ -115,12 +115,25 @@ def get_expense(db: Session, expense_id: int, user_id: int) -> Optional[models.E
 
 def create_expense(db: Session, expense: schemas.ExpenseCreate, user_id: int) -> models.Expense:
     """Create a new expense for a user."""
+    paid_amt = expense.paid_amount
+    status_str = expense.status.value
+    
+    if paid_amt <= 0.0:
+        status_str = "Unpaid"
+        paid_amt = 0.0
+    elif paid_amt >= expense.amount:
+        status_str = "Completely Paid"
+        paid_amt = expense.amount
+    else:
+        status_str = "Paid"
+
     db_expense = models.Expense(
         user_id=user_id,
         category=expense.category,
         description=expense.description,
         amount=expense.amount,
-        status=expense.status.value,
+        paid_amount=paid_amt,
+        status=status_str,
         notes=expense.notes,
         billing_month=expense.billing_month or get_current_billing_month()
     )
@@ -143,9 +156,32 @@ def update_expense(
     
     update_data = expense_update.model_dump(exclude_unset=True)
     
+    new_amount = update_data.get('amount', db_expense.amount)
+    new_paid_amount = update_data.get('paid_amount', db_expense.paid_amount)
+    new_status = update_data.get('status')
+    
+    if 'status' in update_data and 'paid_amount' not in update_data:
+        status_val = new_status.value if hasattr(new_status, 'value') else new_status
+        if status_val == "Unpaid":
+            update_data['paid_amount'] = 0.0
+        elif status_val == "Completely Paid":
+            update_data['paid_amount'] = new_amount
+        elif status_val == "Paid" and new_paid_amount == 0.0:
+            update_data['paid_amount'] = new_amount / 2.0
+    elif 'paid_amount' in update_data or 'amount' in update_data:
+        if new_paid_amount <= 0.0:
+            update_data['status'] = "Unpaid"
+            update_data['paid_amount'] = 0.0
+        elif new_paid_amount >= new_amount:
+            update_data['status'] = "Completely Paid"
+            update_data['paid_amount'] = new_amount
+        else:
+            update_data['status'] = "Paid"
+
     # Convert status enum to string if present
     if 'status' in update_data and update_data['status'] is not None:
-        update_data['status'] = update_data['status'].value
+        if hasattr(update_data['status'], 'value'):
+            update_data['status'] = update_data['status'].value
     
     for field, value in update_data.items():
         setattr(db_expense, field, value)
@@ -202,20 +238,14 @@ def get_metrics(db: Session, user_id: int, budget: float, billing_month: Optiona
         total_query = total_query.filter(models.Expense.billing_month == billing_month)
     total_amount = total_query.scalar() or 0.0
     
-    # Total paid (Paid + Completely Paid)
-    paid_query = db.query(func.sum(models.Expense.amount)).filter(
-        base_filter,
-        models.Expense.status.in_(["Paid", "Completely Paid"])
-    )
+    # Total paid (exact sum of paid_amount)
+    paid_query = db.query(func.sum(models.Expense.paid_amount)).filter(base_filter)
     if billing_month:
         paid_query = paid_query.filter(models.Expense.billing_month == billing_month)
     total_paid = paid_query.scalar() or 0.0
     
-    # Total unpaid
-    unpaid_query = db.query(func.sum(models.Expense.amount)).filter(
-        base_filter,
-        models.Expense.status == "Unpaid"
-    )
+    # Total unpaid (exact sum of remaining balance: amount - paid_amount)
+    unpaid_query = db.query(func.sum(models.Expense.amount - models.Expense.paid_amount)).filter(base_filter)
     if billing_month:
         unpaid_query = unpaid_query.filter(models.Expense.billing_month == billing_month)
     total_unpaid = unpaid_query.scalar() or 0.0

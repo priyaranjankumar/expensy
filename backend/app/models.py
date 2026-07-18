@@ -65,6 +65,7 @@ class Expense(Base):
     category = Column(String(100), nullable=False, index=True)
     description = Column(String(255), nullable=False)
     amount = Column(Float, nullable=False)
+    paid_amount = Column(Float, nullable=False, default=0.0)
     status = Column(String(50), nullable=False, default="Unpaid", index=True)
     notes = Column(Text, nullable=True)
     billing_month = Column(String(7), nullable=False, index=True)  # Format: YYYY-MM

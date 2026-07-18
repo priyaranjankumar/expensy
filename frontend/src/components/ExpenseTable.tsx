@@ -177,7 +177,7 @@ const ExpenseTable: React.FC<ExpenseTableProps> = ({ expenses, loading, onEdit, 
     };
 
     const renderStatusCheckbox = (expense: Expense) => {
-        const isPaid = expense.status === 'Paid' || expense.status === 'Completely Paid';
+        const status = expense.status;
         return (
             <button
                 type="button"
@@ -188,12 +188,18 @@ const ExpenseTable: React.FC<ExpenseTableProps> = ({ expenses, loading, onEdit, 
                     }
                 }}
                 className="flex-shrink-0 focus:outline-none transition-all active:scale-90"
-                title={isPaid ? "Mark as Unpaid" : "Mark as Paid"}
+                title={status === 'Completely Paid' ? "Mark as Unpaid" : "Mark as Paid"}
             >
-                {isPaid ? (
+                {status === 'Completely Paid' ? (
                     <span className="w-5 h-5 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-md shadow-emerald-500/20">
                         <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="3.5" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                        </svg>
+                    </span>
+                ) : status === 'Paid' ? (
+                    <span className="w-5 h-5 rounded-full bg-indigo-500 text-white flex items-center justify-center shadow-md shadow-indigo-500/20">
+                        <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" strokeWidth="4.5" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14" />
                         </svg>
                     </span>
                 ) : (
@@ -353,17 +359,36 @@ const ExpenseTable: React.FC<ExpenseTableProps> = ({ expenses, loading, onEdit, 
                                                     {highlightMatch(expense.notes, searchTerm)}
                                                 </p>
                                             )}
+                                            {expense.paid_amount > 0 && expense.paid_amount < expense.amount && (
+                                                <div className="mt-2 max-w-[180px] space-y-1">
+                                                    <div className="h-1 bg-slate-100 dark:bg-slate-800/60 rounded-full overflow-hidden">
+                                                        <div 
+                                                            className="h-full bg-gradient-to-r from-indigo-500 to-indigo-650 rounded-full transition-all duration-300"
+                                                            style={{ width: `${(expense.paid_amount / expense.amount) * 100}%` }}
+                                                        />
+                                                    </div>
+                                                    <p className="text-[9px] font-bold text-indigo-500 dark:text-indigo-400">
+                                                        {((expense.paid_amount / expense.amount) * 100).toFixed(0)}% paid
+                                                    </p>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                     
                                     <div className="flex items-center gap-4 flex-shrink-0">
                                         <div className="text-right">
-                                            <p className="font-extrabold text-slate-900 dark:text-white text-base">
+                                            <p className="font-extrabold text-slate-905 dark:text-white text-base">
                                                 {formatCurrency(expense.amount)}
                                             </p>
-                                            <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500">
-                                                {expense.billing_month}
-                                            </p>
+                                            {expense.paid_amount > 0 && expense.paid_amount < expense.amount ? (
+                                                <p className="text-[10px] font-extrabold text-indigo-650 dark:text-indigo-400">
+                                                    Paid: {formatCurrency(expense.paid_amount)}
+                                                </p>
+                                            ) : (
+                                                <p className="text-[10px] font-bold text-slate-455 dark:text-slate-500">
+                                                    {expense.billing_month}
+                                                </p>
+                                            )}
                                         </div>
                                         
                                         <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -469,12 +494,31 @@ const ExpenseTable: React.FC<ExpenseTableProps> = ({ expenses, loading, onEdit, 
                                                     {highlightMatch(expense.notes, searchTerm)}
                                                 </p>
                                             )}
+                                            {expense.paid_amount > 0 && expense.paid_amount < expense.amount && (
+                                                <div className="mt-2 max-w-[160px] space-y-1">
+                                                    <div className="h-1 bg-slate-100 dark:bg-slate-800/60 rounded-full overflow-hidden">
+                                                        <div 
+                                                            className="h-full bg-gradient-to-r from-indigo-500 to-indigo-650 rounded-full transition-all duration-300"
+                                                            style={{ width: `${(expense.paid_amount / expense.amount) * 100}%` }}
+                                                        />
+                                                    </div>
+                                                    <p className="text-[9px] font-bold text-indigo-500 dark:text-indigo-400">
+                                                        {((expense.paid_amount / expense.amount) * 100).toFixed(0)}% paid
+                                                    </p>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-4 flex-shrink-0">
                                         <div className="text-right">
                                             <p className="font-bold text-slate-900 dark:text-white text-sm">{formatCurrency(expense.amount)}</p>
-                                            <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 mt-0.5">{expense.status}</p>
+                                            {expense.paid_amount > 0 && expense.paid_amount < expense.amount ? (
+                                                <p className="text-[10px] font-bold text-indigo-650 dark:text-indigo-400 mt-0.5">
+                                                    Paid: {formatCurrency(expense.paid_amount)}
+                                                </p>
+                                            ) : (
+                                                <p className="text-[10px] font-bold text-slate-400 dark:text-slate-550 mt-0.5">{expense.status}</p>
+                                            )}
                                         </div>
                                         {deleteConfirm === expense.id ? (
                                             <div className="flex gap-1 items-center">

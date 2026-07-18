@@ -65,6 +65,7 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({
         category: '',
         description: '',
         amount: 0,
+        paid_amount: 0,
         status: 'Unpaid',
         notes: '',
         billing_month: currentBillingMonth,
@@ -86,6 +87,7 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({
                 category: expense.category || '',
                 description: expense.description || '',
                 amount: expense.amount || 0,
+                paid_amount: expense.paid_amount || 0,
                 status: expense.status || 'Unpaid',
                 notes: expense.notes || '',
                 billing_month: expense.billing_month || currentBillingMonth,
@@ -99,6 +101,7 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({
                 category: '',
                 description: '',
                 amount: 0,
+                paid_amount: 0,
                 status: 'Unpaid',
                 notes: '',
                 billing_month: currentBillingMonth,
@@ -121,6 +124,12 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({
         }
         if (formData.amount < 0) {
             newErrors.amount = 'Amount cannot be negative';
+        }
+        if (formData.paid_amount !== undefined && formData.paid_amount < 0) {
+            newErrors.paid_amount = 'Paid amount cannot be negative';
+        }
+        if (formData.paid_amount !== undefined && formData.paid_amount > formData.amount) {
+            newErrors.paid_amount = 'Paid amount cannot exceed total amount';
         }
         if (!formData.billing_month) {
             newErrors.billing_month = 'Billing month is required';
@@ -318,6 +327,66 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({
                                 )}
                             </div>
 
+                            {/* Paid Amount */}
+                            <div>
+                                <div className="flex justify-between items-center mb-2 ml-1">
+                                    <label className="block text-sm font-bold text-slate-700 dark:text-slate-300" htmlFor="paid_amount">
+                                        💳 Paid Amount
+                                    </label>
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setFormData(prev => ({ 
+                                                ...prev, 
+                                                paid_amount: prev.amount,
+                                                status: 'Completely Paid'
+                                            }));
+                                            if (errors.paid_amount) {
+                                                setErrors(prev => ({ ...prev, paid_amount: '' }));
+                                            }
+                                        }}
+                                        className="text-[10px] font-extrabold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 px-2.5 py-1 rounded-lg transition-colors border border-indigo-200/40"
+                                    >
+                                        Mark Fully Paid
+                                    </button>
+                                </div>
+                                <div className="relative">
+                                    <span className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-lg">₹</span>
+                                    <input
+                                        type="number"
+                                        id="paid_amount"
+                                        name="paid_amount"
+                                        value={formData.paid_amount === 0 ? '' : formData.paid_amount}
+                                        onChange={(e) => {
+                                            const val = parseFloat(e.target.value) || 0;
+                                            setFormData(prev => {
+                                                let nextStatus: ExpenseStatus = 'Paid';
+                                                if (val <= 0) nextStatus = 'Unpaid';
+                                                else if (val >= prev.amount) nextStatus = 'Completely Paid';
+                                                return {
+                                                    ...prev,
+                                                    paid_amount: val,
+                                                    status: nextStatus
+                                                };
+                                            });
+                                            if (errors.paid_amount) {
+                                                setErrors(prev => ({ ...prev, paid_amount: '' }));
+                                            }
+                                        }}
+                                        placeholder="0.00"
+                                        step="0.01"
+                                        min="0"
+                                        className={`w-full pl-12 pr-5 py-3.5 rounded-3xl bg-slate-50 dark:bg-slate-800/50 border outline-none transition-all font-bold text-lg ${errors.paid_amount
+                                                ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20'
+                                                : 'border-slate-200 dark:border-slate-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20'
+                                            }`}
+                                    />
+                                </div>
+                                {errors.paid_amount && (
+                                    <p className="text-sm text-red-500 mt-1 ml-1">{errors.paid_amount}</p>
+                                )}
+                            </div>
+
                             {/* Status */}
                             <div className="bg-slate-50 dark:bg-slate-800/30 p-4 rounded-[2rem] border border-slate-100 dark:border-slate-800">
                                 <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-3 ml-1">
@@ -328,7 +397,19 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({
                                         <button
                                             key={status}
                                             type="button"
-                                            onClick={() => setFormData(prev => ({ ...prev, status }))}
+                                            onClick={() => setFormData(prev => {
+                                                let nextPaidAmt = prev.paid_amount || 0;
+                                                if (status === 'Unpaid') nextPaidAmt = 0;
+                                                else if (status === 'Completely Paid') nextPaidAmt = prev.amount;
+                                                else if (status === 'Paid' && (nextPaidAmt === 0 || nextPaidAmt >= prev.amount)) {
+                                                    nextPaidAmt = prev.amount / 2;
+                                                }
+                                                return {
+                                                    ...prev,
+                                                    status,
+                                                    paid_amount: nextPaidAmt
+                                                };
+                                            })}
                                             className={`py-3 px-2 rounded-2xl text-sm font-bold transition-all duration-300 transform active:scale-95 ${formData.status === status
                                                 ? status === 'Unpaid'
                                                     ? 'bg-red-500 text-white shadow-lg shadow-red-500/30 ring-2 ring-red-500 ring-offset-2 ring-offset-white dark:ring-offset-slate-900'

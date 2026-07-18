@@ -69,6 +69,7 @@ class ExpenseBase(BaseModel):
     category: str = Field(..., min_length=1, max_length=100)
     description: str = Field(..., min_length=1, max_length=255)
     amount: float = Field(..., ge=0)
+    paid_amount: float = Field(0.0, ge=0)
     status: StatusEnum = StatusEnum.UNPAID
     notes: Optional[str] = None
     billing_month: str = Field(default_factory=get_current_billing_month, pattern=r"^\d{4}-\d{2}$")
@@ -84,6 +85,7 @@ class ExpenseUpdate(BaseModel):
     category: Optional[str] = Field(None, min_length=1, max_length=100)
     description: Optional[str] = Field(None, min_length=1, max_length=255)
     amount: Optional[float] = Field(None, ge=0)
+    paid_amount: Optional[float] = Field(None, ge=0)
     status: Optional[StatusEnum] = None
     notes: Optional[str] = None
     billing_month: Optional[str] = Field(None, pattern=r"^\d{4}-\d{2}$")
