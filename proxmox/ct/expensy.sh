@@ -63,6 +63,7 @@ function update_script() {
   # Restart service
   systemctl start expensy
   msg_ok "Updated ${APP} successfully"
+  exit
 }
 
 start

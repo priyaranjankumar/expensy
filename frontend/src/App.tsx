@@ -25,6 +25,7 @@ import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import KeyboardShortcutsHelp from './components/KeyboardShortcutsHelp';
 import toast, { Toaster } from 'react-hot-toast';
 import confetti from 'canvas-confetti';
+import { Keyboard } from 'lucide-react';
 
 function App() {
     // Auth State
@@ -306,8 +307,8 @@ function AuthenticatedApp({ user, onLogout, onUserUpdate, showProfile, setShowPr
             {/* Main Content Area */}
             <main className={`flex-1 transition-all duration-300 ${isSidebarOpen ? 'ml-0 md:ml-64' : 'ml-0 md:ml-20'}`}>
                 {/* Header / Top Bar */}
-                <header className="sticky top-0 z-30 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200 dark:border-slate-800 px-6 py-4 flex items-center justify-between">
-                    <h2 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-indigo-500 capitalize">
+                <header className="sticky top-0 z-30 bg-white/70 dark:bg-[#090d16]/75 backdrop-blur-xl border-b border-slate-200/40 dark:border-slate-850 px-6 py-4 flex items-center justify-between transition-colors duration-300">
+                    <h2 className="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400 capitalize tracking-tight">
                         {activeTab === 'recurring' ? 'Recurring Expenses' :
                             activeTab === 'data' ? 'Data & Sharing' : activeTab}
                     </h2>
@@ -316,10 +317,10 @@ function AuthenticatedApp({ user, onLogout, onUserUpdate, showProfile, setShowPr
                         <DarkModeToggle />
                         <button
                             onClick={() => setShowShortcutsHelp(true)}
-                            className="p-2 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                            className="p-2.5 text-slate-450 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 rounded-full transition-all duration-200 hover:scale-105 active:scale-[0.95]"
                             title="Keyboard Shortcuts (Ctrl+/)"
                         >
-                            ⌨️
+                            <Keyboard className="w-5 h-5" />
                         </button>
                     </div>
                 </header>
