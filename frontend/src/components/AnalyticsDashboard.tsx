@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { TrendingUp, Sparkles, AlertTriangle } from 'lucide-react';
 import { analyticsApi } from '../services/api';
 import type {
     MonthComparisonResponse,
@@ -74,20 +75,22 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ className = '' 
     return (
         <div className={`space-y-6 ${className}`}>
             {/* Section Tabs */}
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-1.5 p-1.5 bg-slate-50/50 dark:bg-slate-900/35 border border-slate-200/40 dark:border-slate-800/50 rounded-2xl w-fit">
                 {[
-                    { id: 'overview', label: '📊 Overview' },
-                    { id: 'forecast', label: '🔮 Forecast' },
-                    { id: 'anomalies', label: '⚠️ Anomalies' },
+                    { id: 'overview', label: 'Overview', icon: <TrendingUp className="w-3.5 h-3.5" /> },
+                    { id: 'forecast', label: 'Forecast', icon: <Sparkles className="w-3.5 h-3.5" /> },
+                    { id: 'anomalies', label: 'Anomalies', icon: <AlertTriangle className="w-3.5 h-3.5" /> },
                 ].map(tab => (
                     <button
                         key={tab.id}
                         onClick={() => setActiveSection(tab.id as typeof activeSection)}
-                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeSection === tab.id
-                            ? 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300'
-                            : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
-                            }`}
+                        className={`px-4 py-2 rounded-xl text-xs font-semibold tracking-wide transition-all flex items-center gap-2 ${
+                            activeSection === tab.id
+                                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20'
+                                : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:text-slate-800 dark:hover:text-slate-200'
+                        }`}
                     >
+                        {tab.icon}
                         {tab.label}
                     </button>
                 ))}

@@ -1,25 +1,61 @@
 import React, { useState, useEffect } from 'react';
+import { 
+    RefreshCw, 
+    Plus, 
+    Trash2, 
+    Edit2, 
+    Play, 
+    Pause, 
+    ArrowLeft, 
+    CalendarDays,
+    Loader2
+} from 'lucide-react';
 import { recurringApi, expenseApi } from '../services/api';
 import type { RecurringExpense, RecurringExpenseCreate, RecurringFrequency } from '../types';
 import { getCurrentBillingMonth, formatBillingMonth } from '../types';
 import CustomDropdown from './CustomDropdown';
-import { Checkbox } from './ui/Checkbox';
 
-// Helper function to get category icons
-function getCategoryIcon(category: string): string {
+// Helper function to get category icons (React components instead of emojis)
+import {
+    Zap,
+    Smartphone,
+    TrendingUp,
+    Home,
+    Building,
+    CreditCard,
+    Shield,
+    ShoppingCart,
+    Car,
+    FileText
+} from 'lucide-react';
+
+function getCategoryIcon(category: string): React.ReactNode {
+    const icons: Record<string, React.ReactNode> = {
+        'Utilities': <Zap className="w-4 h-4 text-amber-500" />,
+        'Subscription': <Smartphone className="w-4 h-4 text-purple-500" />,
+        'SIP': <TrendingUp className="w-4 h-4 text-emerald-500" />,
+        'Rent': <Home className="w-4 h-4 text-cyan-500" />,
+        'EMI': <Building className="w-4 h-4 text-fuchsia-500" />,
+        'Credit Card Bill': <CreditCard className="w-4 h-4 text-blue-500" />,
+        'Insurance': <Shield className="w-4 h-4 text-teal-500" />,
+        'Groceries': <ShoppingCart className="w-4 h-4 text-lime-500" />,
+        'Transportation': <Car className="w-4 h-4 text-sky-500" />,
+    };
+    return icons[category] || <FileText className="w-4 h-4 text-slate-400" />;
+}
+
+// Simple label helper for dropdown config
+function getCategoryIconLabel(category: string): string {
     const icons: Record<string, string> = {
         'Utilities': '⚡',
         'Subscription': '📱',
         'SIP': '📈',
         'Rent': '🏠',
-        'EMI': '💳',
+        'EMI': '🏦',
         'Credit Card Bill': '💳',
         'Insurance': '🛡️',
         'Groceries': '🛒',
         'Transportation': '🚗',
-        'Entertainment': '🎬',
-        'Healthcare': '🏥',
-        'Education': '📚',
     };
     return icons[category] || '📋';
 }
@@ -160,144 +196,141 @@ const RecurringExpensesPage: React.FC<RecurringExpensesPageProps> = ({ className
     };
 
     const frequencyColors: Record<RecurringFrequency, string> = {
-        'monthly': 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300',
-        'weekly': 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300',
-        'yearly': 'bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300'
+        'monthly': 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 border border-blue-200/30 dark:border-blue-800/30',
+        'weekly': 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 border border-green-200/30 dark:border-green-800/30',
+        'yearly': 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400 border border-purple-200/30 dark:border-purple-800/30'
     };
 
     return (
-        <div className={`card p-5 ${className}`}>
+        <div className={`card p-6 card-hover ${className}`}>
             {/* Header */}
-            <div className="flex items-center justify-between mb-5">
+            <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
                     {onClose && (
-                        <button onClick={onClose} className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded">
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                            </svg>
+                        <button 
+                            onClick={onClose} 
+                            className="p-2 text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-all duration-200"
+                        >
+                            <ArrowLeft className="w-5 h-5" />
                         </button>
                     )}
-                    <div className="flex items-center gap-2">
-                        <svg className="w-6 h-6 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                        </svg>
-                        <h2 className="text-xl font-bold text-gray-900 dark:text-white">Recurring Expenses</h2>
+                    <div className="flex items-center gap-2.5">
+                        <div className="p-2 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400">
+                            <RefreshCw className="w-5 h-5" />
+                        </div>
+                        <h2 className="text-lg font-bold text-slate-800 dark:text-white tracking-tight">Recurring Templates</h2>
                     </div>
                 </div>
-                <button onClick={openNewModal} className="btn-primary flex items-center gap-2">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                    </svg>
-                    Add Template
+                <button 
+                    onClick={openNewModal} 
+                    className="btn btn-primary text-xs py-2 px-3 flex items-center gap-1.5"
+                >
+                    <Plus className="w-4 h-4" /> Add Template
                 </button>
             </div>
 
             {/* Content */}
             {loading ? (
                 <div className="animate-pulse space-y-3">
-                    {[1, 2, 3].map(i => (
-                        <div key={i} className="h-20 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
+                    {[1, 2].map(i => (
+                        <div key={i} className="h-20 bg-slate-200 dark:bg-slate-800/80 rounded-2xl"></div>
                     ))}
                 </div>
             ) : recurring.length === 0 ? (
-                <div className="text-center py-12">
-                    <svg className="w-16 h-16 mx-auto mb-4 text-gray-300 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                    </svg>
-                    <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No Recurring Expenses</h3>
-                    <p className="text-gray-500 dark:text-gray-400 mb-4">Create templates for bills that repeat every month</p>
-                    <button onClick={openNewModal} className="btn-primary">
+                <div className="text-center py-12 border border-dashed border-slate-250 dark:border-slate-800/80 rounded-2xl p-6">
+                    <RefreshCw className="w-10 h-10 mx-auto mb-3.5 text-slate-350 dark:text-slate-650" />
+                    <h3 className="text-sm font-bold text-slate-850 dark:text-white mb-1">No Templates Yet</h3>
+                    <p className="text-xs text-slate-450 dark:text-slate-505 mb-4">Create templates for bills, subscriptions, or SIPs that repeat</p>
+                    <button onClick={openNewModal} className="btn btn-primary text-xs py-2">
                         Create Your First Template
                     </button>
                 </div>
             ) : (
-                <div className="space-y-3">
+                <div className="space-y-4">
                     {recurring.map(item => (
                         <div
                             key={item.id}
-                            className={`p-4 rounded-xl border transition-all ${item.is_active
-                                ? 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700'
-                                : 'bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-800 opacity-60'
-                                }`}
+                            className={`p-5 rounded-3xl border transition-all ${
+                                item.is_active
+                                    ? 'bg-white dark:bg-slate-900/30 border-slate-200 dark:border-slate-800/80 hover:shadow-md'
+                                    : 'bg-slate-50/50 dark:bg-slate-900/10 border-slate-200/50 dark:border-slate-800/40 opacity-60'
+                            }`}
                         >
-                            <div className="flex items-start justify-between">
-                                <div className="flex-1">
-                                    <div className="flex items-center gap-2 mb-1">
-                                        <h4 className="font-semibold text-gray-900 dark:text-white">{item.description}</h4>
-                                        <span className={`text-xs px-2 py-0.5 rounded-full ${frequencyColors[item.frequency]}`}>
-                                            {frequencyLabels[item.frequency]}
-                                        </span>
-                                        {!item.is_active && (
-                                            <span className="text-xs px-2 py-0.5 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400">
-                                                Paused
-                                            </span>
-                                        )}
+                            <div className="flex items-start justify-between gap-4">
+                                <div className="flex items-start gap-4">
+                                    <div className="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-2xl flex-shrink-0">
+                                        {getCategoryIcon(item.category)}
                                     </div>
-                                    <p className="text-sm text-gray-500 dark:text-gray-400">{item.category}</p>
-                                    <div className="flex items-center gap-4 mt-2 text-xs text-gray-400">
-                                        {item.day_of_month && (
-                                            <span>Day {item.day_of_month} of month</span>
-                                        )}
-                                        {item.last_generated && (
-                                            <span>Last: {formatBillingMonth(item.last_generated)}</span>
-                                        )}
+                                    <div>
+                                        <div className="flex flex-wrap items-center gap-2 mb-1">
+                                            <h4 className="font-bold text-slate-800 dark:text-white text-sm tracking-tight">{item.description}</h4>
+                                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${frequencyColors[item.frequency]}`}>
+                                                {frequencyLabels[item.frequency]}
+                                            </span>
+                                            {!item.is_active && (
+                                                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
+                                                    Paused
+                                                </span>
+                                            )}
+                                        </div>
+                                        <p className="text-xs text-slate-455 dark:text-slate-450">{item.category}</p>
+                                        <div className="flex items-center gap-3.5 mt-2 text-[10px] font-semibold text-slate-400 dark:text-slate-505">
+                                            {item.day_of_month && (
+                                                <span className="flex items-center gap-1">
+                                                    <CalendarDays className="w-3.5 h-3.5" /> Day {item.day_of_month} of month
+                                                </span>
+                                            )}
+                                            {item.last_generated && (
+                                                <span>Last: {formatBillingMonth(item.last_generated)}</span>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
-                                <div className="text-right">
-                                    <p className="text-lg font-bold text-gray-900 dark:text-white">
-                                        ₹{item.amount.toLocaleString()}
+                                <div className="text-right flex flex-col items-end">
+                                    <p className="text-base font-bold text-slate-850 dark:text-white font-mono leading-none">
+                                        ₹{item.amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                     </p>
-                                    <div className="flex items-center gap-1 mt-2">
+                                    <div className="flex items-center gap-1.5 mt-3">
                                         <button
                                             onClick={() => handleGenerate(item.id)}
                                             disabled={generating === item.id || !item.is_active}
-                                            className="p-1.5 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 rounded disabled:opacity-50"
+                                            className="p-1.5 bg-green-50 dark:bg-green-950/20 text-green-600 dark:text-green-400 rounded-lg hover:scale-105 active:scale-95 disabled:opacity-50 transition-all border border-green-200/20 dark:border-green-800/20"
                                             title="Generate expense for this month"
                                         >
                                             {generating === item.id ? (
-                                                <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                                                </svg>
+                                                <Loader2 className="w-3.5 h-3.5 animate-spin" />
                                             ) : (
-                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                                                </svg>
+                                                <Plus className="w-3.5 h-3.5" />
                                             )}
                                         </button>
                                         <button
                                             onClick={() => handleToggleActive(item)}
-                                            className={`p-1.5 rounded ${item.is_active ? 'text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-900/20' : 'text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20'}`}
+                                            className={`p-1.5 rounded-lg hover:scale-105 active:scale-95 transition-all border ${
+                                                item.is_active 
+                                                    ? 'bg-amber-50 dark:bg-amber-950/20 text-amber-600 dark:text-amber-400 border-amber-250/20 dark:border-amber-800/20' 
+                                                    : 'bg-green-50 dark:bg-green-950/20 text-green-600 dark:text-green-400 border-green-250/20 dark:border-green-800/20'
+                                            }`}
                                             title={item.is_active ? 'Pause' : 'Resume'}
                                         >
                                             {item.is_active ? (
-                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                </svg>
+                                                <Pause className="w-3.5 h-3.5" />
                                             ) : (
-                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                </svg>
+                                                <Play className="w-3.5 h-3.5" />
                                             )}
                                         </button>
                                         <button
                                             onClick={() => handleEdit(item)}
-                                            className="p-1.5 text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded"
+                                            className="p-1.5 bg-indigo-50 dark:bg-indigo-950/20 text-indigo-650 dark:text-indigo-400 rounded-lg hover:scale-105 active:scale-95 transition-all border border-indigo-200/20 dark:border-indigo-800/20"
+                                            title="Edit"
                                         >
-                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                            </svg>
+                                            <Edit2 className="w-3.5 h-3.5" />
                                         </button>
                                         <button
                                             onClick={() => handleDelete(item.id)}
-                                            className="p-1.5 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded"
+                                            className="p-1.5 bg-red-50 dark:bg-red-950/20 text-red-500 hover:text-red-700 rounded-lg hover:scale-105 active:scale-95 transition-all border border-red-200/20 dark:border-red-800/20"
+                                            title="Delete"
                                         >
-                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                            </svg>
+                                            <Trash2 className="w-3.5 h-3.5" />
                                         </button>
                                     </div>
                                 </div>
@@ -309,20 +342,26 @@ const RecurringExpensesPage: React.FC<RecurringExpensesPageProps> = ({ className
 
             {/* Modal */}
             {showModal && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 animate-fade-in" onClick={() => setShowModal(false)}>
-                    <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto shadow-2xl scale-100 transition-transform" onClick={e => e.stopPropagation()}>
-                        <h3 className="text-2xl font-bold mb-6 text-gray-800 dark:text-white flex items-center gap-2">
-                            {editingItem ? '✏️ Edit Recurring Expense' : '🆕 Create Recurring Expense'}
+                <div 
+                    className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in" 
+                    onClick={() => setShowModal(false)}
+                >
+                    <div 
+                        className="bg-white dark:bg-[#0f172a] border border-slate-200/60 dark:border-slate-800/80 rounded-3xl p-6 w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto shadow-2xl scale-100 transition-transform" 
+                        onClick={e => e.stopPropagation()}
+                    >
+                        <h3 className="text-base font-bold mb-5 text-slate-900 dark:text-white flex items-center gap-2">
+                            {editingItem ? '✏️ Edit Template' : '🆕 Add Template'}
                         </h3>
-                        <form onSubmit={handleSubmit} className="space-y-5">
-                            <div className="grid grid-cols-2 gap-5">
+                        <form onSubmit={handleSubmit} className="space-y-4">
+                            <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium mb-1.5 ml-1 text-gray-700 dark:text-gray-300">Category *</label>
+                                    <label className="label">Category *</label>
                                     <CustomDropdown
                                         value={formData.category}
                                         onChange={(val) => setFormData({ ...formData, category: val })}
                                         options={[
-                                            ...categories.map(cat => ({ value: cat, label: cat, icon: getCategoryIcon(cat) })),
+                                            ...categories.map(cat => ({ value: cat, label: cat, icon: getCategoryIconLabel(cat) })),
                                             { value: '__new__', label: '+ New Category', icon: '✨' }
                                         ]}
                                         placeholder="Select category"
@@ -330,12 +369,12 @@ const RecurringExpensesPage: React.FC<RecurringExpensesPageProps> = ({ className
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium mb-1.5 ml-1 text-gray-700 dark:text-gray-300">Amount *</label>
+                                    <label className="label">Amount (₹) *</label>
                                     <input
                                         type="number"
                                         value={formData.amount || ''}
                                         onChange={e => setFormData({ ...formData, amount: parseFloat(e.target.value) || 0 })}
-                                        className="w-full px-5 py-2.5 rounded-3xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all"
+                                        className="input text-sm"
                                         min="0"
                                         step="0.01"
                                         required
@@ -343,89 +382,84 @@ const RecurringExpensesPage: React.FC<RecurringExpensesPageProps> = ({ className
                                 </div>
                             </div>
                             <div>
-                                <label className="block text-sm font-medium mb-1.5 ml-1 text-gray-700 dark:text-gray-300">Description *</label>
+                                <label className="label">Description *</label>
                                 <input
                                     type="text"
                                     value={formData.description}
                                     onChange={e => setFormData({ ...formData, description: e.target.value })}
-                                    className="w-full px-5 py-2.5 rounded-3xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all"
-                                    placeholder="e.g., Netflix subscription"
+                                    className="input text-sm"
+                                    placeholder="e.g., Netflix Subscription, House Rent"
                                     required
                                 />
                             </div>
-                            <div className="grid grid-cols-2 gap-5">
+                            <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium mb-1.5 ml-1 text-gray-700 dark:text-gray-300">Frequency *</label>
-                                    <CustomDropdown
+                                    <label className="label">Frequency</label>
+                                    <select
                                         value={formData.frequency}
-                                        onChange={(val) => setFormData({ ...formData, frequency: val as RecurringFrequency })}
-                                        options={[
-                                            { value: 'monthly', label: 'Monthly', icon: '📅' },
-                                            { value: 'weekly', label: 'Weekly', icon: '📆' },
-                                            { value: 'yearly', label: 'Yearly', icon: '🗓️' }
-                                        ]}
-                                        placeholder="Select frequency"
-                                        className="w-full"
-                                    />
+                                        onChange={e => setFormData({ ...formData, frequency: e.target.value as RecurringFrequency })}
+                                        className="input text-sm h-11"
+                                    >
+                                        <option value="monthly">Monthly</option>
+                                        <option value="weekly">Weekly</option>
+                                        <option value="yearly">Yearly</option>
+                                    </select>
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium mb-1.5 ml-1 text-gray-700 dark:text-gray-300">Day of Month</label>
+                                    <label className="label">Day of Month</label>
                                     <input
                                         type="number"
                                         value={formData.day_of_month || ''}
-                                        onChange={e => setFormData({ ...formData, day_of_month: parseInt(e.target.value) || undefined })}
-                                        className="w-full px-5 py-2.5 rounded-3xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all"
+                                        onChange={e => setFormData({ ...formData, day_of_month: parseInt(e.target.value) || 1 })}
+                                        className="input text-sm"
                                         min="1"
                                         max="31"
-                                        placeholder="1-31"
                                     />
                                 </div>
                             </div>
-                            <div className="grid grid-cols-2 gap-5">
+                            <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium mb-1.5 ml-1 text-gray-700 dark:text-gray-300">Start Date *</label>
+                                    <label className="label">Start Date *</label>
                                     <input
                                         type="date"
                                         value={formData.start_date}
                                         onChange={e => setFormData({ ...formData, start_date: e.target.value })}
-                                        className="w-full px-5 py-2.5 rounded-3xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all"
+                                        className="input text-sm"
                                         required
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium mb-1.5 ml-1 text-gray-700 dark:text-gray-300">End Date</label>
+                                    <label className="label">End Date (Optional)</label>
                                     <input
                                         type="date"
                                         value={formData.end_date || ''}
                                         onChange={e => setFormData({ ...formData, end_date: e.target.value || undefined })}
-                                        className="w-full px-5 py-2.5 rounded-3xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all"
+                                        className="input text-sm"
                                     />
                                 </div>
                             </div>
                             <div>
-                                <label className="block text-sm font-medium mb-1.5 ml-1 text-gray-700 dark:text-gray-300">Notes</label>
+                                <label className="label">Notes</label>
                                 <textarea
                                     value={formData.notes}
                                     onChange={e => setFormData({ ...formData, notes: e.target.value })}
-                                    className="w-full px-5 py-2.5 rounded-2xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all resize-none"
-                                    rows={2}
+                                    className="input text-sm h-20 resize-none py-2"
+                                    placeholder="Add any extra notes or payment method instructions..."
                                 />
                             </div>
-                            <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-3xl">
-                                <Checkbox
-                                    id="is_active"
-                                    checked={formData.is_active}
-                                    onChange={e => setFormData({ ...formData, is_active: e.target.checked })}
-                                    label="Active (will generate expenses)"
-                                    description="Pause anytime to stop automatic generation"
-                                />
-                            </div>
-                            <div className="flex gap-4 pt-4">
-                                <button type="button" onClick={() => setShowModal(false)} className="flex-1 px-4 py-3 bg-gray-100 text-gray-700 rounded-3xl font-medium hover:bg-gray-200 transition-colors">
+                            <div className="flex gap-4 pt-3">
+                                <button 
+                                    type="button" 
+                                    onClick={() => setShowModal(false)} 
+                                    className="btn btn-secondary flex-1 py-2.5 text-xs"
+                                >
                                     Cancel
                                 </button>
-                                <button type="submit" className="flex-1 px-4 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-3xl font-medium hover:shadow-lg hover:scale-[1.02] transition-all">
-                                    {editingItem ? 'Update' : 'Create'} Template
+                                <button 
+                                    type="submit" 
+                                    className="btn btn-primary flex-1 py-2.5 text-xs"
+                                >
+                                    {editingItem ? 'Update' : 'Create'}
                                 </button>
                             </div>
                         </form>

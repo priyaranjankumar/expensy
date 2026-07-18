@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { FileText, Import, Users, X } from 'lucide-react';
 import { reportsApi, importApi, familyApi } from '../services/api';
 import { Card } from './ui/Card';
 import { Button } from './ui/Button';
@@ -212,30 +213,40 @@ const DataPage: React.FC = () => {
     return (
         <div className="space-y-6 animate-fade-in">
             {/* Tabs */}
-            <div className="flex gap-2 border-b border-gray-200 dark:border-gray-700 pb-1">
+            <div className="flex flex-wrap gap-1.5 p-1.5 bg-slate-50/50 dark:bg-slate-900/35 border border-slate-200/40 dark:border-slate-800/50 rounded-2xl w-fit">
                 {[
-                    { id: 'reports', label: '📊 Reports', desc: 'Generate PDF reports' },
-                    { id: 'import', label: '📥 Import Data', desc: 'CSV/JSON import' },
-                    { id: 'family', label: '👨‍👩‍👧‍👦 Family', desc: 'Share budgets' },
+                    { id: 'reports', label: 'Reports', icon: <FileText className="w-3.5 h-3.5" /> },
+                    { id: 'import', label: 'Import Data', icon: <Import className="w-3.5 h-3.5" /> },
+                    { id: 'family', label: 'Family Sharing', icon: <Users className="w-3.5 h-3.5" /> },
                 ].map(tab => (
                     <button
                         key={tab.id}
                         onClick={() => setActiveTab(tab.id as ActiveTab)}
-                        className={`px-4 py-2 rounded-t-lg transition-colors text-sm font-medium ${activeTab === tab.id
-                            ? 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 border-b-2 border-indigo-500'
-                            : 'text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800'
-                            }`}
+                        className={`px-4 py-2 rounded-xl text-xs font-semibold tracking-wide transition-all flex items-center gap-2 ${
+                            activeTab === tab.id
+                                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20'
+                                : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:text-slate-800 dark:hover:text-slate-200'
+                        }`}
                     >
+                        {tab.icon}
                         {tab.label}
                     </button>
                 ))}
             </div>
 
             {message && (
-                <div className={`p-4 rounded-xl flex justify-between items-center ${message.type === 'success' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
-                    }`}>
-                    <span>{message.text}</span>
-                    <button onClick={() => setMessage(null)}>✕</button>
+                <div className={`p-4 rounded-2xl flex justify-between items-center border ${
+                    message.type === 'success' 
+                        ? 'bg-green-50 dark:bg-green-950/20 border-green-200/50 dark:border-green-800/20 text-green-600 dark:text-green-400' 
+                        : 'bg-red-50 dark:bg-red-950/20 border-red-200/50 dark:border-red-800/20 text-red-650 dark:text-red-400'
+                }`}>
+                    <span className="text-xs font-semibold">{message.text}</span>
+                    <button 
+                        onClick={() => setMessage(null)}
+                        className="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-all"
+                    >
+                        <X className="w-4 h-4" />
+                    </button>
                 </div>
             )}
 

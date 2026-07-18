@@ -17,7 +17,7 @@ export const Input: React.FC<InputProps> = ({
     return (
         <div className="w-full">
             {label && (
-                <label htmlFor={id} className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                <label htmlFor={id} className="label">
                     {label}
                 </label>
             )}
@@ -30,13 +30,13 @@ export const Input: React.FC<InputProps> = ({
                 <input
                     id={id}
                     className={`
-                        w-full px-5 py-3 text-sm rounded-3xl border transition-all duration-200
-                        bg-white dark:bg-slate-800 
-                        border-slate-200 dark:border-slate-700 
+                        w-full px-5 py-2.5 text-sm rounded-2xl border transition-all duration-200
+                        bg-slate-50/50 dark:bg-slate-900/30 
+                        border-slate-200 dark:border-slate-800/80 
                         text-slate-900 dark:text-white 
                         placeholder-slate-400 dark:placeholder-slate-500
                         focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500
-                        disabled:bg-slate-50 dark:disabled:bg-slate-900 disabled:text-slate-500
+                        disabled:bg-slate-100 dark:disabled:bg-slate-900 disabled:text-slate-500
                         ${leftIcon ? 'pl-10' : ''}
                         ${error ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : ''}
                         ${className}

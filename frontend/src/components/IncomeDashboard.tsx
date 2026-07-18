@@ -1,4 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { 
+    Coins, 
+    Plus, 
+    Edit2, 
+    Trash2, 
+    Check
+} from 'lucide-react';
 import { incomeApi } from '../services/api';
 import type { Income, IncomeCreate, IncomeSummary } from '../types';
 import { getCurrentBillingMonth, formatBillingMonth } from '../types';
@@ -108,125 +115,127 @@ const IncomeDashboard: React.FC<IncomeDashboardProps> = ({ className = '', billi
 
     // Source color mapping
     const sourceColors: Record<string, string> = {
-        'Salary': 'bg-green-500',
-        'Freelance': 'bg-blue-500',
+        'Salary': 'bg-emerald-500',
+        'Freelance': 'bg-indigo-500',
         'Investment': 'bg-purple-500',
         'Rental': 'bg-orange-500',
-        'Business': 'bg-indigo-500',
-        'Other': 'bg-gray-500'
+        'Business': 'bg-pink-500',
+        'Other': 'bg-slate-500'
     };
 
     const getSourceColor = (source: string) => {
-        return sourceColors[source] || 'bg-gray-500';
+        return sourceColors[source] || 'bg-slate-500';
     };
 
     return (
-        <div className={`card p-5 ${className}`}>
+        <div className={`card p-6 card-hover ${className}`}>
             {/* Header */}
-            <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                    <svg className="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-                        Income - {formatBillingMonth(currentMonth)}
+            <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-2.5">
+                    <div className="p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400">
+                        <Coins className="w-5 h-5" />
+                    </div>
+                    <h2 className="text-lg font-bold text-slate-800 dark:text-white tracking-tight">
+                        Income Ledger — <span className="font-semibold text-slate-500 dark:text-slate-400">{formatBillingMonth(currentMonth)}</span>
                     </h2>
                 </div>
                 <button
                     onClick={openNewModal}
-                    className="btn-primary text-sm px-3 py-1.5 flex items-center gap-1"
+                    className="btn btn-primary text-xs py-2 px-3 flex items-center gap-1.5 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 shadow-emerald-500/10 focus:ring-emerald-500 border-none"
                 >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                    </svg>
-                    Add Income
+                    <Plus className="w-4 h-4" /> Add Income
                 </button>
             </div>
 
             {loading ? (
-                <div className="animate-pulse space-y-3">
-                    <div className="h-20 bg-gray-200 dark:bg-gray-700 rounded"></div>
-                    <div className="h-32 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                <div className="animate-pulse space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="h-20 bg-slate-200 dark:bg-slate-800/80 rounded-2xl"></div>
+                        <div className="h-20 bg-slate-200 dark:bg-slate-800/80 rounded-2xl"></div>
+                    </div>
+                    <div className="h-44 bg-slate-200 dark:bg-slate-800/80 rounded-2xl"></div>
                 </div>
             ) : (
                 <>
                     {/* Summary Cards */}
-                    <div className="grid grid-cols-2 gap-4 mb-4">
-                        <div className="bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl p-4 text-white">
-                            <p className="text-sm opacity-80">Total Income</p>
-                            <p className="text-2xl font-bold">₹{summary?.total_income.toLocaleString() || 0}</p>
-                            <p className="text-xs opacity-70 mt-1">{summary?.income_count || 0} entries</p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                        <div className="bg-gradient-to-br from-emerald-500 to-green-600 rounded-3xl p-5 text-white shadow-lg shadow-emerald-500/10 flex flex-col justify-between h-28">
+                            <div>
+                                <p className="text-xs font-semibold uppercase tracking-wider opacity-85">Total Monthly Income</p>
+                                <p className="text-2xl font-bold font-mono mt-1">₹{summary?.total_income.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || '0.00'}</p>
+                            </div>
+                            <p className="text-[10px] font-semibold opacity-75">{summary?.income_count || 0} credited entries</p>
                         </div>
-                        <div className="bg-gray-100 dark:bg-gray-800 rounded-xl p-4">
-                            <p className="text-sm text-gray-600 dark:text-gray-400">By Source</p>
-                            <div className="mt-2 space-y-1">
-                                {summary?.by_source.slice(0, 3).map(item => (
-                                    <div key={item.source} className="flex justify-between text-xs">
-                                        <span className="flex items-center gap-1">
-                                            <span className={`w-2 h-2 rounded-full ${getSourceColor(item.source)}`}></span>
-                                            {item.source}
-                                        </span>
-                                        <span className="font-medium">₹{item.total.toLocaleString()}</span>
-                                    </div>
-                                ))}
+                        
+                        <div className="glass border border-slate-250/60 dark:border-slate-800/80 rounded-3xl p-5 flex flex-col justify-between h-28">
+                            <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Top Sources</p>
+                            <div className="space-y-1.5 mt-2">
+                                {summary?.by_source.length === 0 ? (
+                                    <p className="text-xs text-slate-400 dark:text-slate-600">No income data yet</p>
+                                ) : (
+                                    summary?.by_source.slice(0, 2).map(item => (
+                                        <div key={item.source} className="flex justify-between items-center text-xs">
+                                            <span className="flex items-center gap-1.5 font-semibold text-slate-600 dark:text-slate-400">
+                                                <span className={`w-2 h-2 rounded-full ${getSourceColor(item.source)}`}></span>
+                                                {item.source}
+                                            </span>
+                                            <span className="font-bold text-slate-800 dark:text-white font-mono">₹{item.total.toLocaleString()}</span>
+                                        </div>
+                                    ))
+                                )}
                             </div>
                         </div>
                     </div>
 
                     {/* Income List */}
                     {incomes.length === 0 ? (
-                        <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-                            <svg className="w-12 h-12 mx-auto mb-2 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            <p>No income recorded for this month</p>
-                            <button onClick={openNewModal} className="text-indigo-600 dark:text-indigo-400 text-sm mt-2 hover:underline">
-                                Add your first income
+                        <div className="text-center py-12 border border-dashed border-slate-250 dark:border-slate-800/80 rounded-3xl p-6">
+                            <Coins className="w-10 h-10 mx-auto mb-3.5 text-slate-350 dark:text-slate-650" />
+                            <h3 className="text-sm font-bold text-slate-850 dark:text-white mb-1">No Income Credited</h3>
+                            <p className="text-xs text-slate-450 dark:text-slate-505 mb-4">Record salary, freelance work, or rental income for this month</p>
+                            <button onClick={openNewModal} className="btn btn-primary text-xs py-2 bg-gradient-to-r from-emerald-500 to-green-600 border-none shadow-emerald-500/10">
+                                Add Your First Income
                             </button>
                         </div>
                     ) : (
-                        <div className="space-y-2 max-h-64 overflow-y-auto">
+                        <div className="space-y-3 max-h-[300px] overflow-y-auto pr-1">
                             {incomes.map(income => (
                                 <div
                                     key={income.id}
-                                    className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-750 transition-colors"
+                                    className="flex items-center justify-between p-4 bg-slate-50/50 dark:bg-slate-900/30 rounded-2xl border border-slate-200/50 dark:border-slate-800/40 hover:border-slate-300 dark:hover:border-slate-700/60 hover:shadow-sm transition-all"
                                 >
                                     <div className="flex items-center gap-3">
                                         <div className={`w-3 h-3 rounded-full ${getSourceColor(income.source)}`}></div>
                                         <div>
-                                            <p className="font-medium text-sm">{income.source}</p>
+                                            <p className="font-bold text-slate-850 dark:text-white text-xs leading-snug">{income.source}</p>
                                             {income.description && (
-                                                <p className="text-xs text-gray-500 dark:text-gray-400">{income.description}</p>
+                                                <p className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 leading-none mt-1">{income.description}</p>
                                             )}
                                         </div>
                                         {income.is_recurring && (
-                                            <span className="text-xs bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 px-1.5 py-0.5 rounded">
+                                            <span className="text-[9px] font-extrabold bg-blue-50 dark:bg-blue-950/20 text-blue-600 dark:text-blue-400 px-1.5 py-0.5 rounded border border-blue-200/20 dark:border-blue-800/20 tracking-wider uppercase">
                                                 Recurring
                                             </span>
                                         )}
                                     </div>
                                     <div className="flex items-center gap-3">
-                                        <span className="font-semibold text-green-600 dark:text-green-400">
-                                            +₹{income.amount.toLocaleString()}
+                                        <span className="font-bold text-emerald-600 dark:text-emerald-400 font-mono text-sm">
+                                            +₹{income.amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                         </span>
                                         <div className="flex gap-1">
                                             <button
                                                 onClick={() => handleEdit(income)}
-                                                className="p-1 text-gray-400 hover:text-indigo-600"
+                                                className="p-1.5 bg-white dark:bg-slate-800 text-slate-400 hover:text-indigo-650 rounded-lg border border-slate-200 dark:border-slate-750 hover:scale-105 active:scale-95 transition-all shadow-sm"
+                                                title="Edit"
                                             >
-                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                                </svg>
+                                                <Edit2 className="w-3 h-3" />
                                             </button>
                                             <button
                                                 onClick={() => handleDelete(income.id)}
-                                                className="p-1 text-gray-400 hover:text-red-600"
+                                                className="p-1.5 bg-white dark:bg-slate-800 text-slate-400 hover:text-red-500 rounded-lg border border-slate-200 dark:border-slate-750 hover:scale-105 active:scale-95 transition-all shadow-sm"
+                                                title="Delete"
                                             >
-                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                </svg>
+                                                <Trash2 className="w-3 h-3" />
                                             </button>
                                         </div>
                                     </div>
@@ -239,14 +248,20 @@ const IncomeDashboard: React.FC<IncomeDashboardProps> = ({ className = '', billi
 
             {/* Modal */}
             {showModal && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 animate-fade-in" onClick={() => setShowModal(false)}>
-                    <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 w-full max-w-md mx-4 shadow-2xl scale-100 transition-transform" onClick={e => e.stopPropagation()}>
-                        <h3 className="text-2xl font-bold mb-6 text-gray-800 dark:text-white flex items-center gap-2">
+                <div 
+                    className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in" 
+                    onClick={() => setShowModal(false)}
+                >
+                    <div 
+                        className="bg-white dark:bg-[#0f172a] border border-slate-200/60 dark:border-slate-800/80 rounded-3xl p-6 w-full max-w-md mx-4 shadow-2xl scale-100 transition-transform" 
+                        onClick={e => e.stopPropagation()}
+                    >
+                        <h3 className="text-base font-bold mb-4 text-slate-900 dark:text-white flex items-center gap-2">
                             {editingIncome ? '✏️ Edit Income' : '💰 Add Income'}
                         </h3>
-                        <form onSubmit={handleSubmit} className="space-y-5">
+                        <form onSubmit={handleSubmit} className="space-y-4">
                             <div>
-                                <label className="block text-sm font-medium mb-1.5 ml-1 text-gray-700 dark:text-gray-300">Source *</label>
+                                <label className="label">Source *</label>
                                 <CustomDropdown
                                     value={formData.source}
                                     onChange={(val) => setFormData({ ...formData, source: val })}
@@ -263,23 +278,23 @@ const IncomeDashboard: React.FC<IncomeDashboardProps> = ({ className = '', billi
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium mb-1.5 ml-1 text-gray-700 dark:text-gray-300">Description</label>
+                                <label className="label">Description</label>
                                 <input
                                     type="text"
                                     value={formData.description}
                                     onChange={e => setFormData({ ...formData, description: e.target.value })}
-                                    className="w-full px-5 py-2.5 rounded-3xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm focus:ring-2 focus:ring-green-500/20 focus:border-green-500 outline-none transition-all"
+                                    className="input text-sm"
                                     placeholder="e.g., Monthly salary"
                                 />
                             </div>
-                            <div className="grid grid-cols-2 gap-5">
+                            <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium mb-1.5 ml-1 text-gray-700 dark:text-gray-300">Amount *</label>
+                                    <label className="label">Amount (₹) *</label>
                                     <input
                                         type="number"
                                         value={formData.amount || ''}
                                         onChange={e => setFormData({ ...formData, amount: parseFloat(e.target.value) || 0 })}
-                                        className="w-full px-5 py-2.5 rounded-3xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm focus:ring-2 focus:ring-green-500/20 focus:border-green-500 outline-none transition-all"
+                                        className="input text-sm"
                                         placeholder="0.00"
                                         min="0"
                                         step="0.01"
@@ -287,16 +302,16 @@ const IncomeDashboard: React.FC<IncomeDashboardProps> = ({ className = '', billi
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium mb-1.5 ml-1 text-gray-700 dark:text-gray-300">Date</label>
+                                    <label className="label">Date</label>
                                     <input
                                         type="date"
                                         value={formData.received_date || ''}
                                         onChange={e => setFormData({ ...formData, received_date: e.target.value })}
-                                        className="w-full px-5 py-2.5 rounded-3xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm focus:ring-2 focus:ring-green-500/20 focus:border-green-500 outline-none transition-all"
+                                        className="input text-sm"
                                     />
                                 </div>
                             </div>
-                            <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-3xl">
+                            <div className="bg-slate-50 dark:bg-slate-900/40 p-3.5 border border-slate-200/40 dark:border-slate-800/40 rounded-2xl">
                                 <Checkbox
                                     id="is_recurring"
                                     checked={formData.is_recurring}
@@ -305,21 +320,27 @@ const IncomeDashboard: React.FC<IncomeDashboardProps> = ({ className = '', billi
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium mb-1.5 ml-1 text-gray-700 dark:text-gray-300">Notes</label>
+                                <label className="label">Notes</label>
                                 <textarea
                                     value={formData.notes}
                                     onChange={e => setFormData({ ...formData, notes: e.target.value })}
-                                    className="w-full px-5 py-2.5 rounded-2xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm focus:ring-2 focus:ring-green-500/20 focus:border-green-500 outline-none transition-all resize-none"
-                                    rows={2}
+                                    className="input text-sm h-20 resize-none py-2"
                                     placeholder="Any additional notes..."
                                 />
                             </div>
-                            <div className="flex gap-4 pt-4">
-                                <button type="button" onClick={() => setShowModal(false)} className="flex-1 px-4 py-3 bg-gray-100 text-gray-700 rounded-3xl font-medium hover:bg-gray-200 transition-colors">
+                            <div className="flex gap-4 pt-3">
+                                <button 
+                                    type="button" 
+                                    onClick={() => setShowModal(false)} 
+                                    className="btn btn-secondary flex-1 py-2.5 text-xs"
+                                >
                                     Cancel
                                 </button>
-                                <button type="submit" className="flex-1 px-4 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-3xl font-medium hover:shadow-lg hover:scale-[1.02] transition-all">
-                                    {editingIncome ? 'Update' : 'Add'} Income
+                                <button 
+                                    type="submit" 
+                                    className="btn btn-primary flex-1 py-2.5 text-xs bg-gradient-to-r from-emerald-500 to-green-600 border-none shadow-emerald-500/10 focus:ring-emerald-500"
+                                >
+                                    <Check className="w-4 h-4" /> {editingIncome ? 'Update' : 'Add'} Income
                                 </button>
                             </div>
                         </form>
