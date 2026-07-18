@@ -25,7 +25,6 @@ import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import KeyboardShortcutsHelp from './components/KeyboardShortcutsHelp';
 import toast, { Toaster } from 'react-hot-toast';
 import confetti from 'canvas-confetti';
-import { Keyboard } from 'lucide-react';
 
 function App() {
     // Auth State
@@ -297,9 +296,6 @@ function AuthenticatedApp({ user, onLogout, onUserUpdate, showProfile, setShowPr
             <Sidebar
                 activeTab={activeTab}
                 onTabChange={(tab: any) => setActiveTab(tab)}
-                user={user}
-                onLogout={onLogout}
-                setShowProfile={setShowProfile}
                 isCollapsed={!isSidebarOpen}
                 toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
             />
@@ -316,11 +312,14 @@ function AuthenticatedApp({ user, onLogout, onUserUpdate, showProfile, setShowPr
                     <div className="flex items-center gap-4">
                         <DarkModeToggle />
                         <button
-                            onClick={() => setShowShortcutsHelp(true)}
-                            className="p-2.5 text-slate-450 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 rounded-full transition-all duration-200 hover:scale-105 active:scale-[0.95]"
-                            title="Keyboard Shortcuts (Ctrl+/)"
+                            onClick={() => setShowProfile(true)}
+                            className="relative flex-shrink-0 group hover:scale-105 active:scale-[0.95] transition-all focus:outline-none"
+                            title="User Profile"
                         >
-                            <Keyboard className="w-5 h-5" />
+                            <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 opacity-80 blur-[1px] group-hover:opacity-100 transition-opacity" />
+                            <div className="relative w-9 h-9 rounded-full bg-white dark:bg-slate-900 flex items-center justify-center text-slate-800 dark:text-slate-200 font-bold border-2 border-white dark:border-slate-900 shadow-sm">
+                                {user?.name?.charAt(0) || 'U'}
+                            </div>
                         </button>
                     </div>
                 </header>
