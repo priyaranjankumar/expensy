@@ -8,13 +8,17 @@ import {
     Pause, 
     ArrowLeft, 
     CalendarDays,
-    Loader2
+    Loader2,
+    Film,
+    Heart,
+    BookOpen
 } from 'lucide-react';
 import { recurringApi, expenseApi } from '../services/api';
 import type { RecurringExpense, RecurringExpenseCreate, RecurringFrequency } from '../types';
 import { getCurrentBillingMonth, formatBillingMonth } from '../types';
 import CustomDropdown from './CustomDropdown';
 import Modal from './Modal';
+import MonthPicker from './MonthPicker';
 
 // Helper function to get category icons (React components instead of emojis)
 import {
@@ -30,6 +34,22 @@ import {
     FileText
 } from 'lucide-react';
 
+const DEFAULT_CATEGORIES = [
+    'Utilities',
+    'Subscription',
+    'SIP',
+    'Rent',
+    'EMI',
+    'Credit Card Bill',
+    'Insurance',
+    'Groceries',
+    'Transportation',
+    'Entertainment',
+    'Healthcare',
+    'Education',
+    'Other',
+];
+
 function getCategoryIcon(category: string): React.ReactNode {
     const icons: Record<string, React.ReactNode> = {
         'Utilities': <Zap className="w-4 h-4 text-amber-500" />,
@@ -41,6 +61,9 @@ function getCategoryIcon(category: string): React.ReactNode {
         'Insurance': <Shield className="w-4 h-4 text-teal-500" />,
         'Groceries': <ShoppingCart className="w-4 h-4 text-lime-500" />,
         'Transportation': <Car className="w-4 h-4 text-sky-500" />,
+        'Entertainment': <Film className="w-4 h-4 text-red-500" />,
+        'Healthcare': <Heart className="w-4 h-4 text-rose-500" />,
+        'Education': <BookOpen className="w-4 h-4 text-indigo-500" />,
     };
     return icons[category] || <FileText className="w-4 h-4 text-slate-400" />;
 }
@@ -57,6 +80,10 @@ function getCategoryIconLabel(category: string): string {
         'Insurance': '🛡️',
         'Groceries': '🛒',
         'Transportation': '🚗',
+        'Entertainment': '🎬',
+        'Healthcare': '🏥',
+        'Education': '📚',
+        'Other': '📋',
     };
     return icons[category] || '📋';
 }
@@ -73,6 +100,15 @@ const RecurringExpensesPage: React.FC<RecurringExpensesPageProps> = ({ className
     const [editingItem, setEditingItem] = useState<RecurringExpense | null>(null);
     const [generating, setGenerating] = useState<number | null>(null);
     const [categories, setCategories] = useState<string[]>([]);
+
+    const [showCustomCategory, setShowCustomCategory] = useState(false);
+    const [customCategory, setCustomCategory] = useState('');
+
+    const [showMonthSelectModal, setShowMonthSelectModal] = useState(false);
+    const [selectedTemplateId, setSelectedTemplateId] = useState<number | null>(null);
+    const [generateMonth, setGenerateMonth] = useState(getCurrentBillingMonth());
+
+    const allCategories = [...new Set([...DEFAULT_CATEGORIES, ...categories])].sort();
 
     const [formData, setFormData] = useState<RecurringExpenseCreate>({
         category: '',
@@ -105,13 +141,34 @@ const RecurringExpensesPage: React.FC<RecurringExpensesPageProps> = ({ className
         }
     };
 
+    const handleCategoryChange = (value: string) => {
+        if (value === '__new__') {
+            setShowCustomCategory(true);
+            setFormData(prev => ({ ...prev, category: '' }));
+        } else {
+            setShowCustomCategory(false);
+            setFormData(prev => ({ ...prev, category: value }));
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        const categoryToSubmit = showCustomCategory ? customCategory.trim() : formData.category;
+        if (!categoryToSubmit) {
+            alert('Category is required');
+            return;
+        }
+
+        const dataToSubmit = {
+            ...formData,
+            category: categoryToSubmit
+        };
+
         try {
             if (editingItem) {
-                await recurringApi.update(editingItem.id, formData);
+                await recurringApi.update(editingItem.id, dataToSubmit);
             } else {
-                await recurringApi.create(formData);
+                await recurringApi.create(dataToSubmit);
             }
             setShowModal(false);
             setEditingItem(null);
@@ -132,12 +189,20 @@ const RecurringExpensesPage: React.FC<RecurringExpensesPageProps> = ({ className
         }
     };
 
-    const handleGenerate = async (id: number) => {
-        const month = getCurrentBillingMonth();
+    const handleGenerateClick = (id: number) => {
+        setSelectedTemplateId(id);
+        setGenerateMonth(getCurrentBillingMonth());
+        setShowMonthSelectModal(true);
+    };
+
+    const handleGenerateConfirm = async () => {
+        if (!selectedTemplateId) return;
         try {
-            setGenerating(id);
-            await recurringApi.generate(id, month);
-            alert(`Expense generated for ${formatBillingMonth(month)}!`);
+            setGenerating(selectedTemplateId);
+            await recurringApi.generate(selectedTemplateId, generateMonth);
+            alert(`Expense generated for ${formatBillingMonth(generateMonth)}!`);
+            setShowMonthSelectModal(false);
+            setSelectedTemplateId(null);
             loadData();
         } catch (error: any) {
             alert(error.response?.data?.detail || 'Failed to generate expense');
@@ -147,9 +212,12 @@ const RecurringExpensesPage: React.FC<RecurringExpensesPageProps> = ({ className
     };
 
     const handleEdit = (item: RecurringExpense) => {
+        const allCats = [...new Set([...DEFAULT_CATEGORIES, ...categories])].sort();
+        const isCustom = !allCats.includes(item.category);
+
         setEditingItem(item);
         setFormData({
-            category: item.category,
+            category: isCustom ? '' : item.category,
             description: item.description,
             amount: item.amount,
             frequency: item.frequency,
@@ -159,6 +227,8 @@ const RecurringExpensesPage: React.FC<RecurringExpensesPageProps> = ({ className
             start_date: item.start_date,
             end_date: item.end_date
         });
+        setShowCustomCategory(isCustom);
+        setCustomCategory(isCustom ? item.category : '');
         setShowModal(true);
     };
 
@@ -182,6 +252,8 @@ const RecurringExpensesPage: React.FC<RecurringExpensesPageProps> = ({ className
             notes: '',
             start_date: new Date().toISOString().split('T')[0]
         });
+        setShowCustomCategory(false);
+        setCustomCategory('');
     };
 
     const openNewModal = () => {
@@ -293,7 +365,7 @@ const RecurringExpensesPage: React.FC<RecurringExpensesPageProps> = ({ className
                                     </p>
                                     <div className="flex items-center gap-1.5 mt-3">
                                         <button
-                                            onClick={() => handleGenerate(item.id)}
+                                            onClick={() => handleGenerateClick(item.id)}
                                             disabled={generating === item.id || !item.is_active}
                                             className="p-1.5 bg-green-50 dark:bg-green-950/20 text-green-600 dark:text-green-400 rounded-lg hover:scale-105 active:scale-95 disabled:opacity-50 transition-all border border-green-200/20 dark:border-green-800/20"
                                             title="Generate expense for this month"
@@ -352,16 +424,40 @@ const RecurringExpensesPage: React.FC<RecurringExpensesPageProps> = ({ className
                     <div className="grid grid-cols-2 gap-4">
                         <div>
                             <label className="label">Category *</label>
-                            <CustomDropdown
-                                value={formData.category}
-                                onChange={(val) => setFormData({ ...formData, category: val })}
-                                options={[
-                                    ...categories.map(cat => ({ value: cat, label: cat, icon: getCategoryIconLabel(cat) })),
-                                    { value: '__new__', label: '+ New Category', icon: '✨' }
-                                ]}
-                                placeholder="Select category"
-                                className="w-full"
-                            />
+                            {!showCustomCategory ? (
+                                <CustomDropdown
+                                    value={formData.category}
+                                    onChange={handleCategoryChange}
+                                    options={[
+                                        ...allCategories.map(cat => ({ value: cat, label: cat, icon: getCategoryIconLabel(cat) })),
+                                        { value: '__new__', label: '+ New Category', icon: '✨' }
+                                    ]}
+                                    placeholder="Select category"
+                                    className="w-full"
+                                />
+                            ) : (
+                                <div className="flex gap-2">
+                                    <input
+                                        type="text"
+                                        value={customCategory}
+                                        onChange={(e) => setCustomCategory(e.target.value)}
+                                        placeholder="Enter category name"
+                                        className="input text-sm flex-1"
+                                        required
+                                        autoFocus
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setShowCustomCategory(false);
+                                            setCustomCategory('');
+                                        }}
+                                        className="btn btn-secondary text-xs px-3"
+                                    >
+                                        Cancel
+                                    </button>
+                                </div>
+                            )}
                         </div>
                         <div>
                             <label className="label">Amount (₹) *</label>
@@ -445,7 +541,11 @@ const RecurringExpensesPage: React.FC<RecurringExpensesPageProps> = ({ className
                     <div className="flex gap-4 pt-3">
                         <button 
                             type="button" 
-                            onClick={() => setShowModal(false)} 
+                            onClick={() => {
+                                setShowModal(false);
+                                setEditingItem(null);
+                                resetForm();
+                            }} 
                             className="btn btn-secondary flex-1 py-2.5 text-xs"
                         >
                             Cancel
@@ -458,6 +558,52 @@ const RecurringExpensesPage: React.FC<RecurringExpensesPageProps> = ({ className
                         </button>
                     </div>
                 </form>
+            </Modal>
+
+            {/* Month Selection Modal */}
+            <Modal
+                isOpen={showMonthSelectModal}
+                onClose={() => {
+                    setShowMonthSelectModal(false);
+                    setSelectedTemplateId(null);
+                }}
+                title="📅 Select Billing Month"
+                size="sm"
+            >
+                <div className="p-6 space-y-4">
+                    <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                        Select the billing month for which you want to generate this expense.
+                    </p>
+                    <MonthPicker
+                        value={generateMonth}
+                        onChange={(value) => setGenerateMonth(value)}
+                        className="w-full"
+                    />
+                    <div className="flex gap-3 pt-2">
+                        <button
+                            type="button"
+                            onClick={() => {
+                                setShowMonthSelectModal(false);
+                                setSelectedTemplateId(null);
+                            }}
+                            className="btn btn-secondary flex-1 py-2 text-xs"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            type="button"
+                            onClick={handleGenerateConfirm}
+                            className="btn btn-primary flex-1 py-2 text-xs"
+                            disabled={generating !== null}
+                        >
+                            {generating !== null ? (
+                                <Loader2 className="w-3.5 h-3.5 animate-spin mx-auto" />
+                            ) : (
+                                'Generate'
+                            )}
+                        </button>
+                    </div>
+                </div>
             </Modal>
         </div>
     );
