@@ -100,3 +100,11 @@ msg_ok "Systemd service installed and started"
 # Finalize container customization (includes autologin and MOTD welcome banner)
 motd_ssh
 customize
+
+# Override the update script created by customize to point to the user's fork instead of the official repo
+cat <<EOF >/usr/bin/update
+#!/usr/bin/env bash
+bash -c "\$(curl -fsSL https://raw.githubusercontent.com/priyaranjankumar/expensy/main/proxmox/ct/expensy.sh) -u"
+EOF
+chmod +x /usr/bin/update
+
