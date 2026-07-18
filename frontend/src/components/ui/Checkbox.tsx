@@ -19,8 +19,8 @@ export const Checkbox: React.FC<CheckboxProps> = ({
     const inputId = id || `checkbox-${Math.random().toString(36).substr(2, 9)}`;
 
     return (
-        <div className={`flex items-start gap-3 ${className}`}>
-            <div className="relative flex items-center mt-0.5">
+        <div className={`flex ${description ? 'items-start' : 'items-center'} gap-3 ${className}`}>
+            <div className={`relative flex items-center ${description ? 'mt-1' : ''}`}>
                 <input
                     type="checkbox"
                     id={inputId}
@@ -32,7 +32,7 @@ export const Checkbox: React.FC<CheckboxProps> = ({
                 />
                 <div
                     className={`
-                        w-6 h-6 rounded-xl border-2 transition-all duration-200 flex items-center justify-center cursor-pointer
+                        w-5 h-5 rounded-lg border-2 transition-all duration-200 flex items-center justify-center cursor-pointer
                         peer-focus:ring-2 peer-focus:ring-offset-2 peer-focus:ring-indigo-500/50
                         ${checked
                             ? 'bg-gradient-to-br from-indigo-500 to-purple-600 border-transparent shadow-md transform scale-105'
@@ -43,11 +43,11 @@ export const Checkbox: React.FC<CheckboxProps> = ({
                     onClick={() => !disabled && document.getElementById(inputId)?.click()}
                 >
                     <svg
-                        className={`w-3.5 h-3.5 text-white transition-all duration-200 ${checked ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}
+                        className={`w-3 h-3 text-white transition-all duration-200 ${checked ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
-                        strokeWidth="3"
+                        strokeWidth="3.5"
                         strokeLinecap="round"
                         strokeLinejoin="round"
                     >
