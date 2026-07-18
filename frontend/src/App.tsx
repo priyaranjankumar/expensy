@@ -303,7 +303,7 @@ function AuthenticatedApp({ user, onLogout, onUserUpdate, showProfile, setShowPr
             {/* Main Content Area */}
             <main className={`flex-1 transition-all duration-300 ${isSidebarOpen ? 'ml-0 md:ml-64' : 'ml-0 md:ml-20'}`}>
                 {/* Header / Top Bar */}
-                <header className="sticky top-0 z-30 bg-white/70 dark:bg-[#090d16]/75 backdrop-blur-xl border-b border-slate-200/40 dark:border-slate-850 px-6 py-4 flex items-center justify-between transition-colors duration-300">
+                <header className="sticky top-0 z-30 h-16 bg-white/70 dark:bg-[#090d16]/75 backdrop-blur-xl px-6 flex items-center justify-between transition-colors duration-300">
                     <h2 className="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400 capitalize tracking-tight">
                         {activeTab === 'recurring' ? 'Recurring Expenses' :
                             activeTab === 'data' ? 'Data & Sharing' : activeTab}
