@@ -17,20 +17,26 @@ const EmptyState: React.FC<EmptyStateProps> = ({
     onAction
 }) => {
     return (
-        <div className="flex flex-col items-center justify-center py-16 px-4 text-center animate-fade-in">
-            <div className="w-20 h-20 bg-indigo-50 dark:bg-indigo-900/20 rounded-full flex items-center justify-center mb-6 shadow-sm">
-                <Icon className="w-10 h-10 text-indigo-500 dark:text-indigo-400" />
+        <div className="relative overflow-hidden flex flex-col items-center justify-center py-16 px-6 text-center animate-fade-in rounded-3xl bg-slate-50/50 dark:bg-slate-900/20 border border-slate-200/50 dark:border-slate-800/40 shadow-inner">
+            {/* Glowing Backdrop */}
+            <div className="absolute -top-10 w-40 h-40 bg-indigo-500/10 dark:bg-indigo-500/5 rounded-full blur-3xl pointer-events-none" />
+
+            <div className="relative w-16 h-16 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 dark:from-indigo-500/20 dark:to-purple-500/20 rounded-2xl flex items-center justify-center mb-5 border border-indigo-500/20 dark:border-indigo-500/30 shadow-md">
+                <Icon className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
             </div>
-            <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-2">
+
+            <h3 className="relative text-lg font-bold text-slate-800 dark:text-slate-100 mb-1.5 tracking-tight">
                 {title}
             </h3>
-            <p className="text-slate-500 dark:text-slate-400 max-w-sm mb-8 leading-relaxed">
+
+            <p className="relative text-xs text-slate-500 dark:text-slate-400 max-w-xs mb-6 leading-relaxed font-medium">
                 {description}
             </p>
+
             {actionLabel && onAction && (
                 <button
                     onClick={onAction}
-                    className="btn btn-primary"
+                    className="relative btn btn-primary py-2 px-5 text-xs rounded-xl shadow-lg shadow-indigo-500/20 transition-all hover:scale-[1.02] active:scale-[0.98] font-bold"
                 >
                     {actionLabel}
                 </button>

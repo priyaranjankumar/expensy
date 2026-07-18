@@ -41,6 +41,7 @@ export interface CategoryTotal {
     category: string;
     total: number;
     count: number;
+    budget?: number;
 }
 
 export interface MetricsResponse {

@@ -359,6 +359,58 @@ const Dashboard: React.FC<DashboardProps> = ({ metrics, loading }) => {
                         </div>
                     </button>
                 </div>
+
+                {/* Category Budgets Progress Widget */}
+                {metrics.category_totals && metrics.category_totals.some(cat => cat.budget && cat.budget > 0) && (
+                    <div className="card p-6">
+                        <div className="flex items-center justify-between mb-4 border-b border-slate-150 dark:border-slate-800/40 pb-3">
+                            <div>
+                                <h3 className="text-sm font-bold text-slate-800 dark:text-slate-205">Category Budgets</h3>
+                                <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">Budget allocations for active categories</p>
+                            </div>
+                            <span className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-full border border-slate-200/20 dark:border-slate-800/20">
+                                Tracked Budgets
+                            </span>
+                        </div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                            {metrics.category_totals.filter(cat => cat.budget && cat.budget > 0).map((cat) => {
+                                const budget = cat.budget || 0;
+                                const spentPercent = Math.min((cat.total / budget) * 100, 100);
+                                const isOver = cat.total > budget;
+                                
+                                return (
+                                    <div key={cat.category} className="space-y-2 p-3 bg-slate-50/50 dark:bg-[#0f172a]/20 border border-slate-200/50 dark:border-slate-800/40 rounded-2xl shadow-inner">
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-xs font-bold text-slate-700 dark:text-slate-250">{cat.category}</span>
+                                            <span className={`text-[10px] font-extrabold ${isOver ? 'text-red-500' : 'text-slate-450 dark:text-slate-500'}`}>
+                                                {spentPercent.toFixed(0)}%
+                                            </span>
+                                        </div>
+                                        
+                                        <div className="h-2 bg-slate-100 dark:bg-slate-800/60 rounded-full overflow-hidden">
+                                            <div
+                                                className={`h-full rounded-full transition-all duration-500 ${
+                                                    isOver 
+                                                        ? 'bg-gradient-to-r from-red-500 to-red-655 shadow-md shadow-red-550/20' 
+                                                        : spentPercent > 80 
+                                                            ? 'bg-gradient-to-r from-orange-400 to-orange-500 shadow-md shadow-orange-500/20'
+                                                            : 'bg-gradient-to-r from-indigo-500 to-purple-650 shadow-md shadow-indigo-550/20'
+                                                }`}
+                                                style={{ width: `${spentPercent}%` }}
+                                            />
+                                        </div>
+                                        
+                                        <div className="flex justify-between items-baseline text-[10px] font-semibold text-slate-450 dark:text-slate-505 pt-0.5">
+                                            <p>Spent: <span className="font-extrabold text-slate-800 dark:text-slate-200">{formatCurrency(cat.total)}</span></p>
+                                            <p>Budget: <span className="font-bold">{formatCurrency(budget)}</span></p>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                )}
             </div>
 
             {/* Expanded Bar Chart Modal */}

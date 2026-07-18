@@ -230,8 +230,15 @@ def get_metrics(db: Session, user_id: int, budget: float, billing_month: Optiona
         category_query = category_query.filter(models.Expense.billing_month == billing_month)
     category_data = category_query.group_by(models.Expense.category).all()
     
+    # Query category budgets for mapping
+    category_budgets = db.query(models.CategoryBudget).filter(
+        models.CategoryBudget.user_id == user_id,
+        (models.CategoryBudget.billing_month == billing_month) | (models.CategoryBudget.billing_month == None)
+    ).all()
+    budget_map = {b.category: b.budget_amount for b in category_budgets}
+    
     category_totals = [
-        {"category": cat, "total": total, "count": count}
+        {"category": cat, "total": total, "count": count, "budget": budget_map.get(cat, 0.0)}
         for cat, total, count in category_data
     ]
     

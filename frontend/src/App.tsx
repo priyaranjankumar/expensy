@@ -128,7 +128,7 @@ function AuthenticatedApp({ user, onLogout, onUserUpdate, showProfile, setShowPr
         billing_month: getCurrentBillingMonth()
     });
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
+    const [editingExpense, setEditingExpense] = useState<Partial<Expense> | null>(null);
     const [loading, setLoading] = useState({
         expenses: true,
         metrics: true,
@@ -233,7 +233,8 @@ function AuthenticatedApp({ user, onLogout, onUserUpdate, showProfile, setShowPr
     }, [expenses, filters.search]);
 
     // Handle add/edit expense
-    const handleOpenModal = (expense?: Expense) => {
+    // Handle add/edit expense
+    const handleOpenModal = (expense?: Partial<Expense>) => {
         setEditingExpense(expense || null);
         setIsModalOpen(true);
     };
@@ -241,6 +242,29 @@ function AuthenticatedApp({ user, onLogout, onUserUpdate, showProfile, setShowPr
     const handleCloseModal = () => {
         setIsModalOpen(false);
         setEditingExpense(null);
+    };
+
+    const handleStatusToggle = async (id: number, currentStatus: string) => {
+        try {
+            const nextStatus = currentStatus === 'Unpaid' ? 'Paid' : 'Unpaid';
+            await expenseApi.updateExpense(id, { status: nextStatus });
+            if (nextStatus === 'Paid') {
+                confetti({
+                    particleCount: 50,
+                    spread: 45,
+                    origin: { y: 0.85 },
+                    colors: ['#10b981', '#34d399', '#6366f1']
+                });
+                toast.success('Bill marked as paid! 🎉');
+            } else {
+                toast.success('Bill marked as unpaid.');
+            }
+            fetchExpenses();
+            fetchMetrics();
+        } catch (err) {
+            console.error('Failed to toggle status:', err);
+            toast.error('Failed to update status');
+        }
     };
 
     const handleSubmitExpense = async (expense: ExpenseCreate | ExpenseUpdate) => {
@@ -252,7 +276,7 @@ function AuthenticatedApp({ user, onLogout, onUserUpdate, showProfile, setShowPr
                 billing_month: expense.billing_month || filters.billing_month || getCurrentBillingMonth()
             };
 
-            if (editingExpense) {
+            if (editingExpense && editingExpense.id) {
                 await expenseApi.updateExpense(editingExpense.id, expenseWithMonth);
                 toast.success('Expense updated successfully!');
             } else {
@@ -348,7 +372,7 @@ function AuthenticatedApp({ user, onLogout, onUserUpdate, showProfile, setShowPr
                     )}
 
                     {activeTab === 'expenses' && (
-                        <div className="space-y-6">
+                        <div key="expenses" className="animate-slide-up space-y-6">
                             <Dashboard metrics={metrics} loading={loading.metrics} />
 
                             <Filters
@@ -368,6 +392,8 @@ function AuthenticatedApp({ user, onLogout, onUserUpdate, showProfile, setShowPr
                                         loading={loading.expenses}
                                         onEdit={handleOpenModal}
                                         onDelete={handleDeleteExpense}
+                                        onStatusToggle={handleStatusToggle}
+                                        searchTerm={filters.search}
                                     />
                                 </div>
                                 <div className="lg:w-1/4 space-y-6">
@@ -382,19 +408,43 @@ function AuthenticatedApp({ user, onLogout, onUserUpdate, showProfile, setShowPr
                         </div>
                     )}
 
-                    {activeTab === 'recurring' && <RecurringExpensesPage />}
-                    {activeTab === 'income' && <IncomeDashboard billingMonth={filters.billing_month} />}
-                    {activeTab === 'tags' && <TagsManager />}
+                    {activeTab === 'recurring' && (
+                        <div key="recurring" className="animate-slide-up">
+                            <RecurringExpensesPage />
+                        </div>
+                    )}
+                    {activeTab === 'income' && (
+                        <div key="income" className="animate-slide-up">
+                            <IncomeDashboard billingMonth={filters.billing_month} />
+                        </div>
+                    )}
+                    {activeTab === 'tags' && (
+                        <div key="tags" className="animate-slide-up">
+                            <TagsManager />
+                        </div>
+                    )}
 
                     {activeTab === 'analytics' && (
-                        <div className="max-w-5xl mx-auto">
+                        <div key="analytics" className={`animate-slide-up ${layoutPreference === 'wide' ? 'w-full' : 'max-w-5xl mx-auto'}`}>
                             <AnalyticsDashboard />
                         </div>
                     )}
 
-                    {activeTab === 'organize' && <OrganizationPage />}
-                    {activeTab === 'finance' && <FinancePage />}
-                    {activeTab === 'data' && <DataPage />}
+                    {activeTab === 'organize' && (
+                        <div key="organize" className="animate-slide-up">
+                            <OrganizationPage />
+                        </div>
+                    )}
+                    {activeTab === 'finance' && (
+                        <div key="finance" className="animate-slide-up">
+                            <FinancePage />
+                        </div>
+                    )}
+                    {activeTab === 'data' && (
+                        <div key="data" className="animate-slide-up">
+                            <DataPage />
+                        </div>
+                    )}
                 </div>
             </main>
 

@@ -7,7 +7,7 @@ interface ExpenseModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSubmit: (expense: ExpenseCreate | ExpenseUpdate) => void;
-    expense: Expense | null;
+    expense: Partial<Expense> | null;
     categories: string[];
     billingMonths: string[];
     currentBillingMonth: string;
@@ -83,15 +83,15 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({
     useEffect(() => {
         if (expense) {
             setFormData({
-                category: expense.category,
-                description: expense.description,
-                amount: expense.amount,
-                status: expense.status,
+                category: expense.category || '',
+                description: expense.description || '',
+                amount: expense.amount || 0,
+                status: expense.status || 'Unpaid',
                 notes: expense.notes || '',
-                billing_month: expense.billing_month,
+                billing_month: expense.billing_month || currentBillingMonth,
             });
-            setShowCustomCategory(!allCategories.includes(expense.category));
-            if (!allCategories.includes(expense.category)) {
+            setShowCustomCategory(expense.category ? !allCategories.includes(expense.category) : false);
+            if (expense.category && !allCategories.includes(expense.category)) {
                 setCustomCategory(expense.category);
             }
         } else {

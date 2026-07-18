@@ -121,6 +121,7 @@ class CategoryTotal(BaseModel):
     category: str
     total: float
     count: int
+    budget: float = 0.0
 
 
 class MonthlyTotal(BaseModel):
