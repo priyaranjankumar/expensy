@@ -145,6 +145,23 @@ docker run -p 8000:8000 expensy
 
 ---
 
+## 🐳 Proxmox LXC Deployment
+
+Deploy Expensy in a lightweight, resource-optimized LXC container on Proxmox VE using scripts structured like the **Proxmox VE Helper-Scripts (Community Edition)**:
+
+```bash
+# Run this command directly on your Proxmox VE host terminal:
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/priyaranjankumar/expensy/main/proxmox/ct/expensy.sh)"
+```
+
+- **Optimized Resources:** Default configuration uses only **1 vCPU, 256MB RAM, and 4GB Storage**.
+- **Autologin:** Automatically configures root console passwordless autologin.
+- **MOTD Welcome Banner:** Prints local container IP, system status, and hostname upon login.
+
+For more details on custom configurations, service management, and backup/restore, check the [Proxmox LXC Deployment Guide](docs/proxmox-deployment.md).
+
+---
+
 ## 📡 API Endpoints
 
 ### Authentication
