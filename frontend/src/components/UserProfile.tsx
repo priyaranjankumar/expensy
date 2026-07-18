@@ -10,9 +10,19 @@ interface UserProfileProps {
     user: User;
     onUpdate: (user: User) => void;
     onLogout: () => void;
+    layoutPreference: 'standard' | 'wide';
+    onLayoutPreferenceChange: (pref: 'standard' | 'wide') => void;
 }
 
-const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose, user, onUpdate, onLogout }) => {
+const UserProfile: React.FC<UserProfileProps> = ({ 
+    isOpen, 
+    onClose, 
+    user, 
+    onUpdate, 
+    onLogout,
+    layoutPreference,
+    onLayoutPreferenceChange
+}) => {
     const [activeTab, setActiveTab] = useState<'profile' | 'password'>('profile');
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
@@ -158,6 +168,36 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose, user, onUpda
                             <p className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 mt-1.5 ml-1">
                                 Used to calculate your remaining monthly allocation limit
                             </p>
+                        </div>
+
+                        <div>
+                            <label className="label">
+                                Desktop Layout Width
+                            </label>
+                            <div className="grid grid-cols-2 gap-3 mt-1.5">
+                                <button
+                                    type="button"
+                                    onClick={() => onLayoutPreferenceChange('standard')}
+                                    className={`py-2.5 px-3 rounded-xl text-xs font-bold border transition-all ${
+                                        layoutPreference === 'standard'
+                                            ? 'bg-indigo-50 dark:bg-indigo-950/20 border-indigo-500/50 text-indigo-650 dark:text-indigo-400'
+                                            : 'bg-slate-50/50 dark:bg-slate-900/30 border-slate-200 dark:border-slate-800/80 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800'
+                                    }`}
+                                >
+                                    Standard (Centered)
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => onLayoutPreferenceChange('wide')}
+                                    className={`py-2.5 px-3 rounded-xl text-xs font-bold border transition-all ${
+                                        layoutPreference === 'wide'
+                                            ? 'bg-indigo-50 dark:bg-indigo-950/20 border-indigo-500/50 text-indigo-650 dark:text-indigo-400'
+                                            : 'bg-slate-50/50 dark:bg-slate-900/30 border-slate-200 dark:border-slate-800/80 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800'
+                                    }`}
+                                >
+                                    Wide (Full Width)
+                                </button>
+                            </div>
                         </div>
 
                         <button 

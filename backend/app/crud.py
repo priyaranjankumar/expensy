@@ -70,6 +70,9 @@ def get_expenses(
     limit: int = 100
 ) -> List[models.Expense]:
     """Get all expenses for a user with optional filtering."""
+    # Auto-generate active recurring expenses before fetching list
+    auto_generate_recurring_expenses(db, user_id, billing_month)
+    
     query = db.query(models.Expense).filter(models.Expense.user_id == user_id)
     
     if status:
@@ -185,6 +188,12 @@ def bulk_delete_expenses(db: Session, user_id: int, expense_ids: List[int]) -> i
 
 def get_metrics(db: Session, user_id: int, budget: float, billing_month: Optional[str] = None) -> dict:
     """Get expense metrics for dashboard."""
+    if not billing_month:
+        billing_month = get_current_billing_month()
+        
+    # Auto-generate active recurring expenses before computing metrics
+    auto_generate_recurring_expenses(db, user_id, billing_month)
+    
     base_filter = models.Expense.user_id == user_id
     
     # Total amount
@@ -235,6 +244,21 @@ def get_metrics(db: Session, user_id: int, budget: float, billing_month: Optiona
     # Remaining = budget - total_amount
     remaining = budget - total_amount
     
+    # Total income for this billing month
+    income_query = db.query(func.sum(models.Income.amount)).filter(
+        models.Income.user_id == user_id,
+        models.Income.billing_month == billing_month
+    )
+    total_income = income_query.scalar() or 0.0
+    
+    # Overdue unpaid (unpaid from ALL previous billing months)
+    overdue_query = db.query(func.sum(models.Expense.amount)).filter(
+        models.Expense.user_id == user_id,
+        models.Expense.status == "Unpaid",
+        models.Expense.billing_month < billing_month
+    )
+    overdue_unpaid = overdue_query.scalar() or 0.0
+    
     return {
         "total_amount": round(total_amount, 2),
         "total_paid": round(total_paid, 2),
@@ -243,8 +267,60 @@ def get_metrics(db: Session, user_id: int, budget: float, billing_month: Optiona
         "remaining": round(remaining, 2),
         "category_totals": category_totals,
         "expense_count": expense_count,
-        "current_month": billing_month or get_current_billing_month()
+        "current_month": billing_month,
+        "total_income": round(total_income, 2),
+        "net_savings": round(total_income - total_amount, 2),
+        "overdue_unpaid": round(overdue_unpaid, 2)
     }
+
+
+def auto_generate_recurring_expenses(db: Session, user_id: int, billing_month: Optional[str] = None):
+    """Automatically generate expenses from active recurring templates for a month."""
+    if not billing_month:
+        billing_month = get_current_billing_month()
+        
+    # Get all active templates for this user
+    templates = db.query(models.RecurringExpense).filter(
+        models.RecurringExpense.user_id == user_id,
+        models.RecurringExpense.is_active == True
+    ).all()
+    
+    for template in templates:
+        # Check start date
+        start_month = template.start_date.strftime("%Y-%m")
+        if start_month > billing_month:
+            continue
+            
+        # Check if already generated for this billing month
+        if template.last_generated == billing_month:
+            continue
+            
+        # Check if end date is set and passed
+        if template.end_date:
+            end_month = template.end_date.strftime("%Y-%m")
+            if end_month < billing_month:
+                continue
+                
+        # Check if expense already exists in DB to prevent duplicates
+        existing = db.query(models.Expense).filter(
+            models.Expense.recurring_expense_id == template.id,
+            models.Expense.billing_month == billing_month
+        ).first()
+        
+        if not existing:
+            expense = models.Expense(
+                user_id=user_id,
+                category=template.category,
+                description=template.description,
+                amount=template.amount,
+                status="Unpaid",
+                notes=template.notes,
+                billing_month=billing_month,
+                recurring_expense_id=template.id
+            )
+            db.add(expense)
+            template.last_generated = billing_month
+            db.commit()
 
 
 def get_categories(db: Session, user_id: int) -> List[str]:

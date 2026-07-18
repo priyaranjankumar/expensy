@@ -107,6 +107,16 @@ interface AuthenticatedAppProps {
 
 function AuthenticatedApp({ user, onLogout, onUserUpdate, showProfile, setShowProfile }: AuthenticatedAppProps) {
     // State
+    const [layoutPreference, setLayoutPreference] = useState<'standard' | 'wide'>(() => {
+        const saved = localStorage.getItem('layout-preference');
+        return saved === 'wide' ? 'wide' : 'standard';
+    });
+
+    const handleLayoutPreferenceChange = (pref: 'standard' | 'wide') => {
+        setLayoutPreference(pref);
+        localStorage.setItem('layout-preference', pref);
+    };
+
     const [expenses, setExpenses] = useState<Expense[]>([]);
     const [metrics, setMetrics] = useState<MetricsResponse | null>(null);
     const [categories, setCategories] = useState<string[]>([]);
@@ -313,7 +323,7 @@ function AuthenticatedApp({ user, onLogout, onUserUpdate, showProfile, setShowPr
                         <DarkModeToggle />
                         <button
                             onClick={() => setShowProfile(true)}
-                            className="relative flex-shrink-0 group hover:scale-105 active:scale-[0.95] transition-all focus:outline-none"
+                            className="relative flex-shrink-0 group hover:scale-105 active:scale-[0.95] transition-all rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:ring-offset-2 dark:focus:ring-offset-slate-950"
                             title="User Profile"
                         >
                             <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 opacity-80 blur-[1px] group-hover:opacity-100 transition-opacity" />
@@ -325,7 +335,7 @@ function AuthenticatedApp({ user, onLogout, onUserUpdate, showProfile, setShowPr
                 </header>
 
                 {/* Page Content */}
-                <div className="p-6 max-w-7xl mx-auto space-y-6">
+                <div className={`p-6 space-y-6 ${layoutPreference === 'wide' ? 'w-full' : 'max-w-7xl mx-auto'}`}>
                     {/* Error Banner */}
                     {error && (
                         <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800 rounded-xl flex items-center justify-between animate-fade-in">
@@ -412,6 +422,8 @@ function AuthenticatedApp({ user, onLogout, onUserUpdate, showProfile, setShowPr
                     user={user}
                     onUpdate={onUserUpdate}
                     onLogout={onLogout}
+                    layoutPreference={layoutPreference}
+                    onLayoutPreferenceChange={handleLayoutPreferenceChange}
                 />
             )}
 

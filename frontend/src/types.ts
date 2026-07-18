@@ -52,6 +52,9 @@ export interface MetricsResponse {
     category_totals: CategoryTotal[];
     expense_count: number;
     current_month: string;
+    total_income?: number;
+    net_savings?: number;
+    overdue_unpaid?: number;
 }
 
 export interface MonthlyTotal {

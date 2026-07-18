@@ -148,6 +148,9 @@ class MetricsResponse(BaseModel):
     category_totals: List[CategoryTotal]
     expense_count: int
     current_month: str
+    total_income: float = 0.0
+    net_savings: float = 0.0
+    overdue_unpaid: float = 0.0
 
 
 # ============ RECURRING EXPENSE SCHEMAS ============
