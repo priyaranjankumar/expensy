@@ -22,7 +22,11 @@ $STD apt-get install -y \
   build-essential \
   libssl-dev \
   libffi-dev \
-  sqlite3
+  sqlite3 \
+  python3 \
+  python3-pip \
+  python3-venv \
+  python3-dev
 msg_ok "Installed dependencies"
 
 # Setup Node.js v22
