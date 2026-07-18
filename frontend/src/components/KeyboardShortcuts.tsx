@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import Modal from './Modal';
 
 interface ShortcutsHelpProps {
     isOpen: boolean;
@@ -46,18 +47,13 @@ export const KeyboardShortcutsHelp: React.FC<ShortcutsHelpProps> = ({ isOpen, on
     const categories = [...new Set(SHORTCUTS.map(s => s.category))];
 
     return (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={onClose}>
-            <div
-                className="card p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto"
-                onClick={e => e.stopPropagation()}
-            >
-                <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-xl font-semibold">⌨️ Keyboard Shortcuts</h2>
-                    <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-xl">
-                        ✕
-                    </button>
-                </div>
-
+        <Modal
+            isOpen={isOpen}
+            onClose={onClose}
+            title="⌨️ Keyboard Shortcuts"
+            size="lg"
+        >
+            <div className="p-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {categories.map(category => (
                         <div key={category}>
@@ -78,11 +74,11 @@ export const KeyboardShortcutsHelp: React.FC<ShortcutsHelpProps> = ({ isOpen, on
                     ))}
                 </div>
 
-                <p className="text-xs text-gray-500 mt-4 text-center">
+                <p className="text-xs text-gray-500 mt-6 text-center">
                     Press <kbd className="px-1 bg-gray-100 dark:bg-gray-800 rounded">?</kbd> anytime to show this help
                 </p>
             </div>
-        </div>
+        </Modal>
     );
 };
 

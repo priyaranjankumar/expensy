@@ -5,6 +5,7 @@ import { Card } from './ui/Card';
 import { Button } from './ui/Button';
 import { Input } from './ui/Input';
 import { Badge } from './ui/Badge';
+import Modal from './Modal';
 
 type ActiveTab = 'reports' | 'import' | 'family';
 
@@ -516,41 +517,41 @@ const DataPage: React.FC = () => {
                     )}
 
                     {/* New Budget Modal */}
-                    {showBudgetModal && (
-                        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in">
-                            <Card className="p-6 w-full max-w-md animate-slide-up">
-                                <h3 className="font-semibold mb-4 text-lg">Create Shared Budget</h3>
-                                <form onSubmit={handleCreateBudget} className="space-y-4">
-                                    <Input
-                                        label="Budget Name"
-                                        type="text"
-                                        value={newBudget.name}
-                                        onChange={e => setNewBudget({ ...newBudget, name: e.target.value })}
-                                        required
-                                        placeholder="e.g. Household Groceries"
-                                    />
-                                    <Input
-                                        label="Amount"
-                                        type="number"
-                                        value={newBudget.amount}
-                                        onChange={e => setNewBudget({ ...newBudget, amount: e.target.value })}
-                                        required
-                                    />
-                                    <Input
-                                        label="Month"
-                                        type="month"
-                                        value={newBudget.month}
-                                        onChange={e => setNewBudget({ ...newBudget, month: e.target.value })}
-                                        required
-                                    />
-                                    <div className="flex justify-end gap-2 mt-6">
-                                        <Button type="button" variant="ghost" onClick={() => setShowBudgetModal(false)}>Cancel</Button>
-                                        <Button type="submit">Create Budget</Button>
-                                    </div>
-                                </form>
-                            </Card>
-                        </div>
-                    )}
+                    <Modal
+                        isOpen={showBudgetModal}
+                        onClose={() => setShowBudgetModal(false)}
+                        title="Create Shared Budget"
+                        size="md"
+                    >
+                        <form onSubmit={handleCreateBudget} className="p-6 space-y-4">
+                            <Input
+                                label="Budget Name"
+                                type="text"
+                                value={newBudget.name}
+                                onChange={e => setNewBudget({ ...newBudget, name: e.target.value })}
+                                required
+                                placeholder="e.g. Household Groceries"
+                            />
+                            <Input
+                                label="Amount"
+                                type="number"
+                                value={newBudget.amount}
+                                onChange={e => setNewBudget({ ...newBudget, amount: e.target.value })}
+                                required
+                            />
+                            <Input
+                                label="Month"
+                                type="month"
+                                value={newBudget.month}
+                                onChange={e => setNewBudget({ ...newBudget, month: e.target.value })}
+                                required
+                            />
+                            <div className="flex justify-end gap-2 mt-6">
+                                <Button type="button" variant="ghost" onClick={() => setShowBudgetModal(false)}>Cancel</Button>
+                                <Button type="submit">Create Budget</Button>
+                            </div>
+                        </form>
+                    </Modal>
                 </div>
             )}
         </div>
