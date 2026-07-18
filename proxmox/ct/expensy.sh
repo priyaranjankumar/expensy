@@ -40,6 +40,7 @@ function update_script() {
 
   # Pull changes from main branch
   cd /opt/expensy
+  git config --global --add safe.directory /opt/expensy
   git pull origin main
 
   # Update python dependencies
