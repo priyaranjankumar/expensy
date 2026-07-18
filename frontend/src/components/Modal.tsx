@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 
 interface ModalProps {
     isOpen: boolean;
@@ -29,18 +30,18 @@ const Modal: React.FC<ModalProps> = ({
         full: 'max-w-[90vw] max-h-[90vh]',
     };
 
-    return (
+    return ReactDOM.createPortal(
         <>
             {/* Backdrop */}
             <div
-                className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] animate-fade-in"
+                className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] animate-fade-in"
                 onClick={onClose}
             />
 
-            {/* Modal */}
-            <div className="fixed inset-0 z-[101] flex items-center justify-center p-4">
+            {/* Modal Container with scroll support and center alignment */}
+            <div className="fixed inset-0 z-[101] overflow-y-auto flex justify-center p-4 md:p-8">
                 <div
-                    className={`w-full ${sizeClasses[size]} bg-white dark:bg-dark-800 rounded-2xl shadow-2xl overflow-hidden animate-slide-up`}
+                    className={`w-full ${sizeClasses[size]} bg-white dark:bg-dark-800 rounded-[2rem] shadow-2xl overflow-hidden animate-slide-up my-auto border border-slate-200/50 dark:border-slate-800/80`}
                     onClick={(e) => e.stopPropagation()}
                 >
                     {/* Header */}
@@ -69,12 +70,13 @@ const Modal: React.FC<ModalProps> = ({
                     )}
 
                     {/* Content */}
-                    <div className="overflow-y-auto max-h-[70vh]">
+                    <div className="overflow-y-auto max-h-[75vh]">
                         {children}
                     </div>
                 </div>
             </div>
-        </>
+        </>,
+        document.body
     );
 };
 

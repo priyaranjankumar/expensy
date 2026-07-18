@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Store, FolderOpen, Archive, Loader2 } from 'lucide-react';
 import { payeesApi, subcategoriesApi, groupsApi } from '../services/api';
 import type { Payee, PayeeCreate, SubCategoryCreate, ExpenseGroup, ExpenseGroupCreate, CategoryHierarchy } from '../types';
+import Modal from './Modal';
 
 type ActiveTab = 'payees' | 'subcategories' | 'groups';
 
@@ -338,158 +339,154 @@ const OrganizationPage: React.FC<OrganizationPageProps> = ({ className = '' }) =
             )}
 
             {/* Payee Modal */}
-            {showPayeeModal && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-                    <div className="card p-6 w-full max-w-md">
-                        <h3 className="text-lg font-semibold mb-4">
-                            {editingPayee ? 'Edit Payee' : 'Add Payee'}
-                        </h3>
-                        <form onSubmit={handlePayeeSubmit} className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium mb-1">Name *</label>
-                                <input
-                                    type="text"
-                                    value={payeeForm.name}
-                                    onChange={e => setPayeeForm({ ...payeeForm, name: e.target.value })}
-                                    className="w-full px-5 py-2.5 rounded-3xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
-                                    required
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium mb-1">Default Category</label>
-                                <input
-                                    type="text"
-                                    value={payeeForm.category}
-                                    onChange={e => setPayeeForm({ ...payeeForm, category: e.target.value })}
-                                    className="w-full px-5 py-2.5 rounded-3xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium mb-1">Notes</label>
-                                <textarea
-                                    value={payeeForm.notes}
-                                    onChange={e => setPayeeForm({ ...payeeForm, notes: e.target.value })}
-                                    className="w-full px-5 py-2.5 rounded-3xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
-                                    rows={2}
-                                />
-                            </div>
-                            <div className="flex justify-end gap-2">
-                                <button type="button" onClick={() => setShowPayeeModal(false)} className="btn">
-                                    Cancel
-                                </button>
-                                <button type="submit" className="btn btn-primary">
-                                    Save
-                                </button>
-                            </div>
-                        </form>
+            <Modal
+                isOpen={showPayeeModal}
+                onClose={() => setShowPayeeModal(false)}
+                title={editingPayee ? 'Edit Payee' : 'Add Payee'}
+                size="md"
+            >
+                <form onSubmit={handlePayeeSubmit} className="p-6 space-y-4">
+                    <div>
+                        <label className="block text-sm font-medium mb-1">Name *</label>
+                        <input
+                            type="text"
+                            value={payeeForm.name}
+                            onChange={e => setPayeeForm({ ...payeeForm, name: e.target.value })}
+                            className="w-full px-5 py-2.5 rounded-3xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+                            required
+                        />
                     </div>
-                </div>
-            )}
+                    <div>
+                        <label className="block text-sm font-medium mb-1">Default Category</label>
+                        <input
+                            type="text"
+                            value={payeeForm.category}
+                            onChange={e => setPayeeForm({ ...payeeForm, category: e.target.value })}
+                            className="w-full px-5 py-2.5 rounded-3xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium mb-1">Notes</label>
+                        <textarea
+                            value={payeeForm.notes}
+                            onChange={e => setPayeeForm({ ...payeeForm, notes: e.target.value })}
+                            className="w-full px-5 py-2.5 rounded-3xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+                            rows={2}
+                        />
+                    </div>
+                    <div className="flex justify-end gap-2">
+                        <button type="button" onClick={() => setShowPayeeModal(false)} className="btn">
+                            Cancel
+                        </button>
+                        <button type="submit" className="btn btn-primary">
+                            Save
+                        </button>
+                    </div>
+                </form>
+            </Modal>
 
             {/* SubCategory Modal */}
-            {showSubCatModal && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-                    <div className="card p-6 w-full max-w-md">
-                        <h3 className="text-lg font-semibold mb-4">Add Sub-Category</h3>
-                        <form onSubmit={handleSubCatSubmit} className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium mb-1">Parent Category *</label>
-                                <input
-                                    type="text"
-                                    value={subCatForm.parent_category}
-                                    onChange={e => setSubCatForm({ ...subCatForm, parent_category: e.target.value })}
-                                    className="w-full px-5 py-2.5 rounded-3xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
-                                    required
-                                    placeholder="e.g., Food, Transportation"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium mb-1">Sub-Category Name *</label>
-                                <input
-                                    type="text"
-                                    value={subCatForm.name}
-                                    onChange={e => setSubCatForm({ ...subCatForm, name: e.target.value })}
-                                    className="w-full px-5 py-2.5 rounded-3xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
-                                    required
-                                    placeholder="e.g., Groceries, Gas"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium mb-1">Description</label>
-                                <input
-                                    type="text"
-                                    value={subCatForm.description}
-                                    onChange={e => setSubCatForm({ ...subCatForm, description: e.target.value })}
-                                    className="w-full px-5 py-2.5 rounded-3xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
-                                />
-                            </div>
-                            <div className="flex justify-end gap-2">
-                                <button type="button" onClick={() => setShowSubCatModal(false)} className="btn">
-                                    Cancel
-                                </button>
-                                <button type="submit" className="btn btn-primary">
-                                    Create
-                                </button>
-                            </div>
-                        </form>
+            <Modal
+                isOpen={showSubCatModal}
+                onClose={() => setShowSubCatModal(false)}
+                title="Add Sub-Category"
+                size="md"
+            >
+                <form onSubmit={handleSubCatSubmit} className="p-6 space-y-4">
+                    <div>
+                        <label className="block text-sm font-medium mb-1">Parent Category *</label>
+                        <input
+                            type="text"
+                            value={subCatForm.parent_category}
+                            onChange={e => setSubCatForm({ ...subCatForm, parent_category: e.target.value })}
+                            className="w-full px-5 py-2.5 rounded-3xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+                            required
+                            placeholder="e.g., Food, Transportation"
+                        />
                     </div>
-                </div>
-            )}
+                    <div>
+                        <label className="block text-sm font-medium mb-1">Sub-Category Name *</label>
+                        <input
+                            type="text"
+                            value={subCatForm.name}
+                            onChange={e => setSubCatForm({ ...subCatForm, name: e.target.value })}
+                            className="w-full px-5 py-2.5 rounded-3xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+                            required
+                            placeholder="e.g., Groceries, Gas"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium mb-1">Description</label>
+                        <input
+                            type="text"
+                            value={subCatForm.description}
+                            onChange={e => setSubCatForm({ ...subCatForm, description: e.target.value })}
+                            className="w-full px-5 py-2.5 rounded-3xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+                        />
+                    </div>
+                    <div className="flex justify-end gap-2">
+                        <button type="button" onClick={() => setShowSubCatModal(false)} className="btn">
+                            Cancel
+                        </button>
+                        <button type="submit" className="btn btn-primary">
+                            Create
+                        </button>
+                    </div>
+                </form>
+            </Modal>
 
             {/* Group Modal */}
-            {showGroupModal && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-                    <div className="card p-6 w-full max-w-md">
-                        <h3 className="text-lg font-semibold mb-4">
-                            {editingGroup ? 'Edit Group' : 'Create Group'}
-                        </h3>
-                        <form onSubmit={handleGroupSubmit} className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium mb-1">Name *</label>
-                                <input
-                                    type="text"
-                                    value={groupForm.name}
-                                    onChange={e => setGroupForm({ ...groupForm, name: e.target.value })}
-                                    className="w-full px-5 py-2.5 rounded-3xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
-                                    required
-                                    placeholder="e.g., Vacation Trip, Home Renovation"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium mb-1">Description</label>
-                                <input
-                                    type="text"
-                                    value={groupForm.description}
-                                    onChange={e => setGroupForm({ ...groupForm, description: e.target.value })}
-                                    className="w-full px-5 py-2.5 rounded-3xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium mb-1">Color</label>
-                                <div className="flex flex-wrap gap-2">
-                                    {PRESET_COLORS.map(color => (
-                                        <button
-                                            key={color}
-                                            type="button"
-                                            onClick={() => setGroupForm({ ...groupForm, color })}
-                                            className={`w-8 h-8 rounded-full ${groupForm.color === color ? 'ring-2 ring-offset-2 ring-gray-400' : ''}`}
-                                            style={{ backgroundColor: color }}
-                                        />
-                                    ))}
-                                </div>
-                            </div>
-                            <div className="flex justify-end gap-2">
-                                <button type="button" onClick={() => setShowGroupModal(false)} className="btn">
-                                    Cancel
-                                </button>
-                                <button type="submit" className="btn btn-primary">
-                                    Save
-                                </button>
-                            </div>
-                        </form>
+            <Modal
+                isOpen={showGroupModal}
+                onClose={() => setShowGroupModal(false)}
+                title={editingGroup ? 'Edit Group' : 'Create Group'}
+                size="md"
+            >
+                <form onSubmit={handleGroupSubmit} className="p-6 space-y-4">
+                    <div>
+                        <label className="block text-sm font-medium mb-1">Name *</label>
+                        <input
+                            type="text"
+                            value={groupForm.name}
+                            onChange={e => setGroupForm({ ...groupForm, name: e.target.value })}
+                            className="w-full px-5 py-2.5 rounded-3xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+                            required
+                            placeholder="e.g., Vacation Trip, Home Renovation"
+                        />
                     </div>
-                </div>
-            )}
+                    <div>
+                        <label className="block text-sm font-medium mb-1">Description</label>
+                        <input
+                            type="text"
+                            value={groupForm.description}
+                            onChange={e => setGroupForm({ ...groupForm, description: e.target.value })}
+                            className="w-full px-5 py-2.5 rounded-3xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium mb-1">Color</label>
+                        <div className="flex flex-wrap gap-2">
+                            {PRESET_COLORS.map(color => (
+                                <button
+                                    key={color}
+                                    type="button"
+                                    onClick={() => setGroupForm({ ...groupForm, color })}
+                                    className={`w-8 h-8 rounded-full ${groupForm.color === color ? 'ring-2 ring-offset-2 ring-gray-400' : ''}`}
+                                    style={{ backgroundColor: color }}
+                                />
+                            ))}
+                        </div>
+                    </div>
+                    <div className="flex justify-end gap-2">
+                        <button type="button" onClick={() => setShowGroupModal(false)} className="btn">
+                            Cancel
+                        </button>
+                        <button type="submit" className="btn btn-primary">
+                            Save
+                        </button>
+                    </div>
+                </form>
+            </Modal>
         </div>
     );
 };

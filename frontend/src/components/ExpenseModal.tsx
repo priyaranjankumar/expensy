@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import type { Expense, ExpenseCreate, ExpenseUpdate, ExpenseStatus } from '../types';
 import MonthPicker from './MonthPicker';
 import CustomDropdown from './CustomDropdown';
@@ -178,13 +179,19 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({
 
     if (!isOpen) return null;
 
-    return (
+    return ReactDOM.createPortal(
         <>
             {/* Backdrop */}
-            <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center animate-fade-in" onClick={onClose}>
+            <div 
+                className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] animate-fade-in" 
+                onClick={onClose}
+            />
+
+            {/* Modal Container with scroll support and center alignment */}
+            <div className="fixed inset-0 z-[101] overflow-y-auto flex justify-center p-4 md:p-8">
                 {/* Modal Panel */}
                 <div
-                    className="bg-white dark:bg-slate-900 rounded-[2.5rem] w-full max-w-lg mx-4 shadow-2xl relative overflow-hidden animate-slide-up border border-slate-200 dark:border-slate-800"
+                    className="bg-white dark:bg-slate-900 rounded-[2.5rem] w-full max-w-lg shadow-2xl relative overflow-hidden animate-slide-up border border-slate-200 dark:border-slate-800 my-auto"
                     onClick={(e) => e.stopPropagation()}
                 >
                     {/* Header */}
@@ -478,7 +485,8 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({
                     </form>
                 </div>
             </div>
-        </>
+        </>,
+        document.body
     );
 };
 

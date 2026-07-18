@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Tag as TagIcon, Plus, Edit2, Trash2, ArrowLeft } from 'lucide-react';
 import { tagsApi } from '../services/api';
 import type { Tag, TagCreate } from '../types';
+import Modal from './Modal';
 
 interface TagsManagerProps {
     className?: string;
@@ -155,82 +156,74 @@ const TagsManager: React.FC<TagsManagerProps> = ({ className = '', onClose }) =>
             )}
 
             {/* Modal */}
-            {showModal && (
-                <div 
-                    className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in" 
-                    onClick={() => setShowModal(false)}
-                >
-                    <div 
-                        className="bg-white dark:bg-[#0f172a] border border-slate-200/60 dark:border-slate-800/80 rounded-3xl p-6 w-full max-w-sm mx-4 shadow-2xl scale-100 transition-transform" 
-                        onClick={e => e.stopPropagation()}
-                    >
-                        <h3 className="text-base font-bold text-slate-900 dark:text-white mb-4">
-                            {editingTag ? '✏️ Edit Tag' : '🏷️ Create Tag'}
-                        </h3>
-                        <form onSubmit={handleSubmit} className="space-y-4">
-                            <div>
-                                <label className="label">Name *</label>
-                                <input
-                                    type="text"
-                                    value={formData.name}
-                                    onChange={e => setFormData({ ...formData, name: e.target.value })}
-                                    className="input text-sm"
-                                    placeholder="e.g., Essential, Business"
-                                    required
-                                    maxLength={50}
-                                />
-                            </div>
-                            <div>
-                                <label className="label mb-2">Color</label>
-                                <div className="flex flex-wrap gap-2 mb-3">
-                                    {presetColors.map(color => (
-                                        <button
-                                            key={color}
-                                            type="button"
-                                            onClick={() => setFormData({ ...formData, color })}
-                                            className={`w-7 h-7 rounded-full transition-transform hover:scale-115 ${
-                                                formData.color === color ? 'ring-2 ring-offset-2 ring-indigo-500 dark:ring-offset-slate-900' : ''
-                                            }`}
-                                            style={{ backgroundColor: color }}
-                                        />
-                                    ))}
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <input
-                                        type="color"
-                                        value={formData.color}
-                                        onChange={e => setFormData({ ...formData, color: e.target.value })}
-                                        className="w-10 h-10 rounded-xl cursor-pointer bg-transparent border-0"
-                                    />
-                                    <input
-                                        type="text"
-                                        value={formData.color}
-                                        onChange={e => setFormData({ ...formData, color: e.target.value })}
-                                        className="input text-xs font-mono"
-                                        placeholder="#6366f1"
-                                        pattern="^#[0-9a-fA-F]{6}$"
-                                    />
-                                </div>
-                            </div>
-                            <div className="flex gap-3 pt-3">
-                                <button 
-                                    type="button" 
-                                    onClick={() => setShowModal(false)} 
-                                    className="btn btn-secondary flex-1 py-2.5 text-xs"
-                                >
-                                    Cancel
-                                </button>
-                                <button 
-                                    type="submit" 
-                                    className="btn btn-primary flex-1 py-2.5 text-xs"
-                                >
-                                    {editingTag ? 'Update' : 'Create'}
-                                </button>
-                            </div>
-                        </form>
+            <Modal
+                isOpen={showModal}
+                onClose={() => setShowModal(false)}
+                title={editingTag ? '✏️ Edit Tag' : '🏷️ Create Tag'}
+                size="sm"
+            >
+                <form onSubmit={handleSubmit} className="p-6 space-y-4">
+                    <div>
+                        <label className="label">Name *</label>
+                        <input
+                            type="text"
+                            value={formData.name}
+                            onChange={e => setFormData({ ...formData, name: e.target.value })}
+                            className="input text-sm"
+                            placeholder="e.g., Essential, Business"
+                            required
+                            maxLength={50}
+                        />
                     </div>
-                </div>
-            )}
+                    <div>
+                        <label className="label mb-2">Color</label>
+                        <div className="flex flex-wrap gap-2 mb-3">
+                            {presetColors.map(color => (
+                                <button
+                                    key={color}
+                                    type="button"
+                                    onClick={() => setFormData({ ...formData, color })}
+                                    className={`w-7 h-7 rounded-full transition-transform hover:scale-115 ${
+                                        formData.color === color ? 'ring-2 ring-offset-2 ring-indigo-500 dark:ring-offset-slate-900' : ''
+                                    }`}
+                                    style={{ backgroundColor: color }}
+                                />
+                            ))}
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <input
+                                type="color"
+                                value={formData.color}
+                                onChange={e => setFormData({ ...formData, color: e.target.value })}
+                                className="w-10 h-10 rounded-xl cursor-pointer bg-transparent border-0"
+                            />
+                            <input
+                                type="text"
+                                value={formData.color}
+                                onChange={e => setFormData({ ...formData, color: e.target.value })}
+                                className="input text-xs font-mono"
+                                placeholder="#6366f1"
+                                pattern="^#[0-9a-fA-F]{6}$"
+                            />
+                        </div>
+                    </div>
+                    <div className="flex gap-3 pt-3">
+                        <button 
+                            type="button" 
+                            onClick={() => setShowModal(false)} 
+                            className="btn btn-secondary flex-1 py-2.5 text-xs"
+                        >
+                            Cancel
+                        </button>
+                        <button 
+                            type="submit" 
+                            className="btn btn-primary flex-1 py-2.5 text-xs"
+                        >
+                            {editingTag ? 'Update' : 'Create'}
+                        </button>
+                    </div>
+                </form>
+            </Modal>
         </div>
     );
 };
