@@ -419,7 +419,7 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({
                                                 : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700 hover:border-indigo-300 hover:bg-indigo-50 dark:hover:bg-slate-700'
                                                 }`}
                                         >
-                                            {status.replace('Completely ', '')}
+                                            {status === 'Paid' ? 'Partially Paid' : status.replace('Completely ', '')}
                                         </button>
                                     ))}
                                 </div>

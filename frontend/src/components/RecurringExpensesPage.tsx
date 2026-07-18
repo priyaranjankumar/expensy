@@ -14,6 +14,7 @@ import { recurringApi, expenseApi } from '../services/api';
 import type { RecurringExpense, RecurringExpenseCreate, RecurringFrequency } from '../types';
 import { getCurrentBillingMonth, formatBillingMonth } from '../types';
 import CustomDropdown from './CustomDropdown';
+import Modal from './Modal';
 
 // Helper function to get category icons (React components instead of emojis)
 import {
@@ -341,131 +342,123 @@ const RecurringExpensesPage: React.FC<RecurringExpensesPageProps> = ({ className
             )}
 
             {/* Modal */}
-            {showModal && (
-                <div 
-                    className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in" 
-                    onClick={() => setShowModal(false)}
-                >
-                    <div 
-                        className="bg-white dark:bg-[#0f172a] border border-slate-200/60 dark:border-slate-800/80 rounded-3xl p-6 w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto shadow-2xl scale-100 transition-transform" 
-                        onClick={e => e.stopPropagation()}
-                    >
-                        <h3 className="text-base font-bold mb-5 text-slate-900 dark:text-white flex items-center gap-2">
-                            {editingItem ? '✏️ Edit Template' : '🆕 Add Template'}
-                        </h3>
-                        <form onSubmit={handleSubmit} className="space-y-4">
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="label">Category *</label>
-                                    <CustomDropdown
-                                        value={formData.category}
-                                        onChange={(val) => setFormData({ ...formData, category: val })}
-                                        options={[
-                                            ...categories.map(cat => ({ value: cat, label: cat, icon: getCategoryIconLabel(cat) })),
-                                            { value: '__new__', label: '+ New Category', icon: '✨' }
-                                        ]}
-                                        placeholder="Select category"
-                                        className="w-full"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="label">Amount (₹) *</label>
-                                    <input
-                                        type="number"
-                                        value={formData.amount || ''}
-                                        onChange={e => setFormData({ ...formData, amount: parseFloat(e.target.value) || 0 })}
-                                        className="input text-sm"
-                                        min="0"
-                                        step="0.01"
-                                        required
-                                    />
-                                </div>
-                            </div>
-                            <div>
-                                <label className="label">Description *</label>
-                                <input
-                                    type="text"
-                                    value={formData.description}
-                                    onChange={e => setFormData({ ...formData, description: e.target.value })}
-                                    className="input text-sm"
-                                    placeholder="e.g., Netflix Subscription, House Rent"
-                                    required
-                                />
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="label">Frequency</label>
-                                    <select
-                                        value={formData.frequency}
-                                        onChange={e => setFormData({ ...formData, frequency: e.target.value as RecurringFrequency })}
-                                        className="input text-sm h-11"
-                                    >
-                                        <option value="monthly">Monthly</option>
-                                        <option value="weekly">Weekly</option>
-                                        <option value="yearly">Yearly</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="label">Day of Month</label>
-                                    <input
-                                        type="number"
-                                        value={formData.day_of_month || ''}
-                                        onChange={e => setFormData({ ...formData, day_of_month: parseInt(e.target.value) || 1 })}
-                                        className="input text-sm"
-                                        min="1"
-                                        max="31"
-                                    />
-                                </div>
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="label">Start Date *</label>
-                                    <input
-                                        type="date"
-                                        value={formData.start_date}
-                                        onChange={e => setFormData({ ...formData, start_date: e.target.value })}
-                                        className="input text-sm"
-                                        required
-                                    />
-                                </div>
-                                <div>
-                                    <label className="label">End Date (Optional)</label>
-                                    <input
-                                        type="date"
-                                        value={formData.end_date || ''}
-                                        onChange={e => setFormData({ ...formData, end_date: e.target.value || undefined })}
-                                        className="input text-sm"
-                                    />
-                                </div>
-                            </div>
-                            <div>
-                                <label className="label">Notes</label>
-                                <textarea
-                                    value={formData.notes}
-                                    onChange={e => setFormData({ ...formData, notes: e.target.value })}
-                                    className="input text-sm h-20 resize-none py-2"
-                                    placeholder="Add any extra notes or payment method instructions..."
-                                />
-                            </div>
-                            <div className="flex gap-4 pt-3">
-                                <button 
-                                    type="button" 
-                                    onClick={() => setShowModal(false)} 
-                                    className="btn btn-secondary flex-1 py-2.5 text-xs"
-                                >
-                                    Cancel
-                                </button>
-                                <button 
-                                    type="submit" 
-                                    className="btn btn-primary flex-1 py-2.5 text-xs"
-                                >
-                                    {editingItem ? 'Update' : 'Create'}
-                                </button>
-                            </div>
-                        </form>
+            <Modal
+                isOpen={showModal}
+                onClose={() => setShowModal(false)}
+                title={editingItem ? '✏️ Edit Template' : '🆕 Add Template'}
+                size="lg"
+            >
+                <form onSubmit={handleSubmit} className="p-6 space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="label">Category *</label>
+                            <CustomDropdown
+                                value={formData.category}
+                                onChange={(val) => setFormData({ ...formData, category: val })}
+                                options={[
+                                    ...categories.map(cat => ({ value: cat, label: cat, icon: getCategoryIconLabel(cat) })),
+                                    { value: '__new__', label: '+ New Category', icon: '✨' }
+                                ]}
+                                placeholder="Select category"
+                                className="w-full"
+                            />
+                        </div>
+                        <div>
+                            <label className="label">Amount (₹) *</label>
+                            <input
+                                type="number"
+                                value={formData.amount || ''}
+                                onChange={e => setFormData({ ...formData, amount: parseFloat(e.target.value) || 0 })}
+                                className="input text-sm"
+                                min="0"
+                                step="0.01"
+                                required
+                            />
+                        </div>
                     </div>
-                </div>
-            )}
+                    <div>
+                        <label className="label">Description *</label>
+                        <input
+                            type="text"
+                            value={formData.description}
+                            onChange={e => setFormData({ ...formData, description: e.target.value })}
+                            className="input text-sm"
+                            placeholder="e.g., Netflix Subscription, House Rent"
+                            required
+                        />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="label">Frequency</label>
+                            <select
+                                value={formData.frequency}
+                                onChange={e => setFormData({ ...formData, frequency: e.target.value as RecurringFrequency })}
+                                className="input text-sm h-11"
+                            >
+                                <option value="monthly">Monthly</option>
+                                <option value="weekly">Weekly</option>
+                                <option value="yearly">Yearly</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label className="label">Day of Month</label>
+                            <input
+                                type="number"
+                                value={formData.day_of_month || ''}
+                                onChange={e => setFormData({ ...formData, day_of_month: parseInt(e.target.value) || 1 })}
+                                className="input text-sm"
+                                min="1"
+                                max="31"
+                            />
+                        </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="label">Start Date *</label>
+                            <input
+                                type="date"
+                                value={formData.start_date}
+                                onChange={e => setFormData({ ...formData, start_date: e.target.value })}
+                                className="input text-sm"
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label className="label">End Date (Optional)</label>
+                            <input
+                                type="date"
+                                value={formData.end_date || ''}
+                                onChange={e => setFormData({ ...formData, end_date: e.target.value || undefined })}
+                                className="input text-sm"
+                            />
+                        </div>
+                    </div>
+                    <div>
+                        <label className="label">Notes</label>
+                        <textarea
+                            value={formData.notes}
+                            onChange={e => setFormData({ ...formData, notes: e.target.value })}
+                            className="input text-sm h-20 resize-none py-2"
+                            placeholder="Add any extra notes or payment method instructions..."
+                        />
+                    </div>
+                    <div className="flex gap-4 pt-3">
+                        <button 
+                            type="button" 
+                            onClick={() => setShowModal(false)} 
+                            className="btn btn-secondary flex-1 py-2.5 text-xs"
+                        >
+                            Cancel
+                        </button>
+                        <button 
+                            type="submit" 
+                            className="btn btn-primary flex-1 py-2.5 text-xs"
+                        >
+                            {editingItem ? 'Update' : 'Create'}
+                        </button>
+                    </div>
+                </form>
+            </Modal>
         </div>
     );
 };

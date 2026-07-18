@@ -450,7 +450,7 @@ function AuthenticatedApp({ user, onLogout, onUserUpdate, showProfile, setShowPr
 
             {/* Quick Add Widget (FAB) */}
             <QuickAddWidget
-                onOpenModal={() => handleOpenModal()}
+                onOpenModal={handleOpenModal}
             />
 
             {/* Modals */}

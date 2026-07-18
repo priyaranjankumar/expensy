@@ -441,7 +441,7 @@ const ExpenseTable: React.FC<ExpenseTableProps> = ({ expenses, loading, onEdit, 
                         <span className="w-2 h-2 rounded-full bg-red-500 shadow-lg shadow-red-500/30"></span> Unpaid
                     </div>
                     <div className="flex items-center gap-2">
-                        <span className="w-2 h-2 rounded-full bg-blue-500 shadow-lg shadow-blue-500/30"></span> Paid
+                        <span className="w-2 h-2 rounded-full bg-blue-500 shadow-lg shadow-blue-500/30"></span> Partially Paid
                     </div>
                     <div className="flex items-center gap-2">
                         <span className="w-2 h-2 rounded-full bg-green-500 shadow-lg shadow-green-500/30"></span> Completely Paid
@@ -517,7 +517,9 @@ const ExpenseTable: React.FC<ExpenseTableProps> = ({ expenses, loading, onEdit, 
                                                     Paid: {formatCurrency(expense.paid_amount)}
                                                 </p>
                                             ) : (
-                                                <p className="text-[10px] font-bold text-slate-400 dark:text-slate-550 mt-0.5">{expense.status}</p>
+                                                <p className="text-[10px] font-bold text-slate-400 dark:text-slate-550 mt-0.5">
+                                                    {expense.status === 'Paid' ? 'Partially Paid' : expense.status}
+                                                </p>
                                             )}
                                         </div>
                                         {deleteConfirm === expense.id ? (

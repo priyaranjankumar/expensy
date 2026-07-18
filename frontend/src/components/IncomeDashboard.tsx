@@ -11,6 +11,7 @@ import type { Income, IncomeCreate, IncomeSummary } from '../types';
 import { getCurrentBillingMonth, formatBillingMonth } from '../types';
 import CustomDropdown from './CustomDropdown';
 import { Checkbox } from './ui/Checkbox';
+import Modal from './Modal';
 
 interface IncomeDashboardProps {
     className?: string;
@@ -247,106 +248,88 @@ const IncomeDashboard: React.FC<IncomeDashboardProps> = ({ className = '', billi
             )}
 
             {/* Modal */}
-            {showModal && (
-                <div 
-                    className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in" 
-                    onClick={() => setShowModal(false)}
-                >
-                    <div 
-                        className="bg-white dark:bg-[#0f172a] border border-slate-200/60 dark:border-slate-800/80 rounded-3xl p-6 w-full max-w-md mx-4 shadow-2xl scale-100 transition-transform" 
-                        onClick={e => e.stopPropagation()}
-                    >
-                        <h3 className="text-base font-bold mb-4 text-slate-900 dark:text-white flex items-center gap-2">
-                            {editingIncome ? '✏️ Edit Income' : '💰 Add Income'}
-                        </h3>
-                        <form onSubmit={handleSubmit} className="space-y-4">
-                            <div>
-                                <label className="label">Source *</label>
-                                <CustomDropdown
-                                    value={formData.source}
-                                    onChange={(val) => setFormData({ ...formData, source: val })}
-                                    options={[
-                                        { value: 'Salary', label: 'Salary', icon: '💼' },
-                                        { value: 'Freelance', label: 'Freelance', icon: '👨‍💻' },
-                                        { value: 'Investment', label: 'Investment', icon: '📈' },
-                                        { value: 'Rental', label: 'Rental', icon: '🏠' },
-                                        { value: 'Business', label: 'Business', icon: '🏢' },
-                                        { value: 'Other', label: 'Other', icon: '📦' }
-                                    ]}
-                                    placeholder="Select source"
-                                    className="w-full"
-                                />
-                            </div>
-                            <div>
-                                <label className="label">Description</label>
-                                <input
-                                    type="text"
-                                    value={formData.description}
-                                    onChange={e => setFormData({ ...formData, description: e.target.value })}
-                                    className="input text-sm"
-                                    placeholder="e.g., Monthly salary"
-                                />
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="label">Amount (₹) *</label>
-                                    <input
-                                        type="number"
-                                        value={formData.amount || ''}
-                                        onChange={e => setFormData({ ...formData, amount: parseFloat(e.target.value) || 0 })}
-                                        className="input text-sm"
-                                        placeholder="0.00"
-                                        min="0"
-                                        step="0.01"
-                                        required
-                                    />
-                                </div>
-                                <div>
-                                    <label className="label">Date</label>
-                                    <input
-                                        type="date"
-                                        value={formData.received_date || ''}
-                                        onChange={e => setFormData({ ...formData, received_date: e.target.value })}
-                                        className="input text-sm"
-                                    />
-                                </div>
-                            </div>
-                            <div className="bg-slate-50 dark:bg-slate-900/40 p-3.5 border border-slate-200/40 dark:border-slate-800/40 rounded-2xl">
-                                <Checkbox
-                                    id="is_recurring"
-                                    checked={formData.is_recurring}
-                                    onChange={e => setFormData({ ...formData, is_recurring: e.target.checked })}
-                                    label="This is recurring income"
-                                />
-                            </div>
-                            <div>
-                                <label className="label">Notes</label>
-                                <textarea
-                                    value={formData.notes}
-                                    onChange={e => setFormData({ ...formData, notes: e.target.value })}
-                                    className="input text-sm h-20 resize-none py-2"
-                                    placeholder="Any additional notes..."
-                                />
-                            </div>
-                            <div className="flex gap-4 pt-3">
-                                <button 
-                                    type="button" 
-                                    onClick={() => setShowModal(false)} 
-                                    className="btn btn-secondary flex-1 py-2.5 text-xs"
-                                >
-                                    Cancel
-                                </button>
-                                <button 
-                                    type="submit" 
-                                    className="btn btn-primary flex-1 py-2.5 text-xs bg-gradient-to-r from-emerald-500 to-green-600 border-none shadow-emerald-500/10 focus:ring-emerald-500"
-                                >
-                                    <Check className="w-4 h-4" /> {editingIncome ? 'Update' : 'Add'} Income
-                                </button>
-                            </div>
-                        </form>
+            <Modal
+                isOpen={showModal}
+                onClose={() => setShowModal(false)}
+                title={editingIncome ? '✏️ Edit Income' : '💰 Add Income'}
+                size="md"
+            >
+                <form onSubmit={handleSubmit} className="p-6 space-y-4">
+                    <div>
+                        <label className="label">Source *</label>
+                        <CustomDropdown
+                            value={formData.source}
+                            onChange={(val) => setFormData({ ...formData, source: val })}
+                            options={[
+                                { value: 'Salary', label: 'Salary', icon: '💼' },
+                                { value: 'Freelance', label: 'Freelance', icon: '👨‍💻' },
+                                { value: 'Investment', label: 'Investment', icon: '📈' },
+                                { value: 'Rental', label: 'Rental', icon: '🏠' },
+                                { value: 'Business', label: 'Business', icon: '🏢' },
+                                { value: 'Other', label: 'Other', icon: '📦' }
+                            ]}
+                            placeholder="Select source"
+                            className="w-full"
+                        />
                     </div>
-                </div>
-            )}
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="label">Amount (₹) *</label>
+                            <input
+                                type="number"
+                                value={formData.amount || ''}
+                                onChange={e => setFormData({ ...formData, amount: parseFloat(e.target.value) || 0 })}
+                                className="input text-sm"
+                                min="0"
+                                step="0.01"
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label className="label">Date *</label>
+                            <input
+                                type="date"
+                                value={formData.received_date || ''}
+                                onChange={e => setFormData({ ...formData, received_date: e.target.value })}
+                                className="input text-sm"
+                                required
+                            />
+                        </div>
+                    </div>
+                    <div className="pt-2">
+                        <Checkbox
+                            id="isRecurring"
+                            checked={formData.is_recurring}
+                            onChange={e => setFormData({ ...formData, is_recurring: e.target.checked })}
+                            label="This is recurring income"
+                        />
+                    </div>
+                    <div>
+                        <label className="label">Notes</label>
+                        <textarea
+                            value={formData.notes}
+                            onChange={e => setFormData({ ...formData, notes: e.target.value })}
+                            className="input text-sm h-20 resize-none py-2"
+                            placeholder="Any additional notes..."
+                        />
+                    </div>
+                    <div className="flex gap-4 pt-3">
+                        <button 
+                            type="button" 
+                            onClick={() => setShowModal(false)} 
+                            className="btn btn-secondary flex-1 py-2.5 text-xs"
+                        >
+                            Cancel
+                        </button>
+                        <button 
+                            type="submit" 
+                            className="btn btn-primary flex-1 py-2.5 text-xs bg-gradient-to-r from-emerald-500 to-green-600 border-none shadow-emerald-500/10 focus:ring-emerald-500"
+                        >
+                            <Check className="w-4 h-4" /> {editingIncome ? 'Update' : 'Add'} Income
+                        </button>
+                    </div>
+                </form>
+            </Modal>
         </div>
     );
 };

@@ -6,6 +6,7 @@ import { Input } from './ui/Input';
 import { Badge } from './ui/Badge';
 import CustomDropdown from './CustomDropdown';
 import { getAssetLogo } from './ui/BankIcons';
+import Modal from './Modal';
 
 type ActiveTab = 'accounts' | 'savings' | 'payment-methods';
 
@@ -422,154 +423,154 @@ const FinancePage: React.FC = () => {
             )}
 
             {/* Account Modal */}
-            {showAccountModal && (
-                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in">
-                    <Card className="p-6 w-full max-w-md animate-slide-up">
-                        <h3 className="text-lg font-semibold mb-4">Add Account</h3>
-                        <form onSubmit={handleAccountSubmit} className="space-y-4">
-                            <Input
-                                label="Account Name"
-                                value={accountForm.name}
-                                onChange={e => setAccountForm({ ...accountForm, name: e.target.value })}
-                                required
-                                placeholder="e.g., HDFC Savings"
-                            />
-                            <div>
-                                <label className="block text-sm font-medium mb-1 text-slate-700 dark:text-slate-200">Account Type *</label>
-                                <CustomDropdown
-                                    value={accountForm.account_type}
-                                    onChange={(val) => setAccountForm({ ...accountForm, account_type: val })}
-                                    options={ACCOUNT_TYPES}
-                                    placeholder="Select Type"
-                                    className="w-full"
-                                />
-                            </div>
-                            <Input
-                                label="Current Balance"
-                                type="number"
-                                value={accountForm.balance}
-                                onChange={e => setAccountForm({ ...accountForm, balance: parseFloat(e.target.value) || 0 })}
-                                step="0.01"
-                            />
-                            <div className="flex justify-end gap-2 mt-6">
-                                <Button type="button" variant="ghost" onClick={() => setShowAccountModal(false)}>Cancel</Button>
-                                <Button type="submit">Add Account</Button>
-                            </div>
-                        </form>
-                    </Card>
-                </div>
-            )}
+            <Modal
+                isOpen={showAccountModal}
+                onClose={() => setShowAccountModal(false)}
+                title="Add Account"
+                size="md"
+            >
+                <form onSubmit={handleAccountSubmit} className="p-6 space-y-4">
+                    <Input
+                        label="Account Name"
+                        value={accountForm.name}
+                        onChange={e => setAccountForm({ ...accountForm, name: e.target.value })}
+                        required
+                        placeholder="e.g., HDFC Savings"
+                    />
+                    <div>
+                        <label className="block text-sm font-medium mb-1 text-slate-700 dark:text-slate-200">Account Type *</label>
+                        <CustomDropdown
+                            value={accountForm.account_type}
+                            onChange={(val) => setAccountForm({ ...accountForm, account_type: val })}
+                            options={ACCOUNT_TYPES}
+                            placeholder="Select Type"
+                            className="w-full"
+                        />
+                    </div>
+                    <Input
+                        label="Current Balance"
+                        type="number"
+                        value={accountForm.balance}
+                        onChange={e => setAccountForm({ ...accountForm, balance: parseFloat(e.target.value) || 0 })}
+                        step="0.01"
+                    />
+                    <div className="flex justify-end gap-2 mt-6">
+                        <Button type="button" variant="ghost" onClick={() => setShowAccountModal(false)}>Cancel</Button>
+                        <Button type="submit">Add Account</Button>
+                    </div>
+                </form>
+            </Modal>
 
             {/* Savings Modal */}
-            {showSavingsModal && (
-                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in">
-                    <Card className="p-6 w-full max-w-md animate-slide-up">
-                        <h3 className="text-lg font-semibold mb-4">New Savings Goal</h3>
-                        <form onSubmit={handleSavingsSubmit} className="space-y-4">
-                            <Input
-                                label="Goal Name"
-                                value={savingsForm.name}
-                                onChange={e => setSavingsForm({ ...savingsForm, name: e.target.value })}
-                                required
-                                placeholder="e.g., Vacation Fund"
-                            />
-                            <Input
-                                label="Target Amount"
-                                type="number"
-                                value={savingsForm.target_amount || ''}
-                                onChange={e => setSavingsForm({ ...savingsForm, target_amount: parseFloat(e.target.value) || 0 })}
-                                required
-                                min="1"
-                            />
-                            <Input
-                                label="Target Date"
-                                type="date"
-                                value={savingsForm.target_date}
-                                onChange={e => setSavingsForm({ ...savingsForm, target_date: e.target.value })}
-                            />
-                            <div className="flex justify-end gap-2 mt-6">
-                                <Button type="button" variant="ghost" onClick={() => setShowSavingsModal(false)}>Cancel</Button>
-                                <Button type="submit">Create Goal</Button>
-                            </div>
-                        </form>
-                    </Card>
-                </div>
-            )}
+            <Modal
+                isOpen={showSavingsModal}
+                onClose={() => setShowSavingsModal(false)}
+                title="New Savings Goal"
+                size="md"
+            >
+                <form onSubmit={handleSavingsSubmit} className="p-6 space-y-4">
+                    <Input
+                        label="Goal Name"
+                        value={savingsForm.name}
+                        onChange={e => setSavingsForm({ ...savingsForm, name: e.target.value })}
+                        required
+                        placeholder="e.g., Vacation Fund"
+                    />
+                    <Input
+                        label="Target Amount"
+                        type="number"
+                        value={savingsForm.target_amount || ''}
+                        onChange={e => setSavingsForm({ ...savingsForm, target_amount: parseFloat(e.target.value) || 0 })}
+                        required
+                        min="1"
+                    />
+                    <Input
+                        label="Target Date"
+                        type="date"
+                        value={savingsForm.target_date}
+                        onChange={e => setSavingsForm({ ...savingsForm, target_date: e.target.value })}
+                    />
+                    <div className="flex justify-end gap-2 mt-6">
+                        <Button type="button" variant="ghost" onClick={() => setShowSavingsModal(false)}>Cancel</Button>
+                        <Button type="submit">Create Goal</Button>
+                    </div>
+                </form>
+            </Modal>
 
             {/* Contribute Modal */}
-            {contributeGoalId && (
-                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in">
-                    <Card className="p-6 w-full max-w-sm animate-slide-up">
-                        <h3 className="text-lg font-semibold mb-4">Add Money</h3>
-                        <div className="space-y-4">
-                            <Input
-                                label="Amount to Add"
-                                type="number"
-                                value={contributeAmount}
-                                onChange={e => setContributeAmount(e.target.value)}
-                                placeholder="Enter amount"
-                                min="1"
-                                autoFocus
-                            />
-                            <div className="flex justify-end gap-2 mt-4">
-                                <Button variant="ghost" onClick={() => setContributeGoalId(null)}>Cancel</Button>
-                                <Button onClick={handleContribute}>Add Money</Button>
-                            </div>
-                        </div>
-                    </Card>
+            <Modal
+                isOpen={!!contributeGoalId}
+                onClose={() => setContributeGoalId(null)}
+                title="Add Money"
+                size="sm"
+            >
+                <div className="p-6 space-y-4">
+                    <Input
+                        label="Amount to Add"
+                        type="number"
+                        value={contributeAmount}
+                        onChange={e => setContributeAmount(e.target.value)}
+                        placeholder="Enter amount"
+                        min="1"
+                        autoFocus
+                    />
+                    <div className="flex justify-end gap-2 mt-4">
+                        <Button variant="ghost" onClick={() => setContributeGoalId(null)}>Cancel</Button>
+                        <Button onClick={handleContribute}>Add Money</Button>
+                    </div>
                 </div>
-            )}
+            </Modal>
 
             {/* Payment Method Modal */}
-            {showPaymentModal && (
-                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in">
-                    <Card className="p-6 w-full max-w-md animate-slide-up">
-                        <h3 className="text-lg font-semibold mb-4">Add Payment Method</h3>
-                        <form onSubmit={handlePaymentSubmit} className="space-y-4">
-                            <Input
-                                label="Name"
-                                value={paymentForm.name}
-                                onChange={e => setPaymentForm({ ...paymentForm, name: e.target.value })}
-                                required
-                                placeholder="e.g., HDFC Debit Card"
-                            />
-                            <div>
-                                <label className="block text-sm font-medium mb-1 text-slate-700 dark:text-slate-200">Type *</label>
-                                <CustomDropdown
-                                    value={paymentForm.method_type}
-                                    onChange={(val) => setPaymentForm({ ...paymentForm, method_type: val })}
-                                    options={PAYMENT_TYPES}
-                                    placeholder="Select Type"
-                                    className="w-full"
-                                />
-                            </div>
-                            {paymentForm.method_type === 'card' && (
-                                <Input
-                                    label="Last 4 Digits"
-                                    value={paymentForm.last_four}
-                                    onChange={e => setPaymentForm({ ...paymentForm, last_four: e.target.value.slice(0, 4) })}
-                                    maxLength={4}
-                                    placeholder="1234"
-                                />
-                            )}
-                            <div className="flex items-center gap-2 my-2">
-                                <input
-                                    type="checkbox"
-                                    id="isDefault"
-                                    checked={paymentForm.is_default}
-                                    onChange={e => setPaymentForm({ ...paymentForm, is_default: e.target.checked })}
-                                    className="w-4 h-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500"
-                                />
-                                <label htmlFor="isDefault" className="text-sm cursor-pointer select-none">Set as default payment method</label>
-                            </div>
-                            <div className="flex justify-end gap-2 mt-6">
-                                <Button type="button" variant="ghost" onClick={() => setShowPaymentModal(false)}>Cancel</Button>
-                                <Button type="submit">Add Method</Button>
-                            </div>
-                        </form>
-                    </Card>
-                </div>
-            )}
+            <Modal
+                isOpen={showPaymentModal}
+                onClose={() => setShowPaymentModal(false)}
+                title="Add Payment Method"
+                size="md"
+            >
+                <form onSubmit={handlePaymentSubmit} className="p-6 space-y-4">
+                    <Input
+                        label="Name"
+                        value={paymentForm.name}
+                        onChange={e => setPaymentForm({ ...paymentForm, name: e.target.value })}
+                        required
+                        placeholder="e.g., HDFC Debit Card"
+                    />
+                    <div>
+                        <label className="block text-sm font-medium mb-1 text-slate-700 dark:text-slate-200">Type *</label>
+                        <CustomDropdown
+                            value={paymentForm.method_type}
+                            onChange={(val) => setPaymentForm({ ...paymentForm, method_type: val })}
+                            options={PAYMENT_TYPES}
+                            placeholder="Select Type"
+                            className="w-full"
+                        />
+                    </div>
+                    {paymentForm.method_type === 'card' && (
+                        <Input
+                            label="Last 4 Digits"
+                            value={paymentForm.last_four}
+                            onChange={e => setPaymentForm({ ...paymentForm, last_four: e.target.value.slice(0, 4) })}
+                            maxLength={4}
+                            placeholder="1234"
+                        />
+                    )}
+                    <div className="flex items-center gap-2 my-2">
+                        <input
+                            type="checkbox"
+                            id="isDefault"
+                            checked={paymentForm.is_default}
+                            onChange={e => setPaymentForm({ ...paymentForm, is_default: e.target.checked })}
+                            className="w-4 h-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500"
+                        />
+                        <label htmlFor="isDefault" className="text-sm cursor-pointer select-none">Set as default payment method</label>
+                    </div>
+                    <div className="flex justify-end gap-2 mt-6">
+                        <Button type="button" variant="ghost" onClick={() => setShowPaymentModal(false)}>Cancel</Button>
+                        <Button type="submit">Add Method</Button>
+                    </div>
+                </form>
+            </Modal>
         </div>
     );
 };
