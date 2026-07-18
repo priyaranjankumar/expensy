@@ -5,6 +5,7 @@ import { Button } from './ui/Button';
 import { Input } from './ui/Input';
 import { Badge } from './ui/Badge';
 import CustomDropdown from './CustomDropdown';
+import { getAssetLogo } from './ui/BankIcons';
 
 type ActiveTab = 'accounts' | 'savings' | 'payment-methods';
 
@@ -54,6 +55,15 @@ const PAYMENT_TYPES = [
     { value: 'net_banking', label: '🏦 Net Banking' },
     { value: 'other', label: '📋 Other' },
 ];
+
+const CardChip: React.FC = () => (
+    <svg className="w-8 h-6 rounded bg-gradient-to-br from-yellow-300 via-amber-400 to-yellow-600 opacity-90 shadow-sm border border-yellow-200/40" viewBox="0 0 24 18">
+        <rect x="2" y="2" width="20" height="14" rx="2" fill="none" stroke="rgba(0,0,0,0.15)" strokeWidth="0.5" />
+        <line x1="8" y1="2" x2="8" y2="16" stroke="rgba(0,0,0,0.15)" strokeWidth="0.5" />
+        <line x1="16" y1="2" x2="16" y2="16" stroke="rgba(0,0,0,0.15)" strokeWidth="0.5" />
+        <line x1="2" y1="9" x2="22" y2="9" stroke="rgba(0,0,0,0.15)" strokeWidth="0.5" />
+    </svg>
+);
 
 const FinancePage: React.FC = () => {
     const [activeTab, setActiveTab] = useState<ActiveTab>('accounts');
@@ -212,30 +222,54 @@ const FinancePage: React.FC = () => {
                             No accounts yet. Add your bank, wallet, or cash accounts!
                         </Card>
                     ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {accounts.map(account => (
-                                <Card key={account.id} className="p-5 border-l-4 hover:shadow-md transition-shadow" style={{ borderLeftColor: account.color }}>
-                                    <div className="flex justify-between items-start">
-                                        <div>
-                                            <p className="text-3xl mb-2">{account.icon}</p>
-                                            <h3 className="font-semibold text-lg">{account.name}</h3>
-                                            <p className="text-xs text-gray-500 capitalize mb-2">{account.account_type.replace('_', ' ')}</p>
-                                            <p className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-700 to-slate-900 dark:from-slate-200 dark:to-white">
-                                                ₹{account.balance.toLocaleString()}
-                                            </p>
+                                <div 
+                                    key={account.id} 
+                                    className="relative h-44 rounded-3xl p-6 text-white overflow-hidden shadow-lg shadow-black/10 group transition-all duration-300 hover:shadow-xl hover:shadow-indigo-500/10 hover:-translate-y-1"
+                                    style={{ 
+                                        background: `linear-gradient(135deg, ${account.color || '#4f46e5'} 0%, #0f172a 100%)` 
+                                    }}
+                                >
+                                    <div className="absolute inset-0 opacity-10 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-white via-transparent to-transparent pointer-events-none" />
+                                    <div className="flex flex-col h-full justify-between">
+                                        <div className="flex justify-between items-start">
+                                            <div className="flex items-center gap-2.5">
+                                                <div className="p-1 bg-white/10 rounded-xl backdrop-blur-sm">
+                                                    {getAssetLogo(account.name)}
+                                                </div>
+                                                <div>
+                                                    <h3 className="font-semibold text-base leading-tight tracking-wide text-white/95">{account.name}</h3>
+                                                    <p className="text-[10px] text-white/70 uppercase tracking-widest font-medium">{account.account_type.replace('_', ' ')}</p>
+                                                </div>
+                                            </div>
+                                            <button
+                                                onClick={() => handleDeleteAccount(account.id)}
+                                                className="p-1.5 rounded-full bg-white/0 hover:bg-white/10 text-white/40 hover:text-red-400 transition-all duration-200"
+                                                title="Delete Account"
+                                            >
+                                                <span className="sr-only">Delete</span>
+                                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                </svg>
+                                            </button>
                                         </div>
-                                        <button
-                                            onClick={() => handleDeleteAccount(account.id)}
-                                            className="text-gray-300 hover:text-red-500 transition-colors"
-                                            title="Delete Account"
-                                        >
-                                            <span className="sr-only">Delete</span>
-                                            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                            </svg>
-                                        </button>
+                                        <div className="my-1.5 self-start">
+                                            <CardChip />
+                                        </div>
+                                        <div className="flex items-baseline justify-between">
+                                            <div>
+                                                <span className="text-[9px] uppercase tracking-wider text-white/60 font-semibold block">Balance</span>
+                                                <p className="text-2xl font-bold tracking-tight text-white font-mono leading-none">
+                                                    ₹{account.balance.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                                </p>
+                                            </div>
+                                            <div className="text-right">
+                                                <span className="text-xl opacity-20 group-hover:opacity-40 transition-opacity select-none">{account.icon}</span>
+                                            </div>
+                                        </div>
                                     </div>
-                                </Card>
+                                </div>
                             ))}
                         </div>
                     )}
@@ -322,36 +356,65 @@ const FinancePage: React.FC = () => {
                             No payment methods yet. Add your cards, UPI, etc.
                         </Card>
                     ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {paymentMethods.map(method => (
-                                <Card key={method.id} className="p-5 flex items-center justify-between hover:shadow-md transition-shadow">
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-12 h-12 rounded-xl bg-indigo-50 dark:bg-indigo-900/20 flex items-center justify-center text-2xl text-indigo-600 dark:text-indigo-400">
-                                            {method.icon}
+                                <div 
+                                    key={method.id} 
+                                    className="relative h-44 rounded-3xl p-6 text-white overflow-hidden shadow-lg shadow-black/10 group transition-all duration-300 hover:shadow-xl hover:shadow-indigo-500/10 hover:-translate-y-1"
+                                    style={{ 
+                                        background: method.is_default 
+                                            ? 'linear-gradient(135deg, #1e1b4b 0%, #030712 100%)' 
+                                            : 'linear-gradient(135deg, #334155 0%, #0f172a 100%)'
+                                    }}
+                                >
+                                    <div className="absolute inset-0 opacity-10 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-white via-transparent to-transparent pointer-events-none" />
+                                    <div className="flex flex-col h-full justify-between">
+                                        <div className="flex justify-between items-start">
+                                            <div className="flex items-center gap-2.5">
+                                                <div className="p-1 bg-white/10 rounded-xl backdrop-blur-sm">
+                                                    {getAssetLogo(method.name)}
+                                                </div>
+                                                <div>
+                                                    <h3 className="font-semibold text-base leading-tight tracking-wide text-white/95">{method.name}</h3>
+                                                    <p className="text-[10px] text-white/70 uppercase tracking-widest font-medium">
+                                                        {method.method_type.replace('_', ' ')}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center gap-1.5">
+                                                {method.is_default ? (
+                                                    <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-green-500/20 text-green-400 border border-green-500/30">
+                                                        Default
+                                                    </span>
+                                                ) : (
+                                                    <button
+                                                        onClick={() => handleSetDefault(method.id)}
+                                                        className="px-2.5 py-1 rounded-lg text-[9px] font-semibold bg-white/10 hover:bg-white/20 text-white transition-all"
+                                                    >
+                                                        Set Default
+                                                    </button>
+                                                )}
+                                            </div>
                                         </div>
-                                        <div>
-                                            <h3 className="font-medium text-slate-800 dark:text-white">{method.name}</h3>
-                                            <p className="text-xs text-gray-500 capitalize flex items-center gap-1">
-                                                {method.method_type.replace('_', ' ')}
-                                                {method.last_four && <span className="bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded text-slate-600 dark:text-slate-400 font-mono text-[10px]">•••• {method.last_four}</span>}
-                                            </p>
+                                        <div className="my-1.5 self-start">
+                                            <CardChip />
+                                        </div>
+                                        <div className="flex items-baseline justify-between">
+                                            <div>
+                                                {method.last_four ? (
+                                                    <p className="text-xl font-mono tracking-widest text-white/90">
+                                                        ••••  ••••  ••••  <span className="font-bold">{method.last_four}</span>
+                                                    </p>
+                                                ) : (
+                                                    <p className="text-xs text-white/60 tracking-wider font-mono">DIGITAL WALLET</p>
+                                                )}
+                                            </div>
+                                            <div className="text-right">
+                                                <span className="text-xl opacity-20 group-hover:opacity-40 transition-opacity select-none">{method.icon}</span>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div className="flex items-center gap-2">
-                                        {method.is_default ? (
-                                            <Badge variant="success">Default</Badge>
-                                        ) : (
-                                            <Button
-                                                variant="ghost"
-                                                size="sm"
-                                                onClick={() => handleSetDefault(method.id)}
-                                                className="text-xs text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50"
-                                            >
-                                                Set Default
-                                            </Button>
-                                        )}
-                                    </div>
-                                </Card>
+                                </div>
                             ))}
                         </div>
                     )}

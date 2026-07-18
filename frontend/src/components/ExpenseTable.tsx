@@ -1,5 +1,17 @@
 import React, { useState, useMemo } from 'react';
-import { Receipt } from 'lucide-react';
+import { 
+    Receipt, 
+    Zap, 
+    Smartphone, 
+    TrendingUp, 
+    Home, 
+    Building, 
+    CreditCard, 
+    Shield, 
+    ShoppingCart, 
+    Car, 
+    FileText 
+} from 'lucide-react';
 import type { Expense } from '../types';
 import Modal from './Modal';
 import EmptyState from './EmptyState';
@@ -37,18 +49,18 @@ const getStatusClasses = (status: string): string => {
 
 // Get category colors
 const getCategoryStyle = (category: string) => {
-    const styles: Record<string, { bg: string; icon: string }> = {
-        'Utilities': { bg: 'from-amber-500 to-orange-600', icon: '⚡' },
-        'Subscription': { bg: 'from-purple-500 to-violet-600', icon: '📱' },
-        'SIP': { bg: 'from-emerald-500 to-green-600', icon: '📈' },
-        'Rent': { bg: 'from-cyan-500 to-teal-600', icon: '🏠' },
-        'EMI': { bg: 'from-fuchsia-500 to-pink-600', icon: '🏦' },
-        'Credit Card Bill': { bg: 'from-blue-500 to-indigo-600', icon: '💳' },
-        'Insurance': { bg: 'from-teal-500 to-cyan-600', icon: '🛡️' },
-        'Groceries': { bg: 'from-lime-500 to-green-600', icon: '🛒' },
-        'Transportation': { bg: 'from-sky-500 to-blue-600', icon: '🚗' },
+    const styles: Record<string, { bg: string; icon: React.ReactNode }> = {
+        'Utilities': { bg: 'from-amber-500 to-orange-600', icon: <Zap className="w-5 h-5 text-white" /> },
+        'Subscription': { bg: 'from-purple-500 to-violet-600', icon: <Smartphone className="w-5 h-5 text-white" /> },
+        'SIP': { bg: 'from-emerald-500 to-green-600', icon: <TrendingUp className="w-5 h-5 text-white" /> },
+        'Rent': { bg: 'from-cyan-500 to-teal-600', icon: <Home className="w-5 h-5 text-white" /> },
+        'EMI': { bg: 'from-fuchsia-500 to-pink-600', icon: <Building className="w-5 h-5 text-white" /> },
+        'Credit Card Bill': { bg: 'from-blue-500 to-indigo-600', icon: <CreditCard className="w-5 h-5 text-white" /> },
+        'Insurance': { bg: 'from-teal-500 to-cyan-600', icon: <Shield className="w-5 h-5 text-white" /> },
+        'Groceries': { bg: 'from-lime-500 to-green-600', icon: <ShoppingCart className="w-5 h-5 text-white" /> },
+        'Transportation': { bg: 'from-sky-500 to-blue-600', icon: <Car className="w-5 h-5 text-white" /> },
     };
-    return styles[category] || { bg: 'from-slate-500 to-slate-600', icon: '📋' };
+    return styles[category] || { bg: 'from-slate-500 to-slate-600', icon: <FileText className="w-5 h-5 text-white" /> };
 };
 
 interface GroupedExpenses {
@@ -161,7 +173,9 @@ const ExpenseTable: React.FC<ExpenseTableProps> = ({ expenses, loading, onEdit, 
                                 <div className={`p-4 bg-gradient-to-br ${style.bg} text-white`}>
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-3">
-                                            <span className="text-2xl drop-shadow-lg group-hover:scale-110 transition-transform">{style.icon}</span>
+                                            <div className="p-2 rounded-xl bg-white/20 backdrop-blur-sm group-hover:scale-110 transition-transform">
+                                                {style.icon}
+                                            </div>
                                             <div>
                                                 <h3 className="font-semibold text-white">{category}</h3>
                                                 <p className="text-xs text-white/80">
