@@ -86,6 +86,7 @@ const FinancePage: React.FC = () => {
     const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
     const [showPaymentModal, setShowPaymentModal] = useState(false);
     const [paymentForm, setPaymentForm] = useState({ name: '', method_type: 'card', last_four: '', is_default: false });
+    const [editingPaymentId, setEditingPaymentId] = useState<number | null>(null);
 
     useEffect(() => {
         loadData();
@@ -146,9 +147,35 @@ const FinancePage: React.FC = () => {
     // Payment method handlers
     const handlePaymentSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        await paymentMethodsApi.create(paymentForm);
+        if (editingPaymentId) {
+            await paymentMethodsApi.update(editingPaymentId, {
+                name: paymentForm.name,
+                method_type: paymentForm.method_type,
+                last_four: paymentForm.last_four || undefined,
+            });
+        } else {
+            await paymentMethodsApi.create(paymentForm);
+        }
         setShowPaymentModal(false);
+        setEditingPaymentId(null);
         setPaymentForm({ name: '', method_type: 'card', last_four: '', is_default: false });
+        loadData();
+    };
+
+    const handleEditPayment = (method: PaymentMethod) => {
+        setEditingPaymentId(method.id);
+        setPaymentForm({
+            name: method.name,
+            method_type: method.method_type,
+            last_four: method.last_four || '',
+            is_default: method.is_default,
+        });
+        setShowPaymentModal(true);
+    };
+
+    const handleDeletePayment = async (id: number) => {
+        if (!confirm('Remove this payment method?')) return;
+        await paymentMethodsApi.delete(id);
         loadData();
     };
 
@@ -395,6 +422,24 @@ const FinancePage: React.FC = () => {
                                                         Set Default
                                                     </button>
                                                 )}
+                                                <button
+                                                    onClick={() => handleEditPayment(method)}
+                                                    className="p-1.5 rounded-full bg-white/0 hover:bg-white/10 text-white/40 hover:text-white transition-all duration-200"
+                                                    title="Edit"
+                                                >
+                                                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                                    </svg>
+                                                </button>
+                                                <button
+                                                    onClick={() => handleDeletePayment(method.id)}
+                                                    className="p-1.5 rounded-full bg-white/0 hover:bg-white/10 text-white/40 hover:text-red-400 transition-all duration-200"
+                                                    title="Delete"
+                                                >
+                                                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                    </svg>
+                                                </button>
                                             </div>
                                         </div>
                                         <div className="my-1.5 self-start">
@@ -521,11 +566,15 @@ const FinancePage: React.FC = () => {
                 </div>
             </Modal>
 
-            {/* Payment Method Modal */}
+            {/* Payment Method Modal (Add / Edit) */}
             <Modal
                 isOpen={showPaymentModal}
-                onClose={() => setShowPaymentModal(false)}
-                title="Add Payment Method"
+                onClose={() => {
+                    setShowPaymentModal(false);
+                    setEditingPaymentId(null);
+                    setPaymentForm({ name: '', method_type: 'card', last_four: '', is_default: false });
+                }}
+                title={editingPaymentId ? 'Edit Payment Method' : 'Add Payment Method'}
                 size="md"
             >
                 <form onSubmit={handlePaymentSubmit} className="p-6 space-y-4">
@@ -555,19 +604,25 @@ const FinancePage: React.FC = () => {
                             placeholder="1234"
                         />
                     )}
-                    <div className="flex items-center gap-2 my-2">
-                        <input
-                            type="checkbox"
-                            id="isDefault"
-                            checked={paymentForm.is_default}
-                            onChange={e => setPaymentForm({ ...paymentForm, is_default: e.target.checked })}
-                            className="w-4 h-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500"
-                        />
-                        <label htmlFor="isDefault" className="text-sm cursor-pointer select-none">Set as default payment method</label>
-                    </div>
+                    {!editingPaymentId && (
+                        <div className="flex items-center gap-2 my-2">
+                            <input
+                                type="checkbox"
+                                id="isDefault"
+                                checked={paymentForm.is_default}
+                                onChange={e => setPaymentForm({ ...paymentForm, is_default: e.target.checked })}
+                                className="w-4 h-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500"
+                            />
+                            <label htmlFor="isDefault" className="text-sm cursor-pointer select-none">Set as default payment method</label>
+                        </div>
+                    )}
                     <div className="flex justify-end gap-2 mt-6">
-                        <Button type="button" variant="ghost" onClick={() => setShowPaymentModal(false)}>Cancel</Button>
-                        <Button type="submit">Add Method</Button>
+                        <Button type="button" variant="ghost" onClick={() => {
+                            setShowPaymentModal(false);
+                            setEditingPaymentId(null);
+                            setPaymentForm({ name: '', method_type: 'card', last_four: '', is_default: false });
+                        }}>Cancel</Button>
+                        <Button type="submit">{editingPaymentId ? 'Save Changes' : 'Add Method'}</Button>
                     </div>
                 </form>
             </Modal>

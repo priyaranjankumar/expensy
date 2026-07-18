@@ -135,7 +135,8 @@ def create_expense(db: Session, expense: schemas.ExpenseCreate, user_id: int) ->
         paid_amount=paid_amt,
         status=status_str,
         notes=expense.notes,
-        billing_month=expense.billing_month or get_current_billing_month()
+        billing_month=expense.billing_month or get_current_billing_month(),
+        payment_method_id=expense.payment_method_id
     )
     db.add(db_expense)
     db.commit()

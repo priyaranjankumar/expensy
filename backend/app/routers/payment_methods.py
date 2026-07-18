@@ -45,6 +45,30 @@ def create_payment_method(
     return db_method
 
 
+@router.put("/{method_id}", response_model=schemas.PaymentMethodResponse)
+def update_payment_method(
+    method_id: int,
+    method_update: schemas.PaymentMethodUpdate,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    """Update an existing payment method."""
+    db_method = db.query(models.PaymentMethod).filter(
+        models.PaymentMethod.id == method_id,
+        models.PaymentMethod.user_id == current_user.id
+    ).first()
+    if not db_method:
+        raise HTTPException(status_code=404, detail="Payment method not found")
+    
+    update_data = method_update.model_dump(exclude_unset=True)
+    for field, value in update_data.items():
+        setattr(db_method, field, value)
+    
+    db.commit()
+    db.refresh(db_method)
+    return db_method
+
+
 @router.put("/{method_id}/default")
 def set_default_payment_method(
     method_id: int,

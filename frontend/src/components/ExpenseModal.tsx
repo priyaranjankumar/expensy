@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import ReactDOM from 'react-dom';
 import type { Expense, ExpenseCreate, ExpenseUpdate, ExpenseStatus } from '../types';
+import { paymentMethodsApi } from '../services/api';
 import MonthPicker from './MonthPicker';
 import CustomDropdown from './CustomDropdown';
 
@@ -70,10 +71,64 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({
         status: 'Unpaid',
         notes: '',
         billing_month: currentBillingMonth,
+        payment_method_id: null,
     });
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [showCustomCategory, setShowCustomCategory] = useState(false);
     const [customCategory, setCustomCategory] = useState('');
+
+    // Credit card picker state
+    const [creditCards, setCreditCards] = useState<{ id: number; name: string; last_four?: string }[]>([]);
+    const [showAddCard, setShowAddCard] = useState(false);
+    const [newCardName, setNewCardName] = useState('');
+    const [addingCard, setAddingCard] = useState(false);
+
+    const isCreditCardBill = (showCustomCategory ? customCategory : formData.category) === 'Credit Card Bill';
+
+    // Fetch credit cards (payment methods with method_type = 'card')
+    const fetchCreditCards = useCallback(async () => {
+        try {
+            const methods = await paymentMethodsApi.getAll();
+            const cards = methods
+                .filter((m: any) => m.method_type === 'card')
+                .map((m: any) => ({ id: m.id, name: m.name, last_four: m.last_four }));
+            setCreditCards(cards);
+        } catch (err) {
+            console.error('Failed to fetch credit cards:', err);
+        }
+    }, []);
+
+    useEffect(() => {
+        if (isOpen) {
+            fetchCreditCards();
+        }
+    }, [isOpen, fetchCreditCards]);
+
+    // Add a new credit card inline
+    const handleAddCard = async () => {
+        const trimmed = newCardName.trim();
+        if (!trimmed) return;
+        setAddingCard(true);
+        try {
+            const created = await paymentMethodsApi.create({
+                name: trimmed,
+                method_type: 'card',
+                icon: '💳',
+            });
+            setCreditCards(prev => [...prev, { id: created.id, name: created.name, last_four: created.last_four }]);
+            // Auto-select the newly created card
+            setFormData(prev => ({ ...prev, description: created.name, payment_method_id: created.id }));
+            setShowAddCard(false);
+            setNewCardName('');
+            if (errors.description) {
+                setErrors(prev => ({ ...prev, description: '' }));
+            }
+        } catch (err) {
+            console.error('Failed to create credit card:', err);
+        } finally {
+            setAddingCard(false);
+        }
+    };
 
     const allCategories = [...new Set([...DEFAULT_CATEGORIES, ...categories])].sort();
 
@@ -92,6 +147,7 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({
                 status: expense.status || 'Unpaid',
                 notes: expense.notes || '',
                 billing_month: expense.billing_month || currentBillingMonth,
+                payment_method_id: expense.payment_method_id || null,
             });
             setShowCustomCategory(expense.category ? !allCategories.includes(expense.category) : false);
             if (expense.category && !allCategories.includes(expense.category)) {
@@ -106,10 +162,13 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({
                 status: 'Unpaid',
                 notes: '',
                 billing_month: currentBillingMonth,
+                payment_method_id: null,
             });
             setShowCustomCategory(false);
             setCustomCategory('');
         }
+        setShowAddCard(false);
+        setNewCardName('');
         setErrors({});
     }, [expense, isOpen, currentBillingMonth]);
 
@@ -167,13 +226,19 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({
     const handleCategoryChange = (value: string) => {
         if (value === '__custom__') {
             setShowCustomCategory(true);
-            setFormData((prev) => ({ ...prev, category: '' }));
+            setFormData((prev) => ({ ...prev, category: '', description: '', payment_method_id: null }));
         } else {
             setShowCustomCategory(false);
-            setFormData((prev) => ({ ...prev, category: value }));
+            // Clear description & payment_method_id when switching categories
+            setFormData((prev) => ({ ...prev, category: value, description: '', payment_method_id: null }));
         }
+        setShowAddCard(false);
+        setNewCardName('');
         if (errors.category) {
             setErrors((prev) => ({ ...prev, category: '' }));
+        }
+        if (errors.description) {
+            setErrors((prev) => ({ ...prev, description: '' }));
         }
     };
 
@@ -285,23 +350,110 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({
                                 )}
                             </div>
 
-                            {/* Description */}
+                            {/* Description / Credit Card Picker */}
                             <div>
                                 <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2 ml-1" htmlFor="description">
-                                    📝 Description
+                                    {isCreditCardBill ? '💳 Credit Card' : '📝 Description'}
                                 </label>
-                                <input
-                                    type="text"
-                                    id="description"
-                                    name="description"
-                                    value={formData.description}
-                                    onChange={handleChange}
-                                    placeholder="e.g., Grocery shopping"
-                                    className={`w-full px-5 py-3.5 rounded-3xl bg-slate-50 dark:bg-slate-800/50 border outline-none transition-all font-medium ${errors.description
-                                            ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20'
-                                            : 'border-slate-200 dark:border-slate-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20'
-                                        }`}
-                                />
+
+                                {isCreditCardBill ? (
+                                    /* Credit Card Picker */
+                                    <div className="space-y-2">
+                                        {!showAddCard ? (
+                                            <>
+                                                <CustomDropdown
+                                                    value={formData.description}
+                                                    onChange={(value) => {
+                                                        if (value === '__add_card__') {
+                                                            setShowAddCard(true);
+                                                        } else if (value === '__custom_desc__') {
+                                                            // Switch to free-text mode by clearing payment_method_id
+                                                            setFormData(prev => ({ ...prev, description: '', payment_method_id: null }));
+                                                            // Temporarily use a flag - we'll handle this below
+                                                        } else {
+                                                            const card = creditCards.find(c => c.name === value);
+                                                            setFormData(prev => ({
+                                                                ...prev,
+                                                                description: value,
+                                                                payment_method_id: card?.id || null,
+                                                            }));
+                                                        }
+                                                        if (errors.description) {
+                                                            setErrors(prev => ({ ...prev, description: '' }));
+                                                        }
+                                                    }}
+                                                    options={[
+                                                        ...creditCards.map(card => ({
+                                                            value: card.name,
+                                                            label: card.last_four ? `${card.name} (••${card.last_four})` : card.name,
+                                                            icon: '💳',
+                                                        })),
+                                                        { value: '__add_card__', label: '＋ Add new card', icon: '✨' },
+                                                    ]}
+                                                    placeholder="Select credit card"
+                                                    className="w-full"
+                                                />
+                                                {creditCards.length === 0 && (
+                                                    <p className="text-xs text-slate-400 dark:text-slate-500 ml-1">
+                                                        No saved cards yet. Click the dropdown to add one.
+                                                    </p>
+                                                )}
+                                            </>
+                                        ) : (
+                                            /* Inline Add Card */
+                                            <div className="flex gap-2 items-center">
+                                                <input
+                                                    type="text"
+                                                    value={newCardName}
+                                                    onChange={(e) => setNewCardName(e.target.value)}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === 'Enter') {
+                                                            e.preventDefault();
+                                                            handleAddCard();
+                                                        }
+                                                    }}
+                                                    placeholder="e.g., ICICI AMAZON"
+                                                    className="flex-1 px-5 py-3 rounded-3xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-medium"
+                                                    autoFocus
+                                                    disabled={addingCard}
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={handleAddCard}
+                                                    disabled={addingCard || !newCardName.trim()}
+                                                    className="px-4 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-3xl font-bold text-sm shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
+                                                >
+                                                    {addingCard ? '...' : 'Save'}
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        setShowAddCard(false);
+                                                        setNewCardName('');
+                                                    }}
+                                                    className="px-3 py-3 text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 font-medium text-sm transition-colors flex-shrink-0"
+                                                >
+                                                    ✕
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+                                ) : (
+                                    /* Regular Description Input */
+                                    <input
+                                        type="text"
+                                        id="description"
+                                        name="description"
+                                        value={formData.description}
+                                        onChange={handleChange}
+                                        placeholder="e.g., Grocery shopping"
+                                        className={`w-full px-5 py-3.5 rounded-3xl bg-slate-50 dark:bg-slate-800/50 border outline-none transition-all font-medium ${errors.description
+                                                ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20'
+                                                : 'border-slate-200 dark:border-slate-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20'
+                                            }`}
+                                    />
+                                )}
+
                                 {errors.description && (
                                     <p className="text-sm text-red-500 mt-1 ml-1">{errors.description}</p>
                                 )}

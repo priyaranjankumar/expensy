@@ -73,6 +73,7 @@ class ExpenseBase(BaseModel):
     status: StatusEnum = StatusEnum.UNPAID
     notes: Optional[str] = None
     billing_month: str = Field(default_factory=get_current_billing_month, pattern=r"^\d{4}-\d{2}$")
+    payment_method_id: Optional[int] = None
 
 
 class ExpenseCreate(ExpenseBase):
@@ -89,6 +90,7 @@ class ExpenseUpdate(BaseModel):
     status: Optional[StatusEnum] = None
     notes: Optional[str] = None
     billing_month: Optional[str] = Field(None, pattern=r"^\d{4}-\d{2}$")
+    payment_method_id: Optional[int] = None
 
 
 class BulkStatusUpdate(BaseModel):
@@ -552,6 +554,14 @@ class PaymentMethodBase(BaseModel):
 class PaymentMethodCreate(PaymentMethodBase):
     """Schema for creating a payment method."""
     is_default: bool = False
+
+
+class PaymentMethodUpdate(BaseModel):
+    """Schema for updating a payment method."""
+    name: Optional[str] = Field(None, min_length=1, max_length=100)
+    method_type: Optional[str] = Field(None, pattern=r"^(card|upi|cash|net_banking|other)$")
+    last_four: Optional[str] = Field(None, min_length=4, max_length=4)
+    icon: Optional[str] = Field(None, max_length=50)
 
 
 class PaymentMethodResponse(PaymentMethodBase):

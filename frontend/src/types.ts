@@ -11,6 +11,7 @@ export interface Expense {
     status: ExpenseStatus;
     notes: string | null;
     billing_month: string;
+    payment_method_id: number | null;
     created_at: string;
     updated_at: string;
 }
@@ -23,6 +24,7 @@ export interface ExpenseCreate {
     status: ExpenseStatus;
     notes?: string | null;
     billing_month?: string;
+    payment_method_id?: number | null;
 }
 
 export interface ExpenseUpdate {
@@ -33,6 +35,7 @@ export interface ExpenseUpdate {
     status?: ExpenseStatus;
     notes?: string | null;
     billing_month?: string;
+    payment_method_id?: number | null;
 }
 
 export interface ExpenseListResponse {

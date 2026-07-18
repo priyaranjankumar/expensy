@@ -555,6 +555,11 @@ export const paymentMethodsApi = {
         return response.data;
     },
 
+    update: async (id: number, data: { name?: string; method_type?: string; last_four?: string; icon?: string }) => {
+        const response = await api.put(`/payment-methods/${id}`, data);
+        return response.data;
+    },
+
     setDefault: async (id: number) => {
         const response = await api.put(`/payment-methods/${id}/default`);
         return response.data;
