@@ -17,6 +17,7 @@ import {
 import type { Expense } from '../types';
 import Modal from './Modal';
 import EmptyState from './EmptyState';
+import { formatCurrency } from '../utils/format';
 
 interface ExpenseTableProps {
     expenses: Expense[];
@@ -26,16 +27,6 @@ interface ExpenseTableProps {
     onStatusToggle?: (id: number, currentStatus: string) => void;
     searchTerm?: string;
 }
-
-// Format currency in INR (compact)
-const formatCurrency = (amount: number): string => {
-    return new Intl.NumberFormat('en-IN', {
-        style: 'currency',
-        currency: 'INR',
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0,
-    }).format(amount);
-};
 
 // Get status badge classes
 const getStatusClasses = (status: string): string => {
@@ -169,7 +160,7 @@ const ExpenseTable: React.FC<ExpenseTableProps> = ({ expenses, loading, onEdit, 
             <span>
                 {parts.map((part, i) => 
                     part.toLowerCase() === search.toLowerCase() 
-                        ? <mark key={i} className="bg-indigo-100 dark:bg-indigo-950/60 text-indigo-650 dark:text-indigo-400 px-0.5 rounded font-semibold">{part}</mark> 
+                        ? <mark key={i} className="bg-indigo-100 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 px-0.5 rounded font-semibold">{part}</mark> 
                         : part
                 )}
             </span>
@@ -203,7 +194,7 @@ const ExpenseTable: React.FC<ExpenseTableProps> = ({ expenses, loading, onEdit, 
                         </svg>
                     </span>
                 ) : (
-                    <span className="w-5 h-5 rounded-full border-2 border-slate-350 dark:border-slate-655 hover:border-emerald-500 dark:hover:border-emerald-500 flex items-center justify-center text-transparent hover:text-emerald-500 transition-colors">
+                    <span className="w-5 h-5 rounded-full border-2 border-slate-300 dark:border-slate-600 hover:border-emerald-500 dark:hover:border-emerald-500 flex items-center justify-center text-transparent hover:text-emerald-500 transition-colors">
                         <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="3.5" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                         </svg>
@@ -242,7 +233,7 @@ const ExpenseTable: React.FC<ExpenseTableProps> = ({ expenses, loading, onEdit, 
                 <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800/40 pb-3">
                     <div className="flex items-center gap-2">
                         <Receipt className="w-5 h-5 text-indigo-500" />
-                        <h3 className="text-sm font-bold text-slate-800 dark:text-slate-250 tracking-tight">Ledger Layout</h3>
+                        <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200 tracking-tight">Ledger Layout</h3>
                     </div>
                     
                     <div className="flex bg-slate-100 dark:bg-slate-800/80 p-0.5 rounded-xl border border-slate-200/20">
@@ -252,7 +243,7 @@ const ExpenseTable: React.FC<ExpenseTableProps> = ({ expenses, loading, onEdit, 
                             className={`px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all ${
                                 viewMode === 'category'
                                     ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm'
-                                    : 'text-slate-500 dark:text-slate-450 hover:text-slate-700 dark:hover:text-slate-200'
+                                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
                             }`}
                         >
                             Categories Grid
@@ -263,7 +254,7 @@ const ExpenseTable: React.FC<ExpenseTableProps> = ({ expenses, loading, onEdit, 
                             className={`px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all ${
                                 viewMode === 'chrono'
                                     ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm'
-                                    : 'text-slate-500 dark:text-slate-450 hover:text-slate-700 dark:hover:text-slate-200'
+                                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
                             }`}
                         >
                             Chrono Stream
@@ -311,14 +302,14 @@ const ExpenseTable: React.FC<ExpenseTableProps> = ({ expenses, loading, onEdit, 
                                                 {group.expenses.slice(0, 3).map((expense) => (
                                                     <div
                                                         key={expense.id}
-                                                        className="flex items-center gap-1 px-2 py-1 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-200/50 dark:border-slate-800/30 text-[9px] font-semibold text-slate-655 dark:text-slate-350"
+                                                        className="flex items-center gap-1 px-2 py-1 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-200/50 dark:border-slate-800/30 text-[9px] font-semibold text-slate-600 dark:text-slate-300"
                                                     >
                                                         <span className={`w-1.5 h-1.5 rounded-full ${getStatusClasses(expense.status)}`}></span>
                                                         <span className="truncate max-w-[50px]">{expense.description}</span>
                                                     </div>
                                                 ))}
                                                 {group.expenses.length > 3 && (
-                                                    <div className="flex items-center px-1.5 py-1 bg-slate-100 dark:bg-slate-850 rounded-lg text-[9px] font-bold text-slate-500 dark:text-slate-400">
+                                                    <div className="flex items-center px-1.5 py-1 bg-slate-100 dark:bg-slate-800 rounded-lg text-[9px] font-bold text-slate-500 dark:text-slate-400">
                                                         +{group.expenses.length - 3}
                                                     </div>
                                                 )}
@@ -350,12 +341,12 @@ const ExpenseTable: React.FC<ExpenseTableProps> = ({ expenses, loading, onEdit, 
                                                 <p className="font-bold text-slate-800 dark:text-slate-100 text-sm truncate">
                                                     {highlightMatch(expense.description, searchTerm)}
                                                 </p>
-                                                <span className="text-[9px] font-extrabold px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-550 dark:text-slate-400 rounded-full flex items-center gap-1 border border-slate-200/20 dark:border-slate-800/20">
+                                                <span className="text-[9px] font-extrabold px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 rounded-full flex items-center gap-1 border border-slate-200/20 dark:border-slate-800/20">
                                                     {highlightMatch(expense.category, searchTerm)}
                                                 </span>
                                             </div>
                                             {expense.notes && (
-                                                <p className="text-xs text-slate-450 dark:text-slate-450 truncate mt-0.5">
+                                                <p className="text-xs text-slate-400 dark:text-slate-400 truncate mt-0.5">
                                                     {highlightMatch(expense.notes, searchTerm)}
                                                 </p>
                                             )}
@@ -363,7 +354,7 @@ const ExpenseTable: React.FC<ExpenseTableProps> = ({ expenses, loading, onEdit, 
                                                 <div className="mt-2 max-w-[180px] space-y-1">
                                                     <div className="h-1 bg-slate-100 dark:bg-slate-800/60 rounded-full overflow-hidden">
                                                         <div 
-                                                            className="h-full bg-gradient-to-r from-indigo-500 to-indigo-650 rounded-full transition-all duration-300"
+                                                            className="h-full bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-full transition-all duration-300"
                                                             style={{ width: `${(expense.paid_amount / expense.amount) * 100}%` }}
                                                         />
                                                     </div>
@@ -377,15 +368,15 @@ const ExpenseTable: React.FC<ExpenseTableProps> = ({ expenses, loading, onEdit, 
                                     
                                     <div className="flex items-center gap-4 flex-shrink-0">
                                         <div className="text-right">
-                                            <p className="font-extrabold text-slate-905 dark:text-white text-base">
+                                            <p className="font-extrabold text-slate-900 dark:text-white text-base">
                                                 {formatCurrency(expense.amount)}
                                             </p>
                                             {expense.paid_amount > 0 && expense.paid_amount < expense.amount ? (
-                                                <p className="text-[10px] font-extrabold text-indigo-650 dark:text-indigo-400">
+                                                <p className="text-[10px] font-extrabold text-indigo-600 dark:text-indigo-400">
                                                     Paid: {formatCurrency(expense.paid_amount)}
                                                 </p>
                                             ) : (
-                                                <p className="text-[10px] font-bold text-slate-455 dark:text-slate-500">
+                                                <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500">
                                                     {expense.billing_month}
                                                 </p>
                                             )}
@@ -395,7 +386,7 @@ const ExpenseTable: React.FC<ExpenseTableProps> = ({ expenses, loading, onEdit, 
                                             <button
                                                 type="button"
                                                 onClick={() => onEdit(expense)}
-                                                className="p-1.5 text-slate-400 hover:text-indigo-650 hover:bg-slate-50 dark:hover:bg-slate-800/60 rounded-xl transition-all"
+                                                className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-slate-50 dark:hover:bg-slate-800/60 rounded-xl transition-all"
                                                 title="Edit"
                                             >
                                                 <Edit2 className="w-3.5 h-3.5" />
@@ -405,14 +396,14 @@ const ExpenseTable: React.FC<ExpenseTableProps> = ({ expenses, loading, onEdit, 
                                                     <button
                                                         type="button"
                                                         onClick={(e) => handleConfirmDelete(expense.id, e)}
-                                                        className="px-2 py-1 bg-red-500 text-white text-[10px] rounded-lg hover:bg-red-650 font-bold shadow-sm"
+                                                        className="px-2 py-1 bg-red-500 text-white text-[10px] rounded-lg hover:bg-red-600 font-bold shadow-sm"
                                                     >
                                                         Yes
                                                     </button>
                                                     <button
                                                         type="button"
                                                         onClick={() => setDeleteConfirm(null)}
-                                                        className="px-2 py-1 bg-slate-200 dark:bg-slate-700 text-slate-655 dark:text-slate-350 text-[10px] rounded-lg hover:bg-slate-300 dark:hover:bg-slate-600 font-bold"
+                                                        className="px-2 py-1 bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-[10px] rounded-lg hover:bg-slate-300 dark:hover:bg-slate-600 font-bold"
                                                     >
                                                         No
                                                     </button>
@@ -421,7 +412,7 @@ const ExpenseTable: React.FC<ExpenseTableProps> = ({ expenses, loading, onEdit, 
                                                 <button
                                                     type="button"
                                                     onClick={(e) => handleDeleteClick(expense.id, e)}
-                                                    className="p-1.5 text-slate-400 hover:text-red-650 hover:bg-slate-50 dark:hover:bg-slate-800/60 rounded-xl transition-all"
+                                                    className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-slate-50 dark:hover:bg-slate-800/60 rounded-xl transition-all"
                                                     title="Delete"
                                                 >
                                                     <Trash2 className="w-3.5 h-3.5" />
@@ -436,7 +427,7 @@ const ExpenseTable: React.FC<ExpenseTableProps> = ({ expenses, loading, onEdit, 
                 )}
 
                 {/* Legend */}
-                <div className="flex items-center justify-center gap-6 text-[10px] font-bold text-slate-450 dark:text-slate-500 pt-4">
+                <div className="flex items-center justify-center gap-6 text-[10px] font-bold text-slate-400 dark:text-slate-500 pt-4">
                     <div className="flex items-center gap-2">
                         <span className="w-2 h-2 rounded-full bg-red-500 shadow-lg shadow-red-500/30"></span> Unpaid
                     </div>
@@ -461,7 +452,7 @@ const ExpenseTable: React.FC<ExpenseTableProps> = ({ expenses, loading, onEdit, 
                 >
                     <div className="p-4 space-y-3">
                         {/* Summary Bar */}
-                        <div className="flex items-center gap-4 p-4 bg-slate-50 dark:bg-slate-900/50 border border-slate-200/50 dark:border-slate-850 rounded-2xl">
+                        <div className="flex items-center gap-4 p-4 bg-slate-50 dark:bg-slate-900/50 border border-slate-200/50 dark:border-slate-800 rounded-2xl">
                             <div className="flex-1">
                                 <p className="text-xs font-semibold text-slate-500">Category Spent</p>
                                 <p className="text-xl font-extrabold text-slate-800 dark:text-white mt-0.5">{formatCurrency(categoryModal.total)}</p>
@@ -498,7 +489,7 @@ const ExpenseTable: React.FC<ExpenseTableProps> = ({ expenses, loading, onEdit, 
                                                 <div className="mt-2 max-w-[160px] space-y-1">
                                                     <div className="h-1 bg-slate-100 dark:bg-slate-800/60 rounded-full overflow-hidden">
                                                         <div 
-                                                            className="h-full bg-gradient-to-r from-indigo-500 to-indigo-650 rounded-full transition-all duration-300"
+                                                            className="h-full bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-full transition-all duration-300"
                                                             style={{ width: `${(expense.paid_amount / expense.amount) * 100}%` }}
                                                         />
                                                     </div>
@@ -513,11 +504,11 @@ const ExpenseTable: React.FC<ExpenseTableProps> = ({ expenses, loading, onEdit, 
                                         <div className="text-right">
                                             <p className="font-bold text-slate-900 dark:text-white text-sm">{formatCurrency(expense.amount)}</p>
                                             {expense.paid_amount > 0 && expense.paid_amount < expense.amount ? (
-                                                <p className="text-[10px] font-bold text-indigo-650 dark:text-indigo-400 mt-0.5">
+                                                <p className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 mt-0.5">
                                                     Paid: {formatCurrency(expense.paid_amount)}
                                                 </p>
                                             ) : (
-                                                <p className="text-[10px] font-bold text-slate-400 dark:text-slate-550 mt-0.5">
+                                                <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 mt-0.5">
                                                     {expense.status === 'Paid' ? 'Partially Paid' : expense.status}
                                                 </p>
                                             )}
@@ -544,7 +535,7 @@ const ExpenseTable: React.FC<ExpenseTableProps> = ({ expenses, loading, onEdit, 
                                                 <button
                                                     type="button"
                                                     onClick={(e) => { e.stopPropagation(); onEdit(expense); setCategoryModal(null); }}
-                                                    className="p-1.5 text-slate-400 hover:text-indigo-650 hover:bg-slate-50 dark:hover:bg-slate-800/60 rounded-xl transition-all"
+                                                    className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-slate-50 dark:hover:bg-slate-800/60 rounded-xl transition-all"
                                                     title="Edit"
                                                 >
                                                     <Edit2 className="w-3.5 h-3.5" />
@@ -552,7 +543,7 @@ const ExpenseTable: React.FC<ExpenseTableProps> = ({ expenses, loading, onEdit, 
                                                 <button
                                                     type="button"
                                                     onClick={(e) => handleDeleteClick(expense.id, e)}
-                                                    className="p-1.5 text-slate-400 hover:text-red-650 hover:bg-slate-50 dark:hover:bg-slate-800/60 rounded-xl transition-all"
+                                                    className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-slate-50 dark:hover:bg-slate-800/60 rounded-xl transition-all"
                                                     title="Delete"
                                                 >
                                                     <Trash2 className="w-3.5 h-3.5" />

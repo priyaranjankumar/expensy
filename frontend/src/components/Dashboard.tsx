@@ -4,20 +4,12 @@ import { BarChart3, Wallet, TrendingUp, Clock, CheckCircle2, AlertCircle } from 
 import toast from 'react-hot-toast';
 import type { MetricsResponse } from '../types';
 import Modal from './Modal';
+import { formatCurrency } from '../utils/format';
 
 interface DashboardProps {
     metrics: MetricsResponse | null;
     loading: boolean;
 }
-
-// Format currency in INR
-const formatCurrency = (amount: number): string => {
-    return new Intl.NumberFormat('en-IN', {
-        style: 'currency',
-        currency: 'INR',
-        maximumFractionDigits: 0,
-    }).format(amount);
-};
 
 // Custom colors for the chart
 const CHART_COLORS = [
@@ -104,7 +96,7 @@ const Dashboard: React.FC<DashboardProps> = ({ metrics, loading }) => {
             <div className="space-y-5">
                 {/* Overdue Warning Banner */}
                 {overdueUnpaid > 0 && (
-                    <div className="p-4 rounded-3xl bg-red-50 dark:bg-red-950/20 border border-red-200/50 dark:border-red-900/30 text-red-650 dark:text-red-400 flex items-center justify-between shadow-sm animate-pulse-slow">
+                    <div className="p-4 rounded-3xl bg-red-50 dark:bg-red-950/20 border border-red-200/50 dark:border-red-900/30 text-red-700 dark:text-red-400 flex items-center justify-between shadow-sm animate-pulse">
                         <div className="flex items-center gap-3">
                             <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0" />
                             <div>
@@ -136,8 +128,8 @@ const Dashboard: React.FC<DashboardProps> = ({ metrics, loading }) => {
                                 <BarChart3 className="w-4 h-4" />
                             </div>
                         </div>
-                        <div className="mt-4 flex items-center gap-1 text-[10px] font-semibold text-slate-450 dark:text-slate-505">
-                            <span className="font-bold text-slate-700 dark:text-slate-350">{metrics.expense_count}</span> entries tracked
+                        <div className="mt-4 flex items-center gap-1 text-[10px] font-semibold text-slate-400 dark:text-slate-500">
+                            <span className="font-bold text-slate-700 dark:text-slate-300">{metrics.expense_count}</span> entries tracked
                         </div>
                     </div>
 
@@ -147,7 +139,7 @@ const Dashboard: React.FC<DashboardProps> = ({ metrics, loading }) => {
                             <div>
                                 <p className="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wider">Remaining Budget</p>
                                 <p className={`text-2xl font-bold mt-1 ${metrics.remaining < 0
-                                        ? 'text-red-500 dark:text-red-450'
+                                        ? 'text-red-500 dark:text-red-400'
                                         : 'text-emerald-600 dark:text-emerald-400'
                                     }`}>
                                     {formatCurrency(metrics.remaining)}
@@ -169,7 +161,7 @@ const Dashboard: React.FC<DashboardProps> = ({ metrics, loading }) => {
                                 }}
                             />
                         </div>
-                        <div className="mt-2 text-[10px] font-semibold text-slate-450 dark:text-slate-505">
+                        <div className="mt-2 text-[10px] font-semibold text-slate-400 dark:text-slate-500">
                             of {formatCurrency(metrics.budget)} budget used
                         </div>
                     </div>
@@ -180,21 +172,21 @@ const Dashboard: React.FC<DashboardProps> = ({ metrics, loading }) => {
                             <div>
                                 <p className="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wider">Net Savings</p>
                                 <p className={`text-2xl font-bold mt-1 ${netSavings < 0
-                                        ? 'text-red-500 dark:text-red-450'
+                                        ? 'text-red-500 dark:text-red-400'
                                         : 'text-emerald-600 dark:text-emerald-400'
                                     }`}>
                                     {formatCurrency(netSavings)}
                                 </p>
                             </div>
                             <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-white shadow-lg ${netSavings < 0
-                                    ? 'bg-gradient-to-br from-red-500 to-red-650'
+                                    ? 'bg-gradient-to-br from-red-500 to-red-700'
                                     : 'bg-gradient-to-br from-emerald-500 to-green-600'
                                 }`}>
                                 <TrendingUp className="w-4 h-4" />
                             </div>
                         </div>
-                        <div className="mt-4 flex items-center gap-1.5 text-[10px] font-semibold text-slate-450 dark:text-slate-505">
-                            Income: <span className="font-bold text-emerald-600 dark:text-emerald-450">{formatCurrency(totalIncome)}</span>
+                        <div className="mt-4 flex items-center gap-1.5 text-[10px] font-semibold text-slate-400 dark:text-slate-500">
+                            Income: <span className="font-bold text-emerald-600 dark:text-emerald-400">{formatCurrency(totalIncome)}</span>
                         </div>
                     </div>
 
@@ -207,7 +199,7 @@ const Dashboard: React.FC<DashboardProps> = ({ metrics, loading }) => {
                                     <p className="text-xs text-red-600 dark:text-red-400 font-medium uppercase tracking-wider">Unpaid Bills</p>
                                     <p className="text-2xl font-bold text-red-600 dark:text-red-400 mt-1">{formatCurrency(metrics.total_unpaid)}</p>
                                 </div>
-                                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-red-500 to-red-650 flex items-center justify-center text-white shadow-lg shadow-red-500/20">
+                                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center text-white shadow-lg shadow-red-500/20">
                                     <Clock className="w-4 h-4" />
                                 </div>
                             </div>
@@ -235,7 +227,7 @@ const Dashboard: React.FC<DashboardProps> = ({ metrics, loading }) => {
                             </div>
                             <div className="mt-4 h-1.5 bg-green-100 dark:bg-green-950/20 rounded-full overflow-hidden">
                                 <div
-                                    className="h-full bg-gradient-to-r from-green-500 to-green-650 rounded-full transition-all duration-500"
+                                    className="h-full bg-gradient-to-r from-green-500 to-green-600 rounded-full transition-all duration-500"
                                     style={{ width: `${metrics.total_amount > 0 ? Math.min((metrics.total_paid / metrics.total_amount) * 100, 100) : 0}%` }}
                                 />
                             </div>
@@ -276,7 +268,7 @@ const Dashboard: React.FC<DashboardProps> = ({ metrics, loading }) => {
                                     />
                                     <Tooltip
                                         content={<CustomBarTooltip />}
-                                        cursor={{ fill: 'rgba(99, 102, 241, 0.1)', radius: 8 }}
+                                        cursor={{ fill: 'rgba(99, 102, 241, 0.04)', radius: 6 }}
                                     />
                                     <Bar dataKey="total" radius={[0, 8, 8, 0]} animationDuration={800}>
                                         {topChartData.map((_, index) => (
@@ -382,8 +374,8 @@ const Dashboard: React.FC<DashboardProps> = ({ metrics, loading }) => {
                                 return (
                                     <div key={cat.category} className="space-y-2 p-3 bg-slate-50/50 dark:bg-[#0f172a]/20 border border-slate-200/50 dark:border-slate-800/40 rounded-2xl shadow-inner">
                                         <div className="flex items-center justify-between">
-                                            <span className="text-xs font-bold text-slate-700 dark:text-slate-250">{cat.category}</span>
-                                            <span className={`text-[10px] font-extrabold ${isOver ? 'text-red-500' : 'text-slate-450 dark:text-slate-500'}`}>
+                                            <span className="text-xs font-bold text-slate-700 dark:text-slate-200">{cat.category}</span>
+                                            <span className={`text-[10px] font-extrabold ${isOver ? 'text-red-500' : 'text-slate-400 dark:text-slate-500'}`}>
                                                 {spentPercent.toFixed(0)}%
                                             </span>
                                         </div>
@@ -392,16 +384,16 @@ const Dashboard: React.FC<DashboardProps> = ({ metrics, loading }) => {
                                             <div
                                                 className={`h-full rounded-full transition-all duration-500 ${
                                                     isOver 
-                                                        ? 'bg-gradient-to-r from-red-500 to-red-655 shadow-md shadow-red-550/20' 
+                                                        ? 'bg-gradient-to-r from-red-500 to-red-700 shadow-md shadow-red-500/20' 
                                                         : spentPercent > 80 
                                                             ? 'bg-gradient-to-r from-orange-400 to-orange-500 shadow-md shadow-orange-500/20'
-                                                            : 'bg-gradient-to-r from-indigo-500 to-purple-650 shadow-md shadow-indigo-550/20'
+                                                            : 'bg-gradient-to-r from-indigo-500 to-purple-600 shadow-md shadow-indigo-500/20'
                                                 }`}
                                                 style={{ width: `${spentPercent}%` }}
                                             />
                                         </div>
                                         
-                                        <div className="flex justify-between items-baseline text-[10px] font-semibold text-slate-450 dark:text-slate-505 pt-0.5">
+                                        <div className="flex justify-between items-baseline text-[10px] font-semibold text-slate-400 dark:text-slate-500 pt-0.5">
                                             <p>Spent: <span className="font-extrabold text-slate-800 dark:text-slate-200">{formatCurrency(cat.total)}</span></p>
                                             <p>Budget: <span className="font-bold">{formatCurrency(budget)}</span></p>
                                         </div>
@@ -423,29 +415,29 @@ const Dashboard: React.FC<DashboardProps> = ({ metrics, loading }) => {
                 size="xl"
             >
                 <div className="p-6">
-                    <div className="h-[500px]">
+                    <div style={{ height: Math.min(500, Math.max(200, chartData.length * 80 + 60)) }}>
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={chartData} layout="vertical" margin={{ left: 10, right: 30, top: 10, bottom: 10 }}>
                                 <XAxis
                                     type="number"
-                                    tick={{ fontSize: 12, fill: '#64748b' }}
+                                    tick={{ fontSize: 12, fill: 'currentColor' }}
                                     tickFormatter={(v) => formatCurrency(v)}
-                                    axisLine={{ stroke: '#e2e8f0' }}
-                                    tickLine={{ stroke: '#e2e8f0' }}
+                                    axisLine={{ stroke: 'currentColor', strokeOpacity: 0.15 }}
+                                    tickLine={{ stroke: 'currentColor', strokeOpacity: 0.15 }}
                                 />
                                 <YAxis
                                     type="category"
                                     dataKey="category"
-                                    tick={{ fontSize: 13, fill: '#334155' }}
+                                    tick={{ fontSize: 13, fill: 'currentColor' }}
                                     width={140}
                                     axisLine={false}
                                     tickLine={false}
                                 />
                                 <Tooltip
                                     content={<CustomBarTooltip />}
-                                    cursor={{ fill: 'rgba(99, 102, 241, 0.1)', radius: 8 }}
+                                    cursor={{ fill: 'rgba(99, 102, 241, 0.04)', radius: 6 }}
                                 />
-                                <Bar dataKey="total" radius={[0, 10, 10, 0]} animationDuration={800} barSize={30}>
+                                <Bar dataKey="total" radius={[0, 10, 10, 0]} animationDuration={800} barSize={36} maxBarSize={44}>
                                     {chartData.map((_, index) => (
                                         <Cell
                                             key={`cell-${index}`}
@@ -483,8 +475,7 @@ const Dashboard: React.FC<DashboardProps> = ({ metrics, loading }) => {
                                         dataKey="value"
                                         animationDuration={800}
                                         stroke="none"
-                                        label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                                        labelLine={{ stroke: '#64748b' }}
+
                                     >
                                         {pieData.map((entry, index) => (
                                             <Cell

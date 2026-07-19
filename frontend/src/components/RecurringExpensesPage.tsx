@@ -310,10 +310,10 @@ const RecurringExpensesPage: React.FC<RecurringExpensesPageProps> = ({ className
                     ))}
                 </div>
             ) : recurring.length === 0 ? (
-                <div className="text-center py-12 border border-dashed border-slate-250 dark:border-slate-800/80 rounded-2xl p-6">
-                    <RefreshCw className="w-10 h-10 mx-auto mb-3.5 text-slate-350 dark:text-slate-650" />
-                    <h3 className="text-sm font-bold text-slate-850 dark:text-white mb-1">No Templates Yet</h3>
-                    <p className="text-xs text-slate-450 dark:text-slate-505 mb-4">Create templates for bills, subscriptions, or SIPs that repeat</p>
+                <div className="text-center py-12 border border-dashed border-slate-200 dark:border-slate-800/80 rounded-2xl p-6">
+                    <RefreshCw className="w-10 h-10 mx-auto mb-3.5 text-slate-300 dark:text-slate-600" />
+                    <h3 className="text-sm font-bold text-slate-800 dark:text-white mb-1">No Templates Yet</h3>
+                    <p className="text-xs text-slate-400 dark:text-slate-500 mb-4">Create templates for bills, subscriptions, or SIPs that repeat</p>
                     <button onClick={openNewModal} className="btn btn-primary text-xs py-2">
                         Create Your First Template
                     </button>
@@ -346,8 +346,8 @@ const RecurringExpensesPage: React.FC<RecurringExpensesPageProps> = ({ className
                                                 </span>
                                             )}
                                         </div>
-                                        <p className="text-xs text-slate-455 dark:text-slate-450">{item.category}</p>
-                                        <div className="flex items-center gap-3.5 mt-2 text-[10px] font-semibold text-slate-400 dark:text-slate-505">
+                                        <p className="text-xs text-slate-400 dark:text-slate-400">{item.category}</p>
+                                        <div className="flex items-center gap-3.5 mt-2 text-[10px] font-semibold text-slate-400 dark:text-slate-500">
                                             {item.day_of_month && (
                                                 <span className="flex items-center gap-1">
                                                     <CalendarDays className="w-3.5 h-3.5" /> Day {item.day_of_month} of month
@@ -360,7 +360,7 @@ const RecurringExpensesPage: React.FC<RecurringExpensesPageProps> = ({ className
                                     </div>
                                 </div>
                                 <div className="text-right flex flex-col items-end">
-                                    <p className="text-base font-bold text-slate-850 dark:text-white font-mono leading-none">
+                                    <p className="text-base font-bold text-slate-800 dark:text-white font-mono leading-none">
                                         ₹{item.amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                     </p>
                                     <div className="flex items-center gap-1.5 mt-3">
@@ -380,8 +380,8 @@ const RecurringExpensesPage: React.FC<RecurringExpensesPageProps> = ({ className
                                             onClick={() => handleToggleActive(item)}
                                             className={`p-1.5 rounded-lg hover:scale-105 active:scale-95 transition-all border ${
                                                 item.is_active 
-                                                    ? 'bg-amber-50 dark:bg-amber-950/20 text-amber-600 dark:text-amber-400 border-amber-250/20 dark:border-amber-800/20' 
-                                                    : 'bg-green-50 dark:bg-green-950/20 text-green-600 dark:text-green-400 border-green-250/20 dark:border-green-800/20'
+                                                    ? 'bg-amber-50 dark:bg-amber-950/20 text-amber-600 dark:text-amber-400 border-amber-200/20 dark:border-amber-800/20' 
+                                                    : 'bg-green-50 dark:bg-green-950/20 text-green-600 dark:text-green-400 border-green-200/20 dark:border-green-800/20'
                                             }`}
                                             title={item.is_active ? 'Pause' : 'Resume'}
                                         >
@@ -393,7 +393,7 @@ const RecurringExpensesPage: React.FC<RecurringExpensesPageProps> = ({ className
                                         </button>
                                         <button
                                             onClick={() => handleEdit(item)}
-                                            className="p-1.5 bg-indigo-50 dark:bg-indigo-950/20 text-indigo-650 dark:text-indigo-400 rounded-lg hover:scale-105 active:scale-95 transition-all border border-indigo-200/20 dark:border-indigo-800/20"
+                                            className="p-1.5 bg-indigo-50 dark:bg-indigo-950/20 text-indigo-600 dark:text-indigo-400 rounded-lg hover:scale-105 active:scale-95 transition-all border border-indigo-200/20 dark:border-indigo-800/20"
                                             title="Edit"
                                         >
                                             <Edit2 className="w-3.5 h-3.5" />

@@ -45,7 +45,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ className = '' 
         if (change === undefined || change === null) return null;
         if (change > 5) return <span className="text-red-500">↑</span>;
         if (change < -5) return <span className="text-green-500">↓</span>;
-        return <span className="text-gray-400">→</span>;
+        return <span className="text-slate-400">→</span>;
     };
 
     const getSeverityColor = (severity: string) => {
@@ -60,13 +60,13 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ className = '' 
         return (
             <div className={`card p-6 ${className}`}>
                 <div className="animate-pulse space-y-4">
-                    <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-48"></div>
+                    <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded w-48"></div>
                     <div className="grid grid-cols-3 gap-4">
-                        <div className="h-24 bg-gray-200 dark:bg-gray-700 rounded"></div>
-                        <div className="h-24 bg-gray-200 dark:bg-gray-700 rounded"></div>
-                        <div className="h-24 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                        <div className="h-24 bg-slate-200 dark:bg-slate-700 rounded"></div>
+                        <div className="h-24 bg-slate-200 dark:bg-slate-700 rounded"></div>
+                        <div className="h-24 bg-slate-200 dark:bg-slate-700 rounded"></div>
                     </div>
-                    <div className="h-48 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                    <div className="h-48 bg-slate-200 dark:bg-slate-700 rounded"></div>
                 </div>
             </div>
         );
@@ -108,20 +108,20 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ className = '' 
                         </div>
                         {comparison.highest_month && (
                             <div className="card p-4">
-                                <p className="text-sm text-gray-500 dark:text-gray-400">Highest Month</p>
+                                <p className="text-sm text-slate-500 dark:text-slate-400">Highest Month</p>
                                 <p className="text-xl font-bold text-red-600 dark:text-red-400">
                                     ₹{comparison.highest_month.total.toLocaleString()}
                                 </p>
-                                <p className="text-xs text-gray-500">{formatBillingMonth(comparison.highest_month.billing_month)}</p>
+                                <p className="text-xs text-slate-500">{formatBillingMonth(comparison.highest_month.billing_month)}</p>
                             </div>
                         )}
                         {comparison.lowest_month && (
                             <div className="card p-4">
-                                <p className="text-sm text-gray-500 dark:text-gray-400">Lowest Month</p>
+                                <p className="text-sm text-slate-500 dark:text-slate-400">Lowest Month</p>
                                 <p className="text-xl font-bold text-green-600 dark:text-green-400">
                                     ₹{comparison.lowest_month.total.toLocaleString()}
                                 </p>
-                                <p className="text-xs text-gray-500">{formatBillingMonth(comparison.lowest_month.billing_month)}</p>
+                                <p className="text-xs text-slate-500">{formatBillingMonth(comparison.lowest_month.billing_month)}</p>
                             </div>
                         )}
                     </div>
@@ -134,17 +134,21 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ className = '' 
                         <div className="space-y-3">
                             {comparison.months.map((month) => (
                                 <div key={month.billing_month} className="flex items-center gap-4">
-                                    <div className="w-24 text-sm text-gray-600 dark:text-gray-400">
+                                    <div className="w-24 text-sm text-slate-600 dark:text-slate-400">
                                         {formatBillingMonth(month.billing_month).split(' ')[0].slice(0, 3)}
                                     </div>
                                     <div className="flex-1">
-                                        <div className="relative h-8 bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden">
+                                        <div className="relative h-8 bg-slate-100 dark:bg-slate-800 rounded-lg overflow-hidden">
                                             <div
                                                 className="absolute inset-y-0 left-0 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg transition-all"
                                                 style={{ width: `${Math.min(100, (month.total / (comparison.highest_month?.total || 1)) * 100)}%` }}
                                             />
                                             <div className="absolute inset-0 flex items-center px-3">
-                                                <span className="text-sm font-medium text-white drop-shadow">
+                                                <span className={`text-sm font-medium drop-shadow ${
+                                                    (month.total / (comparison.highest_month?.total || 1)) * 100 > 25
+                                                        ? 'text-white'
+                                                        : 'text-slate-700 dark:text-slate-200'
+                                                }`}>
                                                     ₹{month.total.toLocaleString()}
                                                 </span>
                                             </div>
@@ -176,19 +180,19 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ className = '' 
                         </h3>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                             <div>
-                                <p className="text-xs text-gray-500 dark:text-gray-400">Daily Rate</p>
+                                <p className="text-xs text-slate-500 dark:text-slate-400">Daily Rate</p>
                                 <p className="text-lg font-bold">₹{forecast.current_month_velocity.daily_rate.toLocaleString()}/day</p>
                             </div>
                             <div>
-                                <p className="text-xs text-gray-500 dark:text-gray-400">Spent So Far</p>
+                                <p className="text-xs text-slate-500 dark:text-slate-400">Spent So Far</p>
                                 <p className="text-lg font-bold">₹{forecast.current_month_velocity.current_spending.toLocaleString()}</p>
                             </div>
                             <div>
-                                <p className="text-xs text-gray-500 dark:text-gray-400">Days Remaining</p>
+                                <p className="text-xs text-slate-500 dark:text-slate-400">Days Remaining</p>
                                 <p className="text-lg font-bold">{forecast.current_month_velocity.days_remaining}</p>
                             </div>
                             <div>
-                                <p className="text-xs text-gray-500 dark:text-gray-400">Projected Total</p>
+                                <p className="text-xs text-slate-500 dark:text-slate-400">Projected Total</p>
                                 <p className="text-lg font-bold text-amber-600 dark:text-amber-400">
                                     ₹{forecast.current_month_velocity.projected_total.toLocaleString()}
                                 </p>
@@ -206,7 +210,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ className = '' 
                                 ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
                                 : forecast.trend_direction === 'decreasing'
                                     ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
-                                    : 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400'
+                                    : 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-400'
                                 }`}>
                                 {forecast.trend_direction === 'increasing' ? '📈 Trending Up' :
                                     forecast.trend_direction === 'decreasing' ? '📉 Trending Down' : '➡️ Stable'}
@@ -214,17 +218,17 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ className = '' 
                         </div>
 
                         <div className="space-y-3">
-                            <p className="text-xs font-medium text-gray-500 uppercase">Historical</p>
+                            <p className="text-xs font-medium text-slate-500 uppercase">Historical</p>
                             {forecast.historical.slice(-3).map(h => (
-                                <div key={h.billing_month} className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-800">
+                                <div key={h.billing_month} className="flex justify-between items-center py-2 border-b border-slate-100 dark:border-slate-800">
                                     <span className="text-sm">{formatBillingMonth(h.billing_month)}</span>
                                     <span className="font-medium">₹{h.total.toLocaleString()}</span>
                                 </div>
                             ))}
 
-                            <p className="text-xs font-medium text-gray-500 uppercase mt-4">Forecast</p>
+                            <p className="text-xs font-medium text-slate-500 uppercase mt-4">Forecast</p>
                             {forecast.forecast.map(f => (
-                                <div key={f.billing_month} className="flex justify-between items-center py-2 border-b border-dashed border-gray-200 dark:border-gray-700">
+                                <div key={f.billing_month} className="flex justify-between items-center py-2 border-b border-dashed border-slate-200 dark:border-slate-700">
                                     <span className="text-sm text-indigo-600 dark:text-indigo-400">
                                         {formatBillingMonth(f.billing_month)}
                                     </span>
@@ -232,7 +236,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ className = '' 
                                         <span className="font-medium text-indigo-600 dark:text-indigo-400">
                                             ~₹{f.predicted_total.toLocaleString()}
                                         </span>
-                                        <span className={`ml-2 text-xs px-1.5 py-0.5 rounded ${f.confidence === 'medium' ? 'bg-amber-100 text-amber-700' : 'bg-gray-100 text-gray-600'
+                                        <span className={`ml-2 text-xs px-1.5 py-0.5 rounded ${f.confidence === 'medium' ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-600'
                                             }`}>
                                             {f.confidence}
                                         </span>
@@ -259,7 +263,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ className = '' 
                                         ? `${anomalies.total_anomalies} Spending Anomalies Detected`
                                         : 'No Anomalies Detected'}
                                 </h3>
-                                <p className="text-sm text-gray-600 dark:text-gray-400">
+                                <p className="text-sm text-slate-600 dark:text-slate-400">
                                     For {formatBillingMonth(anomalies.billing_month)}
                                 </p>
                             </div>
@@ -271,7 +275,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ className = '' 
                             <h3 className="font-semibold mb-4">📊 Category Anomalies</h3>
                             <div className="space-y-3">
                                 {anomalies.category_anomalies.map((anomaly, index) => (
-                                    <div key={index} className="p-3 rounded-lg bg-gray-50 dark:bg-gray-800">
+                                    <div key={index} className="p-3 rounded-lg bg-slate-50 dark:bg-slate-800">
                                         <div className="flex items-start justify-between">
                                             <div>
                                                 <div className="flex items-center gap-2">
@@ -280,7 +284,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ className = '' 
                                                         {anomaly.severity}
                                                     </span>
                                                 </div>
-                                                <p className="text-sm text-gray-500 mt-1">
+                                                <p className="text-sm text-slate-500 mt-1">
                                                     {anomaly.type === 'high' ? 'Higher' : 'Lower'} than usual
                                                 </p>
                                             </div>
@@ -288,7 +292,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ className = '' 
                                                 <p className={`font-bold ${anomaly.type === 'high' ? 'text-red-600' : 'text-green-600'}`}>
                                                     {anomaly.deviation_percent > 0 ? '+' : ''}{anomaly.deviation_percent}%
                                                 </p>
-                                                <p className="text-xs text-gray-500">
+                                                <p className="text-xs text-slate-500">
                                                     ₹{anomaly.current_month_spending.toLocaleString()} vs ₹{anomaly.historical_average.toLocaleString()} avg
                                                 </p>
                                             </div>
@@ -304,10 +308,10 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ className = '' 
                             <h3 className="font-semibold mb-4">📌 Unusual Expenses</h3>
                             <div className="space-y-2">
                                 {anomalies.expense_outliers.map(outlier => (
-                                    <div key={outlier.expense_id} className="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-gray-800">
+                                    <div key={outlier.expense_id} className="flex items-center justify-between p-3 rounded-lg bg-slate-50 dark:bg-slate-800">
                                         <div>
                                             <p className="font-medium">{outlier.description}</p>
-                                            <p className="text-sm text-gray-500">{outlier.category}</p>
+                                            <p className="text-sm text-slate-500">{outlier.category}</p>
                                         </div>
                                         <div className="text-right">
                                             <p className="font-bold">₹{outlier.amount.toLocaleString()}</p>

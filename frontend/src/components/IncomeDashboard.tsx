@@ -168,7 +168,7 @@ const IncomeDashboard: React.FC<IncomeDashboardProps> = ({ className = '', billi
                             <p className="text-[10px] font-semibold opacity-75">{summary?.income_count || 0} credited entries</p>
                         </div>
                         
-                        <div className="glass border border-slate-250/60 dark:border-slate-800/80 rounded-3xl p-5 flex flex-col justify-between h-28">
+                        <div className="glass border border-slate-200/60 dark:border-slate-800/80 rounded-3xl p-5 flex flex-col justify-between h-28">
                             <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Top Sources</p>
                             <div className="space-y-1.5 mt-2">
                                 {summary?.by_source.length === 0 ? (
@@ -190,10 +190,10 @@ const IncomeDashboard: React.FC<IncomeDashboardProps> = ({ className = '', billi
 
                     {/* Income List */}
                     {incomes.length === 0 ? (
-                        <div className="text-center py-12 border border-dashed border-slate-250 dark:border-slate-800/80 rounded-3xl p-6">
-                            <Coins className="w-10 h-10 mx-auto mb-3.5 text-slate-350 dark:text-slate-650" />
-                            <h3 className="text-sm font-bold text-slate-850 dark:text-white mb-1">No Income Credited</h3>
-                            <p className="text-xs text-slate-450 dark:text-slate-505 mb-4">Record salary, freelance work, or rental income for this month</p>
+                        <div className="text-center py-12 border border-dashed border-slate-200 dark:border-slate-800/80 rounded-3xl p-6">
+                            <Coins className="w-10 h-10 mx-auto mb-3.5 text-slate-300 dark:text-slate-600" />
+                            <h3 className="text-sm font-bold text-slate-800 dark:text-white mb-1">No Income Credited</h3>
+                            <p className="text-xs text-slate-400 dark:text-slate-500 mb-4">Record salary, freelance work, or rental income for this month</p>
                             <button onClick={openNewModal} className="btn btn-primary text-xs py-2 bg-gradient-to-r from-emerald-500 to-green-600 border-none shadow-emerald-500/10">
                                 Add Your First Income
                             </button>
@@ -208,7 +208,7 @@ const IncomeDashboard: React.FC<IncomeDashboardProps> = ({ className = '', billi
                                     <div className="flex items-center gap-3">
                                         <div className={`w-3 h-3 rounded-full ${getSourceColor(income.source)}`}></div>
                                         <div>
-                                            <p className="font-bold text-slate-850 dark:text-white text-xs leading-snug">{income.source}</p>
+                                            <p className="font-bold text-slate-800 dark:text-white text-xs leading-snug">{income.source}</p>
                                             {income.description && (
                                                 <p className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 leading-none mt-1">{income.description}</p>
                                             )}
@@ -226,14 +226,14 @@ const IncomeDashboard: React.FC<IncomeDashboardProps> = ({ className = '', billi
                                         <div className="flex gap-1">
                                             <button
                                                 onClick={() => handleEdit(income)}
-                                                className="p-1.5 bg-white dark:bg-slate-800 text-slate-400 hover:text-indigo-650 rounded-lg border border-slate-200 dark:border-slate-750 hover:scale-105 active:scale-95 transition-all shadow-sm"
+                                                className="p-1.5 bg-white dark:bg-slate-800 text-slate-400 hover:text-indigo-600 rounded-lg border border-slate-200 dark:border-slate-700 hover:scale-105 active:scale-95 transition-all shadow-sm"
                                                 title="Edit"
                                             >
                                                 <Edit2 className="w-3 h-3" />
                                             </button>
                                             <button
                                                 onClick={() => handleDelete(income.id)}
-                                                className="p-1.5 bg-white dark:bg-slate-800 text-slate-400 hover:text-red-500 rounded-lg border border-slate-200 dark:border-slate-750 hover:scale-105 active:scale-95 transition-all shadow-sm"
+                                                className="p-1.5 bg-white dark:bg-slate-800 text-slate-400 hover:text-red-500 rounded-lg border border-slate-200 dark:border-slate-700 hover:scale-105 active:scale-95 transition-all shadow-sm"
                                                 title="Delete"
                                             >
                                                 <Trash2 className="w-3 h-3" />

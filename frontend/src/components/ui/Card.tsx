@@ -16,7 +16,7 @@ export const Card: React.FC<CardProps> = ({
     const baseStyles = "rounded-3xl transition-all duration-300";
 
     const variants = {
-        default: "bg-white dark:bg-slate-900/30 shadow-sm border border-slate-200 dark:border-slate-800/80 hover:shadow-md hover:border-slate-350 dark:hover:border-slate-700/60",
+        default: "bg-white dark:bg-slate-900/30 shadow-sm border border-slate-200 dark:border-slate-800/80 hover:shadow-md hover:border-slate-300 dark:hover:border-slate-700/60",
         glass: "bg-white/70 dark:bg-slate-900/40 backdrop-blur-xl border border-white/20 dark:border-slate-800/40 shadow-glass",
         outlined: "bg-transparent border border-slate-200 dark:border-slate-800"
     };

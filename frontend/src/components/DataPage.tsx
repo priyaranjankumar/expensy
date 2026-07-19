@@ -239,7 +239,7 @@ const DataPage: React.FC = () => {
                 <div className={`p-4 rounded-2xl flex justify-between items-center border ${
                     message.type === 'success' 
                         ? 'bg-green-50 dark:bg-green-950/20 border-green-200/50 dark:border-green-800/20 text-green-600 dark:text-green-400' 
-                        : 'bg-red-50 dark:bg-red-950/20 border-red-200/50 dark:border-red-800/20 text-red-650 dark:text-red-400'
+                        : 'bg-red-50 dark:bg-red-950/20 border-red-200/50 dark:border-red-800/20 text-red-700 dark:text-red-400'
                 }`}>
                     <span className="text-xs font-semibold">{message.text}</span>
                     <button 

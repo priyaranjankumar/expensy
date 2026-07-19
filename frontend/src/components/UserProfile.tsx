@@ -105,7 +105,7 @@ const UserProfile: React.FC<UserProfileProps> = ({
                         className={`flex-1 py-2.5 px-4 rounded-xl text-xs font-semibold tracking-wide transition-all ${
                             activeTab === 'profile'
                                 ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20'
-                                : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-350 hover:bg-slate-200 dark:hover:bg-slate-700'
+                                : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
                         }`}
                     >
                         👤 Edit Profile
@@ -115,7 +115,7 @@ const UserProfile: React.FC<UserProfileProps> = ({
                         className={`flex-1 py-2.5 px-4 rounded-xl text-xs font-semibold tracking-wide transition-all ${
                             activeTab === 'password'
                                 ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20'
-                                : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-350 hover:bg-slate-200 dark:hover:bg-slate-700'
+                                : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
                         }`}
                     >
                         🔑 Change Password
@@ -127,7 +127,7 @@ const UserProfile: React.FC<UserProfileProps> = ({
                     <div className={`p-4 mb-6 rounded-xl border ${
                         message.type === 'success'
                             ? 'bg-green-50 dark:bg-green-950/20 border-green-200/50 dark:border-green-800/20 text-green-600 dark:text-green-400'
-                            : 'bg-red-50 dark:bg-red-950/20 border-red-200/50 dark:border-red-800/20 text-red-650 dark:text-red-400'
+                            : 'bg-red-50 dark:bg-red-950/20 border-red-200/50 dark:border-red-800/20 text-red-700 dark:text-red-400'
                     }`}>
                         <p className="text-xs font-medium">{message.text}</p>
                     </div>
@@ -180,7 +180,7 @@ const UserProfile: React.FC<UserProfileProps> = ({
                                     onClick={() => onLayoutPreferenceChange('standard')}
                                     className={`py-2.5 px-3 rounded-xl text-xs font-bold border transition-all ${
                                         layoutPreference === 'standard'
-                                            ? 'bg-indigo-50 dark:bg-indigo-950/20 border-indigo-500/50 text-indigo-650 dark:text-indigo-400'
+                                            ? 'bg-indigo-50 dark:bg-indigo-950/20 border-indigo-500/50 text-indigo-600 dark:text-indigo-400'
                                             : 'bg-slate-50/50 dark:bg-slate-900/30 border-slate-200 dark:border-slate-800/80 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800'
                                     }`}
                                 >
@@ -191,7 +191,7 @@ const UserProfile: React.FC<UserProfileProps> = ({
                                     onClick={() => onLayoutPreferenceChange('wide')}
                                     className={`py-2.5 px-3 rounded-xl text-xs font-bold border transition-all ${
                                         layoutPreference === 'wide'
-                                            ? 'bg-indigo-50 dark:bg-indigo-950/20 border-indigo-500/50 text-indigo-650 dark:text-indigo-400'
+                                            ? 'bg-indigo-50 dark:bg-indigo-950/20 border-indigo-500/50 text-indigo-600 dark:text-indigo-400'
                                             : 'bg-slate-50/50 dark:bg-slate-900/30 border-slate-200 dark:border-slate-800/80 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800'
                                     }`}
                                 >

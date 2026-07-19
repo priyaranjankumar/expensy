@@ -112,10 +112,10 @@ const TagsManager: React.FC<TagsManagerProps> = ({ className = '', onClose }) =>
                     ))}
                 </div>
             ) : tags.length === 0 ? (
-                <div className="text-center py-12 border border-dashed border-slate-250 dark:border-slate-800/80 rounded-2xl p-6">
-                    <TagIcon className="w-10 h-10 mx-auto mb-3.5 text-slate-350 dark:text-slate-650" />
-                    <h3 className="text-sm font-bold text-slate-850 dark:text-white mb-1">No Tags Yet</h3>
-                    <p className="text-xs text-slate-450 dark:text-slate-505 mb-4">Create tags to organize and categorize your transactions</p>
+                <div className="text-center py-12 border border-dashed border-slate-200 dark:border-slate-800/80 rounded-2xl p-6">
+                    <TagIcon className="w-10 h-10 mx-auto mb-3.5 text-slate-300 dark:text-slate-600" />
+                    <h3 className="text-sm font-bold text-slate-800 dark:text-white mb-1">No Tags Yet</h3>
+                    <p className="text-xs text-slate-400 dark:text-slate-500 mb-4">Create tags to organize and categorize your transactions</p>
                     <button onClick={openNewModal} className="btn btn-primary text-xs py-2">
                         Create Your First Tag
                     </button>
@@ -132,7 +132,7 @@ const TagsManager: React.FC<TagsManagerProps> = ({ className = '', onClose }) =>
                                     className="w-3.5 h-3.5 rounded-full ring-2 ring-white dark:ring-slate-900 flex-shrink-0"
                                     style={{ backgroundColor: tag.color }}
                                 />
-                                <span className="font-semibold text-xs text-slate-700 dark:text-slate-350 truncate">{tag.name}</span>
+                                <span className="font-semibold text-xs text-slate-700 dark:text-slate-300 truncate">{tag.name}</span>
                             </div>
                             <div className="absolute top-2.5 right-2.5 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
                                 <button

@@ -55,7 +55,7 @@ const MonthPicker: React.FC<MonthPickerProps> = ({ value, onChange, className = 
             >
                 <div className="flex items-center gap-2.5">
                     <CalendarDays className="w-4 h-4 text-indigo-500 dark:text-indigo-400" />
-                    <span className="font-semibold text-slate-700 dark:text-slate-250 text-sm">
+                    <span className="font-semibold text-slate-700 dark:text-slate-200 text-sm">
                         {value ? formatBillingMonth(value) : 'Select Month'}
                     </span>
                 </div>
@@ -99,7 +99,7 @@ const MonthPicker: React.FC<MonthPickerProps> = ({ value, onChange, className = 
                                         ? 'bg-primary-500 text-white shadow-lg shadow-primary-500/30'
                                         : isCurrent
                                             ? 'bg-primary-105 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 ring-1 ring-primary-300 dark:ring-primary-750'
-                                            : 'text-slate-700 dark:text-slate-350 hover:bg-slate-100 dark:hover:bg-slate-800'
+                                            : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
                                         }`}
                                 >
                                     {month.slice(0, 3)}

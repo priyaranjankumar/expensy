@@ -53,7 +53,7 @@ const QuickAddWidget: React.FC<QuickAddWidgetProps> = ({
                                 onOpenModal();
                                 setIsOpen(false);
                             }}
-                            className="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-350 shadow-lg flex items-center justify-center transition-all hover:scale-110 active:scale-95 border border-slate-200/50 dark:border-slate-800/40"
+                            className="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 shadow-lg flex items-center justify-center transition-all hover:scale-110 active:scale-95 border border-slate-200/50 dark:border-slate-800/40"
                             title="Add Custom"
                         >
                             <Sparkles className="w-4 h-4 text-indigo-500" />
@@ -66,7 +66,7 @@ const QuickAddWidget: React.FC<QuickAddWidgetProps> = ({
             <button
                 type="button"
                 onClick={() => setIsOpen(!isOpen)}
-                className="w-14 h-14 rounded-full bg-gradient-to-br from-indigo-500 to-purple-650 text-white shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
+                className="w-14 h-14 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
                 aria-label="Add Expense Menu"
             >
                 <Plus className={`w-7 h-7 transition-transform duration-200 ${isOpen ? 'rotate-45' : ''}`} />

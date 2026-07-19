@@ -2,19 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { XAxis, YAxis, Tooltip, ResponsiveContainer, Area, AreaChart, ReferenceLine } from 'recharts';
 import { metricsApi } from '../services/api';
 import type { TrendsResponse } from '../types';
+import { formatCurrency } from '../utils/format';
 
 interface TrendChartProps {
     className?: string;
 }
-
-// Format currency in INR
-const formatCurrency = (amount: number): string => {
-    return new Intl.NumberFormat('en-IN', {
-        style: 'currency',
-        currency: 'INR',
-        maximumFractionDigits: 0,
-    }).format(amount);
-};
 
 // Format month for display (e.g., "Jan '24")
 const formatMonth = (billingMonth: string): string => {
@@ -128,12 +120,12 @@ const TrendChart: React.FC<TrendChartProps> = ({ className = '' }) => {
                         </defs>
                         <XAxis
                             dataKey="displayMonth"
-                            tick={{ fontSize: 11, fill: '#94a3b8' }}
-                            axisLine={{ stroke: '#e2e8f0' }}
+                            tick={{ fontSize: 11, fill: 'currentColor' }}
+                            axisLine={{ stroke: 'currentColor', strokeOpacity: 0.15 }}
                             tickLine={false}
                         />
                         <YAxis
-                            tick={{ fontSize: 10, fill: '#94a3b8' }}
+                            tick={{ fontSize: 10, fill: 'currentColor' }}
                             tickFormatter={(v) => `₹${(v / 1000).toFixed(0)}K`}
                             axisLine={false}
                             tickLine={false}
