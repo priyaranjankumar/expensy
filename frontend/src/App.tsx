@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { Menu } from 'lucide-react';
 import { Sidebar } from './components/Sidebar';
 import Dashboard from './components/Dashboard';
 import TrendChart from './components/TrendChart';
@@ -322,6 +323,7 @@ function AuthenticatedApp({ user, onLogout, onUserUpdate, showProfile, setShowPr
         : 'All Time';
 
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
     return (
         <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex transition-colors duration-300">
@@ -332,16 +334,28 @@ function AuthenticatedApp({ user, onLogout, onUserUpdate, showProfile, setShowPr
                 onTabChange={(tab: any) => setActiveTab(tab)}
                 isCollapsed={!isSidebarOpen}
                 toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
+                isMobileOpen={isMobileSidebarOpen}
+                onMobileClose={() => setIsMobileSidebarOpen(false)}
             />
 
             {/* Main Content Area */}
-            <main className={`flex-1 transition-all duration-300 ${isSidebarOpen ? 'ml-0 md:ml-64' : 'ml-0 md:ml-20'}`}>
+            <main className={`flex-1 transition-all duration-300 ${isSidebarOpen ? 'md:ml-64' : 'md:ml-20'}`}>
                 {/* Header / Top Bar */}
-                <header className="sticky top-0 z-30 h-16 bg-white/70 dark:bg-[#090d16]/75 backdrop-blur-xl px-6 flex items-center justify-between transition-colors duration-300">
-                    <h2 className="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400 capitalize tracking-tight">
-                        {activeTab === 'recurring' ? 'Recurring Expenses' :
-                            activeTab === 'data' ? 'Data & Sharing' : activeTab}
-                    </h2>
+                <header className="sticky top-0 z-30 h-16 bg-white/70 dark:bg-[#090d16]/75 backdrop-blur-xl px-4 sm:px-6 flex items-center justify-between transition-colors duration-300">
+                    <div className="flex items-center gap-3">
+                        {/* Mobile hamburger menu */}
+                        <button
+                            onClick={() => setIsMobileSidebarOpen(true)}
+                            className="md:hidden p-2 -ml-1 rounded-xl text-slate-500 hover:text-indigo-600 hover:bg-slate-100 dark:hover:bg-slate-800 dark:text-slate-400 dark:hover:text-indigo-400 transition-all"
+                            aria-label="Open menu"
+                        >
+                            <Menu className="w-5 h-5" />
+                        </button>
+                        <h2 className="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400 capitalize tracking-tight">
+                            {activeTab === 'recurring' ? 'Recurring Expenses' :
+                                activeTab === 'data' ? 'Data & Sharing' : activeTab}
+                        </h2>
+                    </div>
 
                     <div className="flex items-center gap-4">
                         <DarkModeToggle />
@@ -359,7 +373,7 @@ function AuthenticatedApp({ user, onLogout, onUserUpdate, showProfile, setShowPr
                 </header>
 
                 {/* Page Content */}
-                <div className={`p-6 space-y-6 ${layoutPreference === 'wide' ? 'w-full' : 'max-w-7xl mx-auto'}`}>
+                <div className={`p-3 sm:p-6 space-y-4 sm:space-y-6 ${layoutPreference === 'wide' ? 'w-full' : 'max-w-7xl mx-auto'}`}>
                     {/* Error Banner */}
                     {error && (
                         <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800 rounded-xl flex items-center justify-between animate-fade-in">

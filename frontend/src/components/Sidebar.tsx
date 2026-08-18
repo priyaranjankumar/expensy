@@ -9,7 +9,8 @@ import {
     FolderOpen,
     Tag,
     ChevronLeft,
-    ChevronRight
+    ChevronRight,
+    X
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -17,6 +18,8 @@ interface SidebarProps {
     onTabChange: (tabId: string) => void;
     isCollapsed: boolean;
     toggleSidebar: () => void;
+    isMobileOpen?: boolean;
+    onMobileClose?: () => void;
 }
 
 interface MenuItem {
@@ -40,70 +43,107 @@ export const Sidebar: React.FC<SidebarProps> = ({
     activeTab,
     onTabChange,
     isCollapsed,
-    toggleSidebar
+    toggleSidebar,
+    isMobileOpen = false,
+    onMobileClose
 }) => {
 
+    const handleNavClick = (tabId: string) => {
+        onTabChange(tabId);
+        // Auto-close sidebar on mobile after navigation
+        if (onMobileClose) {
+            onMobileClose();
+        }
+    };
+
     return (
-        <aside className={`
-            fixed left-0 top-0 h-screen bg-white/80 dark:bg-[#090d16]/80 backdrop-blur-xl border-r border-slate-200/40 dark:border-slate-800/40
-            transition-all duration-300 z-50 flex flex-col
-            ${isCollapsed ? 'w-20' : 'w-64'}
-        `}>
-            {/* Collapsible Trigger */}
-            <button
-                onClick={toggleSidebar}
-                className="absolute -right-3.5 top-8 p-1.5 rounded-full bg-white dark:bg-[#0f172a] border border-slate-200/60 dark:border-slate-800/60 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 shadow-md hover:shadow-lg transition-all hover:scale-110 active:scale-[0.95] z-50"
-            >
-                {isCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
-            </button>
+        <>
+            {/* Mobile Overlay Backdrop */}
+            {isMobileOpen && (
+                <div
+                    className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 md:hidden transition-opacity duration-300"
+                    onClick={onMobileClose}
+                    aria-hidden="true"
+                />
+            )}
 
-            {/* Logo Section */}
-            <div className="h-16 flex items-center justify-between px-5 border-b border-slate-100 dark:border-slate-800/60">
-                {!isCollapsed ? (
-                    <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center text-white font-black text-lg shadow-md shadow-indigo-500/20">
-                            E
-                        </div>
-                        <h1 className="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400 tracking-tight">
-                            Expensy<span className="text-indigo-500 font-extrabold">.</span>
-                        </h1>
-                    </div>
-                ) : (
-                    <div className="w-full flex justify-center">
-                        <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center text-white font-black text-lg shadow-md shadow-indigo-500/20">
-                            E
-                        </div>
-                    </div>
-                )}
-            </div>
+            {/* Sidebar */}
+            <aside className={`
+                fixed left-0 top-0 h-screen bg-white/80 dark:bg-[#090d16]/80 backdrop-blur-xl border-r border-slate-200/40 dark:border-slate-800/40
+                transition-all duration-300 flex flex-col
+                ${isCollapsed ? 'md:w-20' : 'md:w-64'}
+                /* Mobile: off-screen by default, slide in when open */
+                w-64 z-50
+                ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'}
+                md:translate-x-0
+            `}>
+                {/* Mobile Close Button */}
+                <button
+                    onClick={onMobileClose}
+                    className="absolute top-4 right-4 p-2 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all md:hidden"
+                    aria-label="Close menu"
+                >
+                    <X className="w-5 h-5" />
+                </button>
 
-            {/* Navigation */}
-            <nav className="flex-1 overflow-y-auto py-5 px-3 space-y-1">
-                {MENU_ITEMS.map((item) => {
-                    const Icon = item.icon;
-                    const isActive = activeTab === item.id;
-                    return (
-                        <button
-                            key={item.id}
-                            onClick={() => onTabChange(item.id)}
-                            className={`
-                                w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl text-sm font-semibold tracking-wide transition-all group relative
-                                ${isActive
-                                    ? 'bg-gradient-to-r from-indigo-500/10 to-purple-500/5 text-indigo-600 dark:text-indigo-400 border-l-[3px] border-indigo-600 dark:border-indigo-400 pl-3'
-                                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800/40'}
-                            `}
-                            title={isCollapsed ? item.label : undefined}
-                        >
-                            <Icon className={`w-5 h-5 transition-transform duration-200 group-hover:scale-105 ${isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300'}`} />
-                            {!isCollapsed && <span>{item.label}</span>}
-                            
-                            {isActive && (
-                                <div className="absolute right-3 w-1.5 h-1.5 rounded-full bg-indigo-500/80 animate-pulse" />
-                            )}
-                        </button>
-                    );
-                })}
-            </nav>
-        </aside>
+                {/* Desktop Collapsible Trigger — hidden on mobile */}
+                <button
+                    onClick={toggleSidebar}
+                    className="hidden md:flex absolute -right-3.5 top-8 p-1.5 rounded-full bg-white dark:bg-[#0f172a] border border-slate-200/60 dark:border-slate-800/60 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 shadow-md hover:shadow-lg transition-all hover:scale-110 active:scale-[0.95] z-50"
+                >
+                    {isCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
+                </button>
+
+                {/* Logo Section */}
+                <div className="h-16 flex items-center justify-between px-5 border-b border-slate-100 dark:border-slate-800/60">
+                    {(!isCollapsed || isMobileOpen) ? (
+                        <div className="flex items-center gap-2">
+                            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center text-white font-black text-lg shadow-md shadow-indigo-500/20">
+                                E
+                            </div>
+                            <h1 className="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400 tracking-tight">
+                                Expensy<span className="text-indigo-500 font-extrabold">.</span>
+                            </h1>
+                        </div>
+                    ) : (
+                        <div className="w-full flex justify-center">
+                            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center text-white font-black text-lg shadow-md shadow-indigo-500/20">
+                                E
+                            </div>
+                        </div>
+                    )}
+                </div>
+
+                {/* Navigation */}
+                <nav className="flex-1 overflow-y-auto py-5 px-3 space-y-1">
+                    {MENU_ITEMS.map((item) => {
+                        const Icon = item.icon;
+                        const isActive = activeTab === item.id;
+                        // On mobile, always show labels (sidebar is full-width)
+                        const showLabel = !isCollapsed || isMobileOpen;
+                        return (
+                            <button
+                                key={item.id}
+                                onClick={() => handleNavClick(item.id)}
+                                className={`
+                                    w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl text-sm font-semibold tracking-wide transition-all group relative
+                                    ${isActive
+                                        ? 'bg-gradient-to-r from-indigo-500/10 to-purple-500/5 text-indigo-600 dark:text-indigo-400 border-l-[3px] border-indigo-600 dark:border-indigo-400 pl-3'
+                                        : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800/40'}
+                                `}
+                                title={!showLabel ? item.label : undefined}
+                            >
+                                <Icon className={`w-5 h-5 transition-transform duration-200 group-hover:scale-105 ${isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300'}`} />
+                                {showLabel && <span>{item.label}</span>}
+                                
+                                {isActive && (
+                                    <div className="absolute right-3 w-1.5 h-1.5 rounded-full bg-indigo-500/80 animate-pulse" />
+                                )}
+                            </button>
+                        );
+                    })}
+                </nav>
+            </aside>
+        </>
     );
 };
