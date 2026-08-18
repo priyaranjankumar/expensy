@@ -71,11 +71,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <aside className={`
                 fixed left-0 top-0 h-screen bg-white/80 dark:bg-[#090d16]/80 backdrop-blur-xl border-r border-slate-200/40 dark:border-slate-800/40
                 transition-all duration-300 flex flex-col
-                ${isCollapsed ? 'md:w-20' : 'md:w-64'}
-                /* Mobile: off-screen by default, slide in when open */
                 w-64 z-50
-                ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'}
-                md:translate-x-0
+                ${isCollapsed ? 'md:w-20' : 'md:w-64'}
+                ${isMobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
             `}>
                 {/* Mobile Close Button */}
                 <button
